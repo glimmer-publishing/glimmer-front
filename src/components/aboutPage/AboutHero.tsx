@@ -7,8 +7,8 @@ export default function AboutHero() {
     <Container className="flex flex-col gap-3 lg:flex-row lg:gap-0 lg:justify-between lg:items-center mb-8 lg:mb-12">
       <PageTitle>Про нас</PageTitle>
       <SectionDescription className="lg:max-w-[363px]">
-        Познайомтесь із Glimmer — книгарнею, створеною з любов’ю. Ми відкриваємо
-        для вас світ історій, турботи й натхнення.
+        Знайомся із Glimmer — новим українським видавництвом. Ми створюємо
+        світи, які говорять від серця до серця.
       </SectionDescription>
     </Container>
   );
