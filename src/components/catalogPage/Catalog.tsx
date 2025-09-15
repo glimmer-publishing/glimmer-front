@@ -132,6 +132,7 @@ export default function Catalog({
                     alt="banner"
                     width={240}
                     height={619}
+                    unoptimized
                   />
                 </motion.div>
               </Link>
