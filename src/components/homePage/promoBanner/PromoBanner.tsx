@@ -25,6 +25,7 @@ export default function PromoBanner({
         alt="promo banner"
         width={320}
         height={268}
+        unoptimized
         className="w-full h-auto xs:hidden"
       />
       <Image
@@ -32,6 +33,7 @@ export default function PromoBanner({
         alt="promo banner"
         width={320}
         height={268}
+        unoptimized
         className="w-full h-auto hidden xs:block"
       />
     </>
