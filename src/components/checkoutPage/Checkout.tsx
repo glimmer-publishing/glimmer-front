@@ -13,7 +13,7 @@ export default function Checkout({ citiesNovaPost }: CheckoutProps) {
     <section className="lg:pb-10">
       <Container>
         <div className="flex flex-col gap-3 lg:flex-row lg:gap-0 lg:justify-between lg:items-center mb-8 lg:mb-12">
-          <PageTitle>Офрмлення замовлення</PageTitle>
+          <PageTitle>Оформлення замовлення</PageTitle>
           <SectionDescription className="lg:max-w-[440px]">
             Заповни необхідну інформацію, і вже скоро твої книжки будуть у
             дорозі!
