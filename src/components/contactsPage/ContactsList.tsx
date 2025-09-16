@@ -113,7 +113,7 @@ export default function ContactsList() {
           />
         </div>
         <ContactItem
-          title="Для будь-якої співпраці: реалізація наших книг, партнерство:"
+          title="Для співпраці з приводу реалізації книг:"
           description={
             <a
               href={`mailto:${EMAIL_COOPERATION}`}
