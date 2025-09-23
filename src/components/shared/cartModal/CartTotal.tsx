@@ -4,6 +4,7 @@ import Link from "next/link";
 import MainButton from "../buttons/MainButton";
 import { useCartStore } from "@/store/cartStore";
 import MarqueeLine from "../marquee/MarqueeLine";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 interface CartTotalProps {
   isPopUpShown?: boolean;
@@ -65,7 +66,11 @@ export default function CartTotal({
             href="/checkout"
             onClick={setIsPopUpShown ? () => setIsPopUpShown(false) : undefined}
           >
-            <MainButton disabled={!cart?.length} className="w-full h-[45px]">
+            <MainButton
+              onClick={() => sendGTMEvent({ event: "InitiateCheckout'" })}
+              disabled={!cart?.length}
+              className="w-full h-[45px]"
+            >
               Оформити замовлення
             </MainButton>
           </Link>

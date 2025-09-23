@@ -4,6 +4,7 @@ import { Product } from "@/types/product";
 import CartIcon from "../icons/CartIcon";
 import AddToCartAnimation from "../addToCartAnimation/AddToCartAnimation";
 import { useCartStore } from "@/store/cartStore";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 interface CartButtonProps {
   status: "inStock" | "preOrder";
@@ -43,6 +44,8 @@ export default function CartButton({
       setAnimationKey(null);
       addToCart(product, 1);
     }, 800);
+
+    sendGTMEvent({ event: "AddToCart" });
   };
 
   return (

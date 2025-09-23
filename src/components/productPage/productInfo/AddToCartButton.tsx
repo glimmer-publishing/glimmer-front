@@ -4,6 +4,7 @@ import MainButton from "@/components/shared/buttons/MainButton";
 import AddToCartAnimation from "@/components/shared/addToCartAnimation/AddToCartAnimation";
 import { useCartStore } from "@/store/cartStore";
 import { Product } from "@/types/product";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 interface AddToCartButtonProps {
   product: Product;
@@ -46,6 +47,8 @@ export default function AddToCartButton({
       setAnimationKey(null);
       addToCart(product, count);
     }, 800);
+
+    sendGTMEvent({ event: "AddToCart" });
   };
 
   return (
