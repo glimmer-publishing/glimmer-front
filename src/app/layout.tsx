@@ -8,6 +8,9 @@ import Footer from "@/components/shared/footer/Footer";
 import { fetchSanityDataServer } from "@/utils/fetchSanityDataServer";
 import { allCategoriesAndProductsQuery } from "@/lib/queries";
 import { getDefaultMetadata } from "@/utils/getDefaultMetadata";
+import { GoogleTagManager } from "@next/third-parties/google";
+
+const GTM_ID = "GTM-WT38LX4S";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -27,6 +30,9 @@ export default async function RootLayout({
 
   return (
     <html lang="uk" className="scroll-smooth antialiased">
+      <head>
+        <GoogleTagManager gtmId={GTM_ID} />
+      </head>
       <body
         className={`${montserrat.variable} flex min-h-dvh flex-col antialiased text-[12px] lg:text-[15px] font-light leading-[120%]`}
       >
