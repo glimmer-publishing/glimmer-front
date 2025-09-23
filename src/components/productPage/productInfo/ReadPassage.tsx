@@ -13,6 +13,7 @@ import { Product } from "@/types/product";
 import { useCartStore } from "@/store/cartStore";
 import * as motion from "motion/react-client";
 import { fadeInAnimation } from "@/utils/animationVariants";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 interface ReadPassageProps {
   bookScreens: string[];
@@ -117,7 +118,10 @@ export default function ReadPassage({
             <div className="flex justify-between gap-4 px-5 w-full my-4">
               <FavoriteButton currentProduct={currentProduct} />
               <MainButton
-                onClick={() => addToCart(currentProduct, 1)}
+                onClick={() => {
+                  addToCart(currentProduct, 1);
+                  sendGTMEvent({ event: "AddToCart" });
+                }}
                 className="h-[45px] lg:max-w-[180px]"
               >
                 Купити
