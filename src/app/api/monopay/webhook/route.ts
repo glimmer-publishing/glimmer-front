@@ -53,11 +53,10 @@ export async function POST(req: NextRequest) {
       const payment_date = now.toISOString().slice(0, 19).replace("T", " ");
 
       // Оновлюємо статус оплати у Key CRM
-      const crmResponse = await axios.put(
-        `${CRM_API_URL}/order/${orderId}`,
+      const crmResponse = await axios.post(
+        `${CRM_API_URL}/order/${orderId}/payment`,
         {
-          payment_status: "paid",
-          payment_method_id: 6, // відповідний метод у CRM
+          payment_method_id: 6,
           payment_method: "MonoPay",
           amount: data.finalAmount / 100,
           status: "paid",
