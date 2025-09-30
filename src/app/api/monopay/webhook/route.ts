@@ -47,16 +47,22 @@ export async function POST(req: NextRequest) {
         },
       });
 
+      const now = new Date();
+      now.setHours(now.getHours() + 3);
+
+      const payment_date = now.toISOString().slice(0, 19).replace("T", " ");
+
       // Оновлюємо статус оплати у Key CRM
-      const crmResponse = await axios.post(
-        `${CRM_API_URL}/order/${orderId}/payment`,
+      const crmResponse = await axios.put(
+        `${CRM_API_URL}/order/${orderId}`,
         {
+          payment_status: "paid",
           payment_method_id: 6, // відповідний метод у CRM
           payment_method: "MonoPay",
           amount: data.finalAmount / 100,
           status: "paid",
           description: "Оплата через MonoPay",
-          payment_date: new Date().toISOString().slice(0, 19).replace("T", " "),
+          payment_date,
         },
         {
           headers: {
