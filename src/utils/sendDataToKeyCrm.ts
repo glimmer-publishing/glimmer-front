@@ -33,24 +33,45 @@ export async function sendDataToKeyCrm(data: OrderData) {
     sku: item.product.sku,
   }));
 
-  const crmOrderData = {
-    source_id: 1,
-    source_uuid: orderNumber,
-    orderedAt: `${orderDate} ${orderTime}`,
-    promocode: promoCode,
-    buyer_comment: message,
-    buyer: { full_name: `${name} ${surname}`, phone, email },
-    shipping: {
-      shipping_service: deliveryService,
-      shipping_address_city: city,
-      shipping_secondary_line: address,
-      shipping_receive_point: branchNumber,
-    },
-    products,
-    payments: [
-      { payment_method: payment, amount: totalOrderSum, status: "not_paid" },
-    ],
-  };
+  const crmOrderData =
+    payment !== "Оплата картою онлайн Visa, Mastercard"
+      ? {
+          source_id: 1,
+          source_uuid: orderNumber,
+          orderedAt: `${orderDate} ${orderTime}`,
+          promocode: promoCode,
+          buyer_comment: message,
+          buyer: { full_name: `${name} ${surname}`, phone, email },
+          shipping: {
+            shipping_service: deliveryService,
+            shipping_address_city: city,
+            shipping_secondary_line: address,
+            shipping_receive_point: branchNumber,
+          },
+          products,
+          payments: [
+            {
+              payment_method: payment,
+              amount: totalOrderSum,
+              status: "not_paid",
+            },
+          ],
+        }
+      : {
+          source_id: 1,
+          source_uuid: orderNumber,
+          orderedAt: `${orderDate} ${orderTime}`,
+          promocode: promoCode,
+          buyer_comment: message,
+          buyer: { full_name: `${name} ${surname}`, phone, email },
+          shipping: {
+            shipping_service: deliveryService,
+            shipping_address_city: city,
+            shipping_secondary_line: address,
+            shipping_receive_point: branchNumber,
+          },
+          products,
+        };
 
   try {
     const response = await axios({
