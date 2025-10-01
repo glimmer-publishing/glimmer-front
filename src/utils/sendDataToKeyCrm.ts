@@ -43,6 +43,7 @@ export async function sendDataToKeyCrm(data: OrderData) {
           buyer_comment: message,
           buyer: { full_name: `${name} ${surname}`, phone, email },
           shipping: {
+            delivery_service_id: deliveryService === "Нова пошта" ? 6 : 5,
             shipping_service: deliveryService,
             shipping_address_city: city,
             shipping_secondary_line: address,
@@ -65,6 +66,7 @@ export async function sendDataToKeyCrm(data: OrderData) {
           buyer_comment: message,
           buyer: { full_name: `${name} ${surname}`, phone, email },
           shipping: {
+            delivery_service_id: deliveryService === "Нова пошта" ? 6 : 5,
             shipping_service: deliveryService,
             shipping_address_city: city,
             shipping_secondary_line: address,
