@@ -111,12 +111,14 @@ export const useCartStore = create<CartStore>()(
           get();
         return cart.reduce((sum, item) => {
           const basePrice = item.product.discountPrice ?? item.product.price;
+          const hasDiscount = !!item.product.discountPrice; // ❗ додано
           const publisherFeature = item.product.features?.find(
             (f) => f.featureName.toLowerCase() === "видавництво"
           );
           const publisherValue = publisherFeature?.value;
           const isEligible =
             promoCode &&
+            !hasDiscount && // ❗ промо не діє, якщо товар зі знижкою
             publisherValue &&
             promoPublishers.some(
               (pub) => pub.name.toLowerCase() === publisherValue.toLowerCase()
@@ -132,6 +134,8 @@ export const useCartStore = create<CartStore>()(
         const { cart, promoDiscountPercent, promoPublishers } = get();
         if (!promoDiscountPercent) return 0;
         return cart.reduce((sum, item) => {
+          const hasDiscount = !!item.product.discountPrice; // ❗ додано
+          if (hasDiscount) return sum; // ❗ пропускаємо товари зі знижкою
           const basePrice = item.product.discountPrice ?? item.product.price;
           const publisherFeature = item.product.features?.find(
             (f) => f.featureName.toLowerCase() === "видавництво"
@@ -152,11 +156,13 @@ export const useCartStore = create<CartStore>()(
         const item = cart.find((i) => i.product.id === productId);
         if (!item) return 0;
         const basePrice = item.product.discountPrice ?? item.product.price;
+        const hasDiscount = !!item.product.discountPrice; // ❗ додано
         const publisherFeature = item.product.features?.find(
           (f) => f.featureName.toLowerCase() === "видавництво"
         );
         const publisherValue = publisherFeature?.value;
         const isEligible =
+          !hasDiscount && // ❗ промо не діє, якщо товар зі знижкою
           publisherValue &&
           promoPublishers.some(
             (pub) => pub.name.toLowerCase() === publisherValue.toLowerCase()
