@@ -134,7 +134,7 @@ export const useCartStore = create<CartStore>()(
         const { cart, promoDiscountPercent, promoPublishers } = get();
         if (!promoDiscountPercent) return 0;
         return cart.reduce((sum, item) => {
-          const hasDiscount = !!item.product.discountPrice; // ❗ додано
+          const hasDiscount = !!item.product.discountPrice; //
           if (hasDiscount) return sum; // ❗ пропускаємо товари зі знижкою
           const basePrice = item.product.discountPrice ?? item.product.price;
           const publisherFeature = item.product.features?.find(
@@ -156,7 +156,7 @@ export const useCartStore = create<CartStore>()(
         const item = cart.find((i) => i.product.id === productId);
         if (!item) return 0;
         const basePrice = item.product.discountPrice ?? item.product.price;
-        const hasDiscount = !!item.product.discountPrice; // ❗ додано
+        const hasDiscount = !!item.product.discountPrice; //
         const publisherFeature = item.product.features?.find(
           (f) => f.featureName.toLowerCase() === "видавництво"
         );
