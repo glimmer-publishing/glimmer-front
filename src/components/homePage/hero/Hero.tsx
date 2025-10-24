@@ -8,7 +8,9 @@ interface HeroProps {
   banners: {
     title: string;
     description: string;
-    image: string;
+    imageMob: string;
+    imageTab: string;
+    imageDesk: string;
     button: {
       label: string;
       link: string;
@@ -20,7 +22,7 @@ interface HeroProps {
 
 export default function Hero({ banners }: HeroProps) {
   return (
-    <section className="relative overflow-hidden">
+    <section className="relative overflow-hidden pt-[85px]">
       <Flowers />
       <SwiperWrapper
         swiperClassName="heroProducts"
