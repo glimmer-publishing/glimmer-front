@@ -9,7 +9,9 @@ interface HeroSlideProps {
   banner: {
     title: string;
     description: string;
-    image: string;
+    imageMob: string;
+    imageTab: string;
+    imageDesk: string;
     button: {
       label: string;
       link: string;
@@ -20,17 +22,35 @@ interface HeroSlideProps {
 }
 
 export default function HeroSlide({ banner }: HeroSlideProps) {
-  const { title, description, image, button } = banner;
+  const { title, description, imageMob, imageTab, imageDesk, button } = banner;
   return (
-    <div className="relative flex z-10 w-dvw pt-[235px] lg:pt-[155px] pb-[116px] lg:pb-[103px] overflow-hidden min-h-full">
+    <div className="relative flex z-10 w-dvw pt-[235px] lg:pt-[155px] pb-[116px] lg:pb-[103px] overflow-hidden h-full min-h-[500px] lg:min-h-[550px]">
       <Image
-        src={image}
+        src={imageMob}
         alt="hero banner"
         fill
         sizes="100vw"
         unoptimized
         priority
-        className="-z-10 object-cover"
+        className="sm:hidden -z-10 object-cover"
+      />
+      <Image
+        src={imageTab}
+        alt="hero banner"
+        fill
+        sizes="100vw"
+        unoptimized
+        priority
+        className="hidden sm:block lg:hidden -z-10 object-cover"
+      />
+      <Image
+        src={imageDesk}
+        alt="hero banner"
+        fill
+        sizes="100vw"
+        unoptimized
+        priority
+        className="hidden lg:block -z-10 object-cover"
       />
       <Container
         className={`flex min-h-full flex-1 ${button.position === "bottomLeft" ? "flex-col justify-between" : button.position === "bottomRight" ? "flex-col justify-between" : "flex-col-reverse justify-between"}`}

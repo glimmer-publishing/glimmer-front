@@ -54,7 +54,9 @@ export const homepageCombinedQuery = `{
   "heroBanners": *[_type == "heroBanner"] | order(order asc) {
     title,
     description,
-    "image": image.asset->url,
+    "imageMob": imageMob.asset->url,
+    "imageTab": imageTab.asset->url,
+    "imageDesk": imageDesk.asset->url,
     button {
       label,
       link,
