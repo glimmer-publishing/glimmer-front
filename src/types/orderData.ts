@@ -1,4 +1,5 @@
 import { CartItem } from "@/types/cartItem";
+import { UtmData } from "@/store/utmStore";
 
 export interface OrderData {
   orderNumber: string;
@@ -20,4 +21,5 @@ export interface OrderData {
   promoDiscountPercent: number;
   promoPublishers: { id: string; name: string }[];
   totalOrderSum: number;
+  marketing?: UtmData;
 }
