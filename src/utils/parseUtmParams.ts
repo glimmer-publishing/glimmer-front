@@ -15,7 +15,13 @@ export function parseUtmParams(url?: string): UtmData | null {
   const urlObj = new URL(targetUrl);
   const searchParams = urlObj.searchParams;
 
-  const utmData: UtmData = {};
+  const utmData: UtmData = {
+    utm_source: "",
+    utm_medium: "",
+    utm_campaign: "",
+    utm_term: "",
+    utm_content: "",
+  };
 
   // Перевіряємо наявність UTM-параметрів
   const utmSource = searchParams.get("utm_source");
