@@ -9,6 +9,7 @@ import { fetchSanityDataServer } from "@/utils/fetchSanityDataServer";
 import { allCategoriesAndProductsQuery } from "@/lib/queries";
 import { getDefaultMetadata } from "@/utils/getDefaultMetadata";
 import { GoogleTagManager } from "@next/third-parties/google";
+import UtmTracker from "@/components/shared/utmTracker/UtmTracker";
 
 const GTM_ID = "GTM-WT38LX4S";
 
@@ -36,6 +37,7 @@ export default async function RootLayout({
       <body
         className={`${montserrat.variable} flex min-h-dvh flex-col antialiased text-[12px] lg:text-[15px] font-light leading-[120%]`}
       >
+        <UtmTracker />
         <Header categories={result?.categories} products={result?.products} />
         <main className="flex-1">{children}</main>
         <Footer />

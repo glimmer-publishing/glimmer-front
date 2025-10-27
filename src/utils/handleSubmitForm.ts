@@ -6,6 +6,7 @@ import { fetchSanityDataClient } from "./fetchSanityDataClient";
 import { productsByIds, promocodeByCodeQuery } from "../lib/queries";
 import { useCartStore } from "../store/cartStore";
 import { useOrderStore } from "@/store/orderStore";
+import { useUtmStore } from "@/store/utmStore";
 import { CartItem } from "@/types/cartItem";
 import { Product } from "@/types/product";
 import { useRouter } from "next/navigation";
@@ -33,6 +34,8 @@ export const handleSubmitForm = async <T>(
     removePromoCode,
     getCartTotal,
   } = useCartStore.getState();
+
+  const { utmData, clearUtmData } = useUtmStore.getState();
 
   const { clearOrder, setOrder } = useOrderStore.getState();
 
@@ -145,6 +148,7 @@ export const handleSubmitForm = async <T>(
     promoDiscountPercent,
     promoPublishers,
     totalOrderSum,
+    marketing: utmData || undefined,
   };
 
   // Формуємо список товарів з переносами на новий рядок для Telegram
@@ -187,7 +191,11 @@ export const handleSubmitForm = async <T>(
       `<b>Список товарів в замовленні:</b>\n${orderedListProducts}\n` +
       `<b>Сума замовлення:</b> ${totalOrderSum} грн\n`;
 
-    const updatedCollectedOrderData = { ...collectedOrderData, orderNumber };
+    const updatedCollectedOrderData = {
+      ...collectedOrderData,
+      orderNumber,
+      marketing: utmData || undefined,
+    };
 
     // Записуємо в orderState зібрану та оновлену інформацію по замовленню
     setOrder(updatedCollectedOrderData);
@@ -269,6 +277,8 @@ export const handleSubmitForm = async <T>(
     clearCart();
     //Видаляємо промокод
     removePromoCode();
+    //Очищаємо UTM-дані
+    clearUtmData();
     //Редірект на сторінку підтвердження замовлення
     {
       if (
