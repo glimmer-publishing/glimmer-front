@@ -79,7 +79,7 @@ export function OrderConfirmationEmail({
             Дякуємо за покупку в Glimmer.
             <br />
             Ваше замовлення <b>№{orderNumber}</b> від {orderDate} прийнято в
-            обробку, наш менеджер скоро зв&apos;яжеться з вами.
+            обробку.
           </Text>
 
           <Hr style={hr} />
