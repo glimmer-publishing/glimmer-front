@@ -173,10 +173,11 @@ export default function Confirmation() {
               ],
               ...cart.map((item, index) => {
                 const price = item.product.discountPrice ?? item.product.price;
-                const formattedPreOrderShippingDate = item.product
-                  ?.preOrderShippingDate
-                  ? formatDate(item.product?.preOrderShippingDate)
-                  : null;
+                const formattedPreOrderShippingDate =
+                  item.product?.status === "preOrder" &&
+                  item.product?.preOrderShippingDate
+                    ? formatDate(item.product?.preOrderShippingDate)
+                    : null;
                 return [
                   index + 1,
                   `"${item.product.title}" — ${item.product.author}${formattedPreOrderShippingDate ? `, відправка з ${formattedPreOrderShippingDate}` : ""}`,
