@@ -22,6 +22,7 @@ type CartItem = {
     discountPrice?: number;
     mainImage?: string;
     preOrderShippingDate?: string;
+    status?: "inStock" | "preOrder";
   };
   quantity: number;
 };
@@ -92,6 +93,7 @@ export function OrderConfirmationEmail({
               discountPrice,
               mainImage,
               preOrderShippingDate,
+              status,
             } = item.product;
 
             // мінімальна логіка знижки без oldPrice:
@@ -120,7 +122,7 @@ export function OrderConfirmationEmail({
                     <Text style={productTitle}>
                       {title}
                       {author ? ` — ${author}` : ""}
-                      {preOrderShippingDate
+                      {status === "preOrder" && preOrderShippingDate
                         ? `, віправка з ${preOrderShippingDate}`
                         : ""}
                     </Text>
