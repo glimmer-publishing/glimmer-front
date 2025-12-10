@@ -112,6 +112,7 @@ export default function PublicContract() {
     "ЄДРПОУ Банку 21133352",
     `Тел.: ${PHONE.replace(contactsPhoneRegex, "+38 ($1) $2 $3 $4")}`,
     `e-mail: ${EMAIL_CLIENTS}`,
+    `03179, Київ, вул. вул.Ушакова Миколи, буд. 1-Д`,
   ];
 
   return (
