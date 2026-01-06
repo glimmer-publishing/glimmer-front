@@ -14,6 +14,11 @@ export default function PaymentMethods() {
       description: "Оплата Visa або MasterCard безпосередньо на сайті.",
       icon: "/images/deliveryPage/paymentMethods/card.svg",
     },
+    {
+      title: "Карткою Національний кешбек",
+      description: "Оплата Національний кешбек, єКнига безпосередньо на сайті.",
+      icon: "/images/deliveryPage/paymentMethods/card.svg",
+    },
     // {
     //   title: "Оплата частинами",
     //   description: "Розстрочка без переплат через monobank — швидко та зручно.",
@@ -48,14 +53,14 @@ export default function PaymentMethods() {
             staggerChildren: 0.2,
             delayChildren: 0.2,
           })}
-          className="flex flex-col md:flex-row gap-6 lg:gap-8"
+          className="grid md:grid-cols-3 gap-6 lg:gap-8"
         >
           {paymentMethods.map(({ title, description, icon }, idx) => (
             <motion.li
               viewport={{ once: true, amount: 0.2 }}
               variants={listItemVariants}
               key={idx}
-              className="md:w-[calc(50%-12px)] lg:w-[calc(50%-16px)] p-2 lg:p-3 shadow-[0_1px_3px_0_rgba(0,0,0,0.10),0_1px_2px_-1px_rgba(0,0,0,0.10)] rounded-[12px]"
+              className="p-2 lg:p-3 shadow-[0_1px_3px_0_rgba(0,0,0,0.10),0_1px_2px_-1px_rgba(0,0,0,0.10)] rounded-[12px]"
             >
               <div className="flex justify-between gap-3 mb-6">
                 <h3>{title}</h3>

@@ -21,6 +21,11 @@ export default function PaymentBlock() {
         label={"Оплата картою онлайн Visa, Mastercard"}
         value="Оплата картою онлайн Visa, Mastercard"
       />
+      <RadioButtonInput
+        fieldName="payment"
+        label={"Оплата картою Національний кешбек, єКнига"}
+        value="Оплата картою Національний кешбек, єКнига"
+      />
       {values.deliveryService === "Укрпошта" ? null : (
         <RadioButtonInput
           fieldName="payment"

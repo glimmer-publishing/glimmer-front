@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL;
 const MONOPAY_TOKEN = process.env.MONOPAY_TOKEN;
+const MONOPAY_NATIONAL_CASHBACK_TOKEN = process.env.MONOPAY_NATIONAL_CASHBACK_TOKEN;
 const MONOBANK_API_URL = "https://api.monobank.ua/api/merchant/invoice/create";
 
 export async function POST(req: NextRequest) {
@@ -9,7 +10,9 @@ export async function POST(req: NextRequest) {
     throw new Error("MONOPAY_TOKEN не визначено в середовищі!");
 
   try {
-    const { amount, orderNumber, basketOrder } = await req.json();
+    const { amount, orderNumber, basketOrder, isNationalCashback } = await req.json();
+
+    const token = isNationalCashback ? MONOPAY_NATIONAL_CASHBACK_TOKEN : MONOPAY_TOKEN;
 
     const invoicePayload = {
       amount,
@@ -30,7 +33,7 @@ export async function POST(req: NextRequest) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-Token": MONOPAY_TOKEN,
+        "X-Token": token!,
       },
       body: JSON.stringify(invoicePayload),
     });

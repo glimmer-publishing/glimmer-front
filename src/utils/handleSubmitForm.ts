@@ -237,7 +237,9 @@ export const handleSubmitForm = async <T>(
 
     if (
       updatedCollectedOrderData.payment ===
-      "Оплата картою онлайн Visa, Mastercard"
+      "Оплата картою онлайн Visa, Mastercard" ||
+      updatedCollectedOrderData.payment ===
+        "Оплата картою Національний кешбек, єКнига"
     ) {
       try {
         const response = await fetch("/api/monopay/invoice", {
@@ -247,6 +249,8 @@ export const handleSubmitForm = async <T>(
             amount: totalOrderSum * 100,
             orderNumber, // додаємо айді замовлення KeyCRM
             basketOrder,
+            isNationalCashback: updatedCollectedOrderData.payment ===
+              "Оплата картою Національний кешбек, єКнига",
           }),
         });
 
@@ -282,7 +286,8 @@ export const handleSubmitForm = async <T>(
     //Редірект на сторінку підтвердження замовлення
     {
       if (
-        collectedOrderData.payment !== "Оплата картою онлайн Visa, Mastercard"
+        collectedOrderData.payment !== "Оплата картою онлайн Visa, Mastercard" &&
+        collectedOrderData.payment !== "Оплата картою Національний кешбек, єКнига"
       )
         router.push("/confirmation");
     }
