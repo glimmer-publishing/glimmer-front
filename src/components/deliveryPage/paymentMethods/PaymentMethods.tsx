@@ -15,8 +15,8 @@ export default function PaymentMethods() {
       icon: "/images/deliveryPage/paymentMethods/card.svg",
     },
     {
-      title: "Карткою Національний кешбек",
-      description: "Оплата Національний кешбек, єКнига безпосередньо на сайті.",
+      title: "Програмою «єКнига» (Дія.Картка)",
+      description: "Оплата програмою «єКнига» безпосередньо на сайті.",
       icon: "/images/deliveryPage/paymentMethods/card.svg",
     },
     // {
