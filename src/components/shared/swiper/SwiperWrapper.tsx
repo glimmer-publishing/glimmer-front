@@ -7,6 +7,7 @@ import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import { Swiper } from "swiper/react";
 import { SwiperOptions } from "swiper/types";
 import { createPagination } from "./CustomPagination";
+import { useScreenWidth } from "@/hooks/useScreenWidth";
 
 interface SwiperWrapperProps {
   children: ReactNode;
@@ -25,6 +26,8 @@ export default function SwiperWrapper({
   isPagination = true,
   autoplay = false,
 }: SwiperWrapperProps) {
+  const screenWidth = useScreenWidth();
+  const isDesktop = screenWidth >= 1024;
   return (
     <Swiper
       pagination={isPagination ? createPagination(3) : false}
@@ -33,7 +36,7 @@ export default function SwiperWrapper({
       loop={loop}
       speed={1000}
       autoplay={autoplay}
-      centerInsufficientSlides={true}
+      centerInsufficientSlides={isDesktop}
       modules={[Navigation, Pagination, Autoplay]}
       className={swiperClassName}
     >

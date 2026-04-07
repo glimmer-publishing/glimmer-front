@@ -24,7 +24,7 @@ export default function Genres({ genres }: GenresProps) {
       <Container className="overflow-visible relative">
         {/* Слайдер "пришитий" лівим боком до контейнера, праворуч може виходити за межі */}
         <div className="relative left-0 overflow-visible">
-          <div className="w-screen xl:w-full overflow-visible">
+          <div className="w-screen lg:w-full overflow-visible">
             <SwiperWrapper
               swiperClassName="genres"
               loop
