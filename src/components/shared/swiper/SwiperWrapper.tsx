@@ -33,6 +33,7 @@ export default function SwiperWrapper({
       loop={loop}
       speed={1000}
       autoplay={autoplay}
+      centerInsufficientSlides={true}
       modules={[Navigation, Pagination, Autoplay]}
       className={swiperClassName}
     >
