@@ -1,8 +1,13 @@
 import { useFormikContext } from "formik";
 import { useEffect } from "react";
 import RadioButtonInput from "../../formComponents/RadioButtonInput";
+import { useCartStore } from "@/store/cartStore";
 
 export default function PaymentBlock() {
+  const { cart } = useCartStore();
+
+  const hasPreorderProducts = cart.some(item => item.product.status === "preOrder");
+
   const { values, setFieldValue } = useFormikContext<{
     deliveryService: string;
     payment: string;
@@ -26,7 +31,7 @@ export default function PaymentBlock() {
         label={"Оплата програмою «єКнига» (Дія.Картка)"}
         value="Оплата програмою «єКнига» (Дія.Картка)"
       />
-      {values.deliveryService === "Укрпошта" ? null : (
+      {(values.deliveryService === "Укрпошта" || hasPreorderProducts) ? null : (
         <RadioButtonInput
           fieldName="payment"
           label={"Оплата під час отримання товару"}
