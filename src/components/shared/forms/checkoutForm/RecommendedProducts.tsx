@@ -10,7 +10,7 @@ import Image from "next/image";
 import MainButton from "../../buttons/MainButton";
 import Link from "next/link";
 import CartIcon from "../../icons/CartIcon";
-import { sendGTMEvent } from "@next/third-parties/google";
+import { trackAddToCart } from "@/utils/ecommerceTracking";
 
 export default function RecommendedProducts() {
   const [recommendedProducts, setRecommendedProducts] = useState<Product[]>([]);
@@ -135,7 +135,7 @@ export default function RecommendedProducts() {
                 <MainButton
                   onClick={() => {
                     addToCart(product, 1);
-                    sendGTMEvent({ event: "AddToCart" });
+                    trackAddToCart(product, 1);
                   }}
                   className="w-[130px] md:w-[50px] lg:w-[149px] h-7 text-[10px] lg:text-[12px] font-medium leading-none"
                 >
