@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import MainButton from "../shared/buttons/MainButton";
 import Container from "../shared/container/Container";
@@ -12,11 +13,16 @@ import { contactsPhoneRegex } from "@/regex/regex";
 import * as motion from "motion/react-client";
 import { fadeInAnimation } from "@/utils/animationVariants";
 import { formatDate } from "@/utils/formatDate";
+import { trackPurchaseOnce } from "@/utils/ecommerceTracking";
 
 pdfMake.vfs = pdfFonts.vfs;
 
 export default function Confirmation() {
   const { order } = useOrderStore();
+
+  useEffect(() => {
+    if (order) trackPurchaseOnce(order);
+  }, [order]);
 
   if (!order) return null;
 

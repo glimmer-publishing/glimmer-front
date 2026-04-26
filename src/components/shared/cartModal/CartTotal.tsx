@@ -4,7 +4,7 @@ import Link from "next/link";
 import MainButton from "../buttons/MainButton";
 import { useCartStore } from "@/store/cartStore";
 import MarqueeLine from "../marquee/MarqueeLine";
-import { sendGTMEvent } from "@next/third-parties/google";
+import { trackBeginCheckout } from "@/utils/ecommerceTracking";
 
 interface CartTotalProps {
   isPopUpShown?: boolean;
@@ -67,7 +67,7 @@ export default function CartTotal({
             onClick={setIsPopUpShown ? () => setIsPopUpShown(false) : undefined}
           >
             <MainButton
-              onClick={() => sendGTMEvent({ event: "InitiateCheckout'" })}
+              onClick={() => trackBeginCheckout(cart, total)}
               disabled={!cart?.length}
               className="w-full h-[45px]"
             >

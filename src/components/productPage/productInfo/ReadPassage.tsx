@@ -13,7 +13,7 @@ import { Product } from "@/types/product";
 import { useCartStore } from "@/store/cartStore";
 import * as motion from "motion/react-client";
 import { fadeInAnimation } from "@/utils/animationVariants";
-import { sendGTMEvent } from "@next/third-parties/google";
+import { trackAddToCart } from "@/utils/ecommerceTracking";
 
 interface ReadPassageProps {
   bookScreens: string[];
@@ -120,7 +120,7 @@ export default function ReadPassage({
               <MainButton
                 onClick={() => {
                   addToCart(currentProduct, 1);
-                  sendGTMEvent({ event: "AddToCart" });
+                  trackAddToCart(currentProduct, 1);
                 }}
                 className="h-[45px] lg:max-w-[180px]"
               >

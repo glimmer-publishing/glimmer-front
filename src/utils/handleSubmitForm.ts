@@ -12,7 +12,6 @@ import { Product } from "@/types/product";
 import { useRouter } from "next/navigation";
 import { sendDataToKeyCrm } from "./sendDataToKeyCrm";
 import { BasketOrder } from "@/hooks/useMonopayBasletOrder";
-import { sendGTMEvent } from "@next/third-parties/google";
 
 export const handleSubmitForm = async <T>(
   { resetForm, setFieldError }: FormikHelpers<T>,
@@ -38,8 +37,6 @@ export const handleSubmitForm = async <T>(
   const { utmData, clearUtmData } = useUtmStore.getState();
 
   const { clearOrder, setOrder } = useOrderStore.getState();
-
-  sendGTMEvent({ event: "Purchase" });
 
   clearOrder();
 

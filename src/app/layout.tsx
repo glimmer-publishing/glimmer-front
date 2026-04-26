@@ -8,10 +8,11 @@ import Footer from "@/components/shared/footer/Footer";
 import { fetchSanityDataServer } from "@/utils/fetchSanityDataServer";
 import { allCategoriesAndProductsQuery } from "@/lib/queries";
 import { getDefaultMetadata } from "@/utils/getDefaultMetadata";
-import { GoogleTagManager } from "@next/third-parties/google";
+import GoogleTagManagerScript from "@/components/shared/gtm/GoogleTagManagerScript";
+import GoogleTagManagerNoScript from "@/components/shared/gtm/GoogleTagManagerNoScript";
 import UtmTracker from "@/components/shared/utmTracker/UtmTracker";
 
-const GTM_ID = "GTM-WT38LX4S";
+const GTM_ID = "GTM-53NZVT3H";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -32,11 +33,12 @@ export default async function RootLayout({
   return (
     <html lang="uk" className="scroll-smooth antialiased">
       <head>
-        <GoogleTagManager gtmId={GTM_ID} />
+        <GoogleTagManagerScript gtmId={GTM_ID} />
       </head>
       <body
         className={`${montserrat.variable} flex min-h-dvh flex-col antialiased text-[12px] lg:text-[15px] font-light leading-[120%]`}
       >
+        <GoogleTagManagerNoScript gtmId={GTM_ID} />
         <UtmTracker />
         <Header categories={result?.categories} products={result?.products} />
         <main className="flex-1">{children}</main>
