@@ -8,6 +8,7 @@ import Footer from "@/components/shared/footer/Footer";
 import { fetchSanityDataServer } from "@/utils/fetchSanityDataServer";
 import { allCategoriesAndProductsQuery } from "@/lib/queries";
 import { getDefaultMetadata } from "@/utils/getDefaultMetadata";
+import GoogleBaseTag from "@/components/shared/gtm/GoogleBaseTag";
 import GoogleTagManagerScript from "@/components/shared/gtm/GoogleTagManagerScript";
 import GoogleTagManagerNoScript from "@/components/shared/gtm/GoogleTagManagerNoScript";
 import UtmTracker from "@/components/shared/utmTracker/UtmTracker";
@@ -33,6 +34,7 @@ export default async function RootLayout({
   return (
     <html lang="uk" className="scroll-smooth antialiased">
       <head>
+        <GoogleBaseTag />
         <GoogleTagManagerScript gtmId={GTM_ID} />
       </head>
       <body
