@@ -1,13 +1,17 @@
+import Script from "next/script";
+
 const META_PIXEL_ID = "24760289606953294";
 
 /**
- * Meta Pixel base code. Must be placed in <head> on every page.
- * Initializes window.fbq and tracks PageView automatically.
+ * Meta Pixel base code. Placed in <head> on every page.
+ * next/script with id ensures this runs exactly once across all navigations.
  */
 export default function MetaPixel() {
   return (
     <>
-      <script
+      <Script
+        id="meta-pixel"
+        strategy="afterInteractive"
         dangerouslySetInnerHTML={{
           __html: `
             !function(f,b,e,v,n,t,s)
@@ -16,14 +20,16 @@ export default function MetaPixel() {
             if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
             n.queue=[];t=b.createElement(e);t.async=!0;
             t.src=v;s=b.getElementsByTagName(e)[0];
-            s.parentNode.insertBefore(t,s)}(window, document,'script',
-            'https://connect.facebook.net/en_US/fbevents.js');
+            s.parentNode.insertBefore(t,s);
             fbq('init', '${META_PIXEL_ID}');
             fbq('track', 'PageView');
+            }(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
           `,
         }}
       />
       <noscript>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           height="1"
           width="1"
