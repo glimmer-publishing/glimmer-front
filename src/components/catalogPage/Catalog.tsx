@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useMemo } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Product } from "@/types/product";
 import Link from "next/link";
 import Container from "../shared/container/Container";
@@ -33,16 +33,18 @@ export default function Catalog({
 }: CatalogProps) {
   const hasSubcategories = subcategories && subcategories?.length > 0;
 
-  const router = useRouter();
   const searchParams = useSearchParams();
   const filterParam = searchParams.get("filter") || "all";
-  const sortParam = searchParams.get("sort") || "default";
+  const sortParam = searchParams.get("sort") || "rating";
 
   const defaultSubcategory = hasSubcategories
     ? subcategories[0]?.genreSlug
     : "";
 
-  const [activeTab, setActiveTab] = useState(defaultSubcategory || "");
+  const subcategoryParam = searchParams.get("subcategory");
+  const [activeTab, setActiveTab] = useState(
+    subcategoryParam || defaultSubcategory || ""
+  );
 
   useEffect(() => {
     if (!hasSubcategories) return;
@@ -52,17 +54,6 @@ export default function Catalog({
       setActiveTab(currentParam);
     }
   }, [searchParams, activeTab, hasSubcategories]);
-
-  useEffect(() => {
-    if (!hasSubcategories) return;
-
-    const currentParam = searchParams.get("subcategory");
-    if (!currentParam && defaultSubcategory) {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("subcategory", defaultSubcategory);
-      router.replace(`?${params.toString()}`, { scroll: false });
-    }
-  }, [searchParams, defaultSubcategory, router, hasSubcategories]);
 
   const currentSubcategory = subcategories
     ? subcategories?.find((subcategory) => subcategory.genreSlug === activeTab)

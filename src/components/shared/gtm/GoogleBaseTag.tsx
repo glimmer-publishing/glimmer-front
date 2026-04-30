@@ -1,21 +1,19 @@
+import Script from "next/script";
+
 const GA4_ID = "G-LSKYNWW75N";
 const GOOGLE_ADS_ID = "AW-18111056280";
 
 /**
  * Loads the combined Google tag (gtag.js) for GA4 and Google Ads.
- *
- * Must be placed in <head> before GTM so that window.gtag is defined
- * synchronously before any client-side tracking code runs.
+ * next/script with id ensures scripts run exactly once across all navigations.
  * GTM container is kept separately and continues to work alongside this.
  */
 export default function GoogleBaseTag() {
   return (
     <>
-      <script
-        async
-        src={`https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`}
-      />
-      <script
+      <Script
+        id="google-base-tag-init"
+        strategy="beforeInteractive"
         dangerouslySetInnerHTML={{
           __html: `
             window.dataLayer = window.dataLayer || [];
@@ -25,6 +23,11 @@ export default function GoogleBaseTag() {
             gtag('config', '${GOOGLE_ADS_ID}');
           `,
         }}
+      />
+      <Script
+        id="google-base-tag"
+        strategy="afterInteractive"
+        src={`https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`}
       />
     </>
   );

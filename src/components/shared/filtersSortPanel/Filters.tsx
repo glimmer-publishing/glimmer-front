@@ -39,15 +39,6 @@ export default function Filters() {
   };
 
   useEffect(() => {
-    if (!searchParams.get("filter")) {
-      const newParams = new URLSearchParams(Array.from(searchParams.entries()));
-      newParams.set("filter", "all");
-      newParams.set("page", "1");
-      router.replace(`?${newParams.toString()}`, { scroll: false });
-    }
-  }, [router, searchParams]);
-
-  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
