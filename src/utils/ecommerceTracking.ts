@@ -1,10 +1,16 @@
-import { sendGTMEvent } from "@next/third-parties/google";
 import { CartItem } from "@/types/cartItem";
 import { Product } from "@/types/product";
 import { OrderData } from "@/types/orderData";
 
 const CURRENCY = "UAH";
 const GOOGLE_ADS_SEND_TO = "AW-18111056280/9ydPCO3HyKAcEJiTg7xD";
+
+declare global {
+  interface Window {
+    gtag?: (...args: unknown[]) => void;
+    fbq?: (...args: unknown[]) => void;
+  }
+}
 
 function callGtag(...args: unknown[]) {
   if (typeof window === "undefined") return;
@@ -19,6 +25,15 @@ function callGtag(...args: unknown[]) {
   (window as { dataLayer?: unknown[] }).dataLayer =
     (window as { dataLayer?: unknown[] }).dataLayer || [];
   (window as { dataLayer: unknown[] }).dataLayer.push(args);
+}
+
+function callFbq(...args: unknown[]) {
+  if (typeof window === "undefined") return;
+  if (typeof window.fbq === "function") {
+    window.fbq(...args);
+    return;
+  }
+  console.warn("[ecommerceTracking] fbq is not available:", args);
 }
 
 function toGa4Item(product: Product, quantity: number) {
@@ -36,21 +51,21 @@ function toGa4Item(product: Product, quantity: number) {
 
 export function trackAddToCart(product: Product, quantity: number) {
   const item = toGa4Item(product, quantity);
-  sendGTMEvent({
-    event: "add_to_cart",
+  callGtag("event", "add_to_cart", {
     currency: CURRENCY,
     value: item.price * quantity,
     items: [item],
   });
+  callFbq("track", "AddToCart");
 }
 
 export function trackBeginCheckout(cart: CartItem[], value: number) {
-  sendGTMEvent({
-    event: "begin_checkout",
+  callGtag("event", "begin_checkout", {
     currency: CURRENCY,
     value,
     items: cart.map(({ product, quantity }) => toGa4Item(product, quantity)),
   });
+  callFbq("track", "InitiateCheckout");
 }
 
 /**
@@ -63,8 +78,7 @@ export function trackPurchaseOnce(order: OrderData) {
   const storageKey = `purchase_tracked_${order.orderNumber}`;
   if (localStorage.getItem(storageKey)) return;
 
-  sendGTMEvent({
-    event: "purchase",
+  callGtag("event", "purchase", {
     currency: CURRENCY,
     transaction_id: order.orderNumber,
     value: order.totalOrderSum,
@@ -84,6 +98,8 @@ export function trackPurchaseOnce(order: OrderData) {
     currency: CURRENCY,
     transaction_id: order.orderNumber,
   });
+
+  callFbq("track", "Purchase");
 
   localStorage.setItem(storageKey, "true");
 }
