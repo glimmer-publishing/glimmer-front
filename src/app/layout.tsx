@@ -11,6 +11,7 @@ import { getDefaultMetadata } from "@/utils/getDefaultMetadata";
 import GoogleBaseTag from "@/components/shared/gtm/GoogleBaseTag";
 import GoogleTagManagerScript from "@/components/shared/gtm/GoogleTagManagerScript";
 import GoogleTagManagerNoScript from "@/components/shared/gtm/GoogleTagManagerNoScript";
+import MetaPixel from "@/components/shared/gtm/MetaPixel";
 import UtmTracker from "@/components/shared/utmTracker/UtmTracker";
 
 const GTM_ID = "GTM-53NZVT3H";
@@ -36,6 +37,7 @@ export default async function RootLayout({
       <head>
         <GoogleBaseTag />
         <GoogleTagManagerScript gtmId={GTM_ID} />
+        <MetaPixel />
       </head>
       <body
         className={`${montserrat.variable} flex min-h-dvh flex-col antialiased text-[12px] lg:text-[15px] font-light leading-[120%]`}
