@@ -48,6 +48,13 @@ function isValidGtin13(value: string): boolean {
   return checkDigit === parseInt(digits[12]);
 }
 
+function optimizeImageUrl(url: string): string {
+  // Resize via Sanity's CDN image transformation params — keeps the larger
+  // dimension at 1000px so Google's crawler loads images quickly
+  const separator = url.includes("?") ? "&" : "?";
+  return `${url}${separator}w=1000&fit=max&auto=format`;
+}
+
 function formatAvailabilityDate(date: string): string {
   // Sanity stores dates as YYYY-MM-DD; Google requires ISO 8601 with time
   if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
@@ -73,7 +80,7 @@ function buildItem(product: FeedProduct): string {
     features,
   } = product;
 
-  const link = `${SITE_URL}/catalog/${categorySlug ?? ""}/${slug}`;
+  const link = `${SITE_URL}/catalog/${encodeURIComponent(categorySlug ?? "")}/${encodeURIComponent(slug)}`;
 
   const availability =
     status === "inStock"
@@ -105,7 +112,9 @@ function buildItem(product: FeedProduct): string {
   lines.push(`      <g:link>${escapeXml(link)}</g:link>`);
 
   if (mainImage) {
-    lines.push(`      <g:image_link>${escapeXml(mainImage)}</g:image_link>`);
+    lines.push(
+      `      <g:image_link>${escapeXml(optimizeImageUrl(mainImage))}</g:image_link>`
+    );
   }
 
   lines.push(
