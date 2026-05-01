@@ -13,7 +13,7 @@ export const TELEGRAM_URL_CHANNEL = "https://t.me/glimmerpublishing";
 
 export const PHONE = "+380778378453";
 
-export const WORKING_HOURS = "Пн–Сб: 10:00-18:00";
+export const WORKING_HOURS = "Пн–Пт: 10:00-18:00";
 
 export const EMAIL_CLIENTS = "hello@glimmer.com.ua";
 
