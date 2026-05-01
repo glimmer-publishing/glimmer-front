@@ -291,6 +291,27 @@ export const promocodeByCodeQuery = `
   }
 `;
 
+export const allProductsForFeedQuery = `
+*[_type == "product" && defined(gallery[0]) && category->slug.current == "khudozhnya-literatura"]{
+  "id": sku,
+  "slug": slug.current,
+  title,
+  "description": coalesce(description, title),
+  price,
+  discountPrice,
+  status,
+  preOrderShippingDate,
+  "mainImage": gallery[0].asset->url,
+  "categorySlug": category->slug.current,
+  "categoryTitle": category->title,
+  "genreTitle": genre->name,
+  features[]{
+    "featureName": feature->name,
+    value
+  }
+}
+`;
+
 export const productsByIds = `*[_type == "product" && _id in $ids]{
   "id":_id,
   price,
