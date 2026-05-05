@@ -6,6 +6,7 @@ export default function NavMenu() {
     { title: "Контакти", link: "/contacts" },
     { title: "Доставка та оплата", link: "/delivery" },
     { title: "Публічний договір", link: "/public-contract" },
+    { title: "Політика конфіденційності", link: "/privacy-policy" },
   ];
 
   return (

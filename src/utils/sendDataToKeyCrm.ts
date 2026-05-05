@@ -20,6 +20,8 @@ export async function sendDataToKeyCrm(data: OrderData) {
     city,
     branchNumber,
     address,
+    internationalAddress,
+    internationalPhone,
     deliveryService,
     message,
     promoCode,
@@ -27,6 +29,8 @@ export async function sendDataToKeyCrm(data: OrderData) {
     totalOrderSum,
     cart,
   } = data;
+
+  const isInternational = deliveryService === "Міжнародна доставка";
 
   const products = cart.map((item) => ({
     price: getItemFinalPrice(item.product.id),
@@ -43,13 +47,21 @@ export async function sendDataToKeyCrm(data: OrderData) {
     promocode: promoCode,
     buyer_comment: message,
     buyer: { full_name: `${name} ${surname}`, phone, email },
-    shipping: {
-      delivery_service_id: deliveryService === "Нова пошта" ? 6 : 5,
-      shipping_service: deliveryService,
-      shipping_address_city: city,
-      shipping_secondary_line: address,
-      shipping_receive_point: branchNumber,
-    },
+    shipping: isInternational
+      ? {
+          delivery_service_id: 1,
+          shipping_service: deliveryService,
+          shipping_address_city: internationalAddress,
+          shipping_secondary_line: internationalPhone,
+          shipping_receive_point: "",
+        }
+      : {
+          delivery_service_id: deliveryService === "Нова пошта" ? 6 : 5,
+          shipping_service: deliveryService,
+          shipping_address_city: city,
+          shipping_secondary_line: address,
+          shipping_receive_point: branchNumber,
+        },
     products,
     // Додаємо UTM-дані, якщо вони є
     ...(utmData && { marketing: utmData }),

@@ -29,18 +29,46 @@ export const checkoutValidation = () => {
       .matches(emailRegex, "Введіть валідний email")
       .required("Дане поле є обов'язковим до заповнення"),
     deliveryService: yup.string().required("Оберіть сервіс доставки"),
-    deliveryType: yup.string().required("Оберіть спосіб доставки"),
-    city: yup.string().required("Дане поле є обов'язковим до заповнення"),
-    branchNumber: yup.string().when("deliveryType", {
-      is: (val: string) => val === "Відділення" || val === "Поштомат",
+    deliveryType: yup.string().when("deliveryService", {
+      is: "Міжнародна доставка",
+      then: (schema) => schema.notRequired(),
+      otherwise: (schema) => schema.required("Оберіть спосіб доставки"),
+    }),
+    city: yup.string().when("deliveryService", {
+      is: "Міжнародна доставка",
+      then: (schema) => schema.notRequired(),
+      otherwise: (schema) =>
+        schema.required("Дане поле є обов'язковим до заповнення"),
+    }),
+    branchNumber: yup.string().when(["deliveryService", "deliveryType"], {
+      is: (service: string, type: string) =>
+        service !== "Міжнародна доставка" &&
+        (type === "Відділення" || type === "Поштомат"),
       then: (schema) =>
         schema.required("Дане поле є обов'язковим до заповнення"),
       otherwise: (schema) => schema.notRequired(),
     }),
-    address: yup.string().when("deliveryType", {
-      is: (val: string) => val === "Доставка кур’єром",
+    address: yup.string().when(["deliveryService", "deliveryType"], {
+      is: (service: string, type: string) =>
+        service !== "Міжнародна доставка" && type === "Доставка кур'єром",
       then: (schema) =>
         schema.required("Дане поле є обов'язковим до заповнення"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+    internationalAddress: yup.string().when("deliveryService", {
+      is: "Міжнародна доставка",
+      then: (schema) =>
+        schema
+          .min(3, "Мінімум 3 символи")
+          .required("Дане поле є обов'язковим до заповнення"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+    internationalPhone: yup.string().when("deliveryService", {
+      is: "Міжнародна доставка",
+      then: (schema) =>
+        schema
+          .min(7, "Мінімум 7 символів")
+          .required("Дане поле є обов'язковим до заповнення"),
       otherwise: (schema) => schema.notRequired(),
     }),
     payment: yup.string(),

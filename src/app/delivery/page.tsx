@@ -1,6 +1,7 @@
 import DeliveryConditions from "@/components/deliveryPage/deliveryConditions/DeliveryConditions";
 import DeliveryInfo from "@/components/deliveryPage/deliveryInfo/DeliveryInfo";
 import PaymentMethods from "@/components/deliveryPage/paymentMethods/PaymentMethods";
+import ReturnPolicy from "@/components/deliveryPage/returnPolicy/ReturnPolicy";
 import Breadcrumbs from "@/components/shared/breadcrumbs/Breadcrumbs";
 import MarqueeLine from "@/components/shared/marquee/MarqueeLine";
 import TelegramCTA from "@/components/shared/telegramCTA/TelegramCTA";
@@ -20,6 +21,7 @@ export default function DeliveryPage() {
       <DeliveryInfo />
       <DeliveryConditions />
       <PaymentMethods />
+      <ReturnPolicy />
       <MarqueeLine />
       <TelegramCTA />
     </div>
