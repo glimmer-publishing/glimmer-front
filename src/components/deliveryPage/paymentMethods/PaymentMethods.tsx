@@ -10,23 +10,19 @@ import {
 export default function PaymentMethods() {
   const paymentMethods = [
     {
-      title: "Банківською карткою онлайн",
-      description: "Оплата Visa або MasterCard безпосередньо на сайті.",
+      title: "Оплата картою онлайн Visa, Mastercard",
+      description: "Оплата Visa або Mastercard безпосередньо на сайті.",
       icon: "/images/deliveryPage/paymentMethods/card.svg",
     },
     {
-      title: "Програмою «єКнига» (Дія.Картка)",
+      title: "Оплата програмою «єКнига» (Дія.Картка)",
       description: "Оплата програмою «єКнига» безпосередньо на сайті.",
       icon: "/images/deliveryPage/paymentMethods/card.svg",
     },
-    // {
-    //   title: "Оплата частинами",
-    //   description: "Розстрочка без переплат через monobank — швидко та зручно.",
-    //   icon: "/images/deliveryPage/paymentMethods/bill.svg",
-    // },
     {
-      title: "Післяоплата під час отримання",
-      description: "Розрахунок готівкою або карткою при отриманні замовлення.",
+      title: "Оплата під час отримання товару",
+      description:
+        "Оплата у відділенні Нової Пошти після огляду товару. Комісію за переказ коштів оплачує покупець за тарифами перевізника (20 грн + 2% від суми).",
       icon: "/images/deliveryPage/paymentMethods/banknote.svg",
     },
   ];
@@ -60,7 +56,7 @@ export default function PaymentMethods() {
               viewport={{ once: true, amount: 0.2 }}
               variants={listItemVariants}
               key={idx}
-              className="p-2 lg:p-3 shadow-[0_1px_3px_0_rgba(0,0,0,0.10),0_1px_2px_-1px_rgba(0,0,0,0.10)] rounded-[12px]"
+              className="p-4 lg:p-6 shadow-[0_1px_3px_0_rgba(0,0,0,0.10),0_1px_2px_-1px_rgba(0,0,0,0.10)] rounded-[12px]"
             >
               <div className="flex justify-between gap-3 mb-6">
                 <h3>{title}</h3>
@@ -72,7 +68,7 @@ export default function PaymentMethods() {
                   className="shrink-0"
                 />
               </div>
-              <p className="text-[14px] lg:text-[18px] font-medium leading-[120%]">
+              <p className="text-[12px] lg:text-[14px] font-medium leading-[120%]">
                 {description}
               </p>
             </motion.li>

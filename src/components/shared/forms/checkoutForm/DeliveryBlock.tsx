@@ -26,10 +26,17 @@ const deliveryServices = [
   {
     label: "Нова пошта",
     logo: "/images/deliveryPage/deliveryConditions/novaPost.svg",
+    fullWidth: false,
   },
   {
     label: "Укрпошта",
     logo: "/images/deliveryPage/deliveryConditions/ukrPost.svg",
+    fullWidth: false,
+  },
+  {
+    label: "Міжнародна доставка",
+    logo: "/images/icons/globe.svg",
+    fullWidth: true,
   },
 ];
 
@@ -94,9 +101,10 @@ export default function DeliveryBlock({ citiesNovaPost }: DeliveryBlockProps) {
     setFieldValue("city", "");
     setFieldValue("branchNumber", "");
     setFieldValue("address", "");
+    setFieldValue("internationalAddress", "");
+    setFieldValue("internationalPhone", "");
 
     // Скидаємо локальні стейти
-
     setWarehouses([]);
     setFilteredCities([]);
     setFilteredWarehouses([]);
@@ -150,18 +158,21 @@ export default function DeliveryBlock({ citiesNovaPost }: DeliveryBlockProps) {
   };
 
   const isDeliveryChecked = !!values.deliveryService;
+  const isInternational = values.deliveryService === "Міжнародна доставка";
 
   return (
     <>
       {/* Служби доставки */}
       <div className="relative">
-        <div className="flex gap-4 lg:gap-8">
+        <div className="grid grid-cols-2 gap-x-4 lg:gap-x-8 gap-y-3">
           {deliveryServices.map((service) => (
             <button
               type="button"
               key={service.label}
               onClick={() => setFieldValue("deliveryService", service.label)}
-              className={`cursor-pointer flex items-center gap-2 w-1/2 h-12 rounded-[12px] p-3 justify-center shadow-sm ${
+              className={`cursor-pointer flex items-center gap-2 h-12 rounded-[12px] p-3 justify-center shadow-sm ${
+                service.fullWidth ? "col-span-2" : ""
+              } ${
                 values.deliveryService === service.label
                   ? "bg-main"
                   : "bg-white"
@@ -187,125 +198,148 @@ export default function DeliveryBlock({ citiesNovaPost }: DeliveryBlockProps) {
         />
       </div>
 
-      <div
-        className={`pb-3 transition-[max-height] duration-500 ${
-          isDeliveryChecked ? "max-h-[500px] ease-in" : "max-h-0 ease-out"
-        }`}
-      >
-        {/* Тип доставки */}
-        <div className="flex flex-col gap-4 my-6">
-          {deliveryTypes.map((type, idx) => (
-            <RadioButtonInput
-              key={idx}
-              fieldName="deliveryType"
-              value={type.value}
-              onClick={() => setFieldValue("deliveryType", type.value)}
-              label={type.label}
-            />
-          ))}
+      {/* Міжнародна доставка */}
+      {isInternational && (
+        <div className="flex flex-col gap-4 pt-3">
+          <CustomizedInput
+            fieldName="internationalAddress"
+            placeholder="Адреса доставки"
+            isRequired
+            errors={errors}
+            touched={touched}
+          />
+          <CustomizedInput
+            fieldName="internationalPhone"
+            placeholder="Міжнародний номер телефону"
+            isRequired
+            errors={errors}
+            touched={touched}
+          />
         </div>
-        {values.deliveryService === "Укрпошта" ? (
-          values.deliveryType !== "Доставка кур’єром" ? (
+      )}
+
+      {/* Нова пошта / Укрпошта */}
+      {!isInternational && (
+        <div
+          className={`pb-3 transition-[max-height] duration-500 ${
+            isDeliveryChecked ? "max-h-[500px] ease-in" : "max-h-0 ease-out"
+          }`}
+        >
+          {/* Тип доставки */}
+          <div className="flex flex-col gap-4 my-6">
+            {deliveryTypes.map((type, idx) => (
+              <RadioButtonInput
+                key={idx}
+                fieldName="deliveryType"
+                value={type.value}
+                onClick={() => setFieldValue("deliveryType", type.value)}
+                label={type.label}
+              />
+            ))}
+          </div>
+          {values.deliveryService === "Укрпошта" ? (
+            values.deliveryType !== "Доставка кур'єром" ? (
+              <p className="mb-6 text-[14px] lg:text-[15px] font-medium leading-[120%]">
+                Обери <span className="lowercase">{values.deliveryType}</span>{" "}
+                Укрпошти
+              </p>
+            ) : (
+              <p className="mb-6 text-[14px] lg:text-[15px] font-medium leading-[120%]">
+                Введи адресу доставки
+              </p>
+            )
+          ) : values.deliveryType !== "Доставка кур'єром" ? (
             <p className="mb-6 text-[14px] lg:text-[15px] font-medium leading-[120%]">
               Обери <span className="lowercase">{values.deliveryType}</span>{" "}
-              Укрпошти
+              Нової пошти
             </p>
           ) : (
             <p className="mb-6 text-[14px] lg:text-[15px] font-medium leading-[120%]">
               Введи адресу доставки
             </p>
-          )
-        ) : values.deliveryType !== "Доставка кур’єром" ? (
-          <p className="mb-6 text-[14px] lg:text-[15px] font-medium leading-[120%]">
-            Обери <span className="lowercase">{values.deliveryType}</span> Нової
-            пошти
-          </p>
-        ) : (
-          <p className="mb-6 text-[14px] lg:text-[15px] font-medium leading-[120%]">
-            Введи адресу доставки
-          </p>
-        )}
+          )}
 
-        {/* Інпути */}
-        <div className="flex flex-col gap-4">
-          {/* Якщо Нова пошта → працюємо з LocationInput */}
-          {values.deliveryService === "Нова пошта" ? (
-            <>
-              <LocationInput
-                fieldName="city"
-                placeholder={"Назва населеного пункту"}
-                options={filteredCities}
-                isDropDownOpen={isCitiesDropDownOpen}
-                setIsDropDownOpen={setIsCitiesDropDownOpen}
-                onChange={onCitiesLocationInputChange}
-                onSelect={(city) => {
-                  setFieldValue("city", city.description);
-                  setIsCitiesDropDownOpen(false);
-                }}
-              />
-
-              {values.deliveryType !== "Доставка кур’єром" ? (
+          {/* Інпути */}
+          <div className="flex flex-col gap-4">
+            {/* Якщо Нова пошта → працюємо з LocationInput */}
+            {values.deliveryService === "Нова пошта" ? (
+              <>
                 <LocationInput
-                  fieldName="branchNumber"
-                  placeholder={
-                    values.deliveryType === "Відділення"
-                      ? "Номер відділення"
-                      : "Номер поштомату"
-                  }
-                  options={filteredWarehouses}
-                  isLoading={isLoadingWarehouses}
-                  isDropDownOpen={isWarehousesDropDownOpen}
-                  setIsDropDownOpen={setIsWarehousesDropDownOpen}
-                  onChange={onWarehousesInputChange}
-                  onSelect={(branch) => {
-                    setFieldValue("branchNumber", branch.description);
-                    setIsWarehousesDropDownOpen(false);
+                  fieldName="city"
+                  placeholder={"Назва населеного пункту"}
+                  options={filteredCities}
+                  isDropDownOpen={isCitiesDropDownOpen}
+                  setIsDropDownOpen={setIsCitiesDropDownOpen}
+                  onChange={onCitiesLocationInputChange}
+                  onSelect={(city) => {
+                    setFieldValue("city", city.description);
+                    setIsCitiesDropDownOpen(false);
                   }}
                 />
-              ) : (
+
+                {values.deliveryType !== "Доставка кур'єром" ? (
+                  <LocationInput
+                    fieldName="branchNumber"
+                    placeholder={
+                      values.deliveryType === "Відділення"
+                        ? "Номер відділення"
+                        : "Номер поштомату"
+                    }
+                    options={filteredWarehouses}
+                    isLoading={isLoadingWarehouses}
+                    isDropDownOpen={isWarehousesDropDownOpen}
+                    setIsDropDownOpen={setIsWarehousesDropDownOpen}
+                    onChange={onWarehousesInputChange}
+                    onSelect={(branch) => {
+                      setFieldValue("branchNumber", branch.description);
+                      setIsWarehousesDropDownOpen(false);
+                    }}
+                  />
+                ) : (
+                  <CustomizedInput
+                    fieldName="address"
+                    placeholder={"Адреса"}
+                    isRequired
+                    errors={errors}
+                    touched={touched}
+                  />
+                )}
+              </>
+            ) : null}
+
+            {/* Якщо Укрпошта → просто інпути */}
+            {values.deliveryService === "Укрпошта" && (
+              <>
                 <CustomizedInput
-                  fieldName="address"
-                  placeholder={"Адреса"}
+                  fieldName="city"
+                  placeholder="Місто"
                   isRequired
                   errors={errors}
                   touched={touched}
                 />
-              )}
-            </>
-          ) : null}
 
-          {/* Якщо Укрпошта → просто інпути */}
-          {values.deliveryService === "Укрпошта" && (
-            <>
-              <CustomizedInput
-                fieldName="city"
-                placeholder="Місто"
-                isRequired
-                errors={errors}
-                touched={touched}
-              />
-
-              <CustomizedInput
-                fieldName={
-                  values.deliveryType === "Доставка кур’єром"
-                    ? "address"
-                    : "branchNumber"
-                }
-                placeholder={
-                  values.deliveryType === "Доставка кур’єром"
-                    ? "Адреса"
-                    : values.deliveryType === "Відділення"
-                      ? "Номер відділення"
-                      : "Номер поштомату"
-                }
-                isRequired
-                errors={errors}
-                touched={touched}
-              />
-            </>
-          )}
+                <CustomizedInput
+                  fieldName={
+                    values.deliveryType === "Доставка кур'єром"
+                      ? "address"
+                      : "branchNumber"
+                  }
+                  placeholder={
+                    values.deliveryType === "Доставка кур'єром"
+                      ? "Адреса"
+                      : values.deliveryType === "Відділення"
+                        ? "Номер відділення"
+                        : "Номер поштомату"
+                  }
+                  isRequired
+                  errors={errors}
+                  touched={touched}
+                />
+              </>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 }

@@ -35,6 +35,8 @@ type OrderEmailProps = {
   city: string;
   branchNumber?: string;
   address?: string;
+  internationalAddress?: string;
+  internationalPhone?: string;
   cart: CartItem[];
   totalOrderSum: number;
   deliveryService: string;
@@ -50,12 +52,15 @@ export function OrderConfirmationEmail({
   city,
   branchNumber,
   address,
+  internationalAddress,
+  internationalPhone,
   cart,
   totalOrderSum,
   deliveryService,
   paymentMethod,
   deliveryType,
 }: OrderEmailProps) {
+  const isInternational = deliveryService === "Міжнародна доставка";
   const deliveryCost =
     totalOrderSum >= 1500 ? "Безкоштовно" : "За тарифами перевізника";
 
@@ -180,29 +185,41 @@ export function OrderConfirmationEmail({
           {/* Доставка */}
           <Section style={{ marginTop: "20px" }}>
             <Text style={subtitle}>Доставка</Text>
-            <Text style={p}>
-              Спосіб доставки: <b>{deliveryService}</b>
-              <br />
-              Адреса:{" "}
-              <b>
-                {branchNumber
-                  ? deliveryService === "Нова пошта"
-                    ? `${branchNumber}, `
-                    : deliveryType === "Відділення"
-                      ? `Відділення №${branchNumber}, `
-                      : deliveryType === "Поштомат"
-                        ? `Поштомат №${branchNumber}, `
-                        : `${branchNumber}, `
-                  : ""}
-              </b>
-              <b>
-                {deliveryType === "Доставка кур’єром"
-                  ? `${city}, ${address}`
-                  : city}
-              </b>
-              <br />
-              Телефон отримувача: <b>{phone}</b>
-            </Text>
+            {isInternational ? (
+              <Text style={p}>
+                Спосіб доставки: <b>{deliveryService}</b>
+                <br />
+                Адреса доставки: <b>{internationalAddress}</b>
+                <br />
+                Міжнародний телефон: <b>{internationalPhone}</b>
+                <br />
+                Телефон отримувача: <b>{phone}</b>
+              </Text>
+            ) : (
+              <Text style={p}>
+                Спосіб доставки: <b>{deliveryService}</b>
+                <br />
+                Адреса:{" "}
+                <b>
+                  {branchNumber
+                    ? deliveryService === "Нова пошта"
+                      ? `${branchNumber}, `
+                      : deliveryType === "Відділення"
+                        ? `Відділення №${branchNumber}, `
+                        : deliveryType === "Поштомат"
+                          ? `Поштомат №${branchNumber}, `
+                          : `${branchNumber}, `
+                    : ""}
+                </b>
+                <b>
+                  {deliveryType === "Доставка кур'єром"
+                    ? `${city}, ${address}`
+                    : city}
+                </b>
+                <br />
+                Телефон отримувача: <b>{phone}</b>
+              </Text>
+            )}
           </Section>
 
           {/* Оплата */}

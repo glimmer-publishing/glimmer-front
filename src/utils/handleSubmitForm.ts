@@ -125,6 +125,8 @@ export const handleSubmitForm = async <T>(
 
   const totalOrderSum = getCartTotal();
 
+  const isInternational = values.deliveryService.trim() === "Міжнародна доставка";
+
   const collectedOrderData = {
     orderDate,
     orderTime,
@@ -138,6 +140,8 @@ export const handleSubmitForm = async <T>(
     city: values.city.trim(),
     branchNumber: values.branchNumber.trim(),
     address: values.address.trim(),
+    internationalAddress: values.internationalAddress.trim(),
+    internationalPhone: values.internationalPhone.trim(),
     payment: values.payment.trim(),
     message: values.message.trim(),
     cart,
@@ -169,6 +173,14 @@ export const handleSubmitForm = async <T>(
     const orderNumber = crmOrderId.toString();
 
     // Формуємо дані для telegram
+    const deliveryDetails = isInternational
+      ? `<b>Адреса міжнародної доставки:</b> ${values.internationalAddress.trim()}\n` +
+        `<b>Міжнародний телефон:</b> ${values.internationalPhone.trim()}\n`
+      : `<b>Тип доставки:</b> ${values.deliveryType.trim()}\n` +
+        `<b>Насeлений пункт:</b> ${values.city.trim()}\n` +
+        `<b>Номер відділення або поштомату:</b> ${values.branchNumber?.trim() || ""}\n` +
+        `<b>Адреса:</b> ${values.address?.trim() || ""}\n`;
+
     const dataTelegram =
       `<b>Замовлення #${orderNumber}</b>\n` +
       `<b>Дата замовлення:</b> ${orderDate} ${orderTime}\n` +
@@ -177,10 +189,7 @@ export const handleSubmitForm = async <T>(
       `<b>Телефон:</b> ${values.phone.replace(/[^\d+]/g, "")}\n` +
       `<b>Email:</b> ${values.email.trim()}\n` +
       `<b>Сервіс доставки:</b> ${values.deliveryService.trim()}\n` +
-      `<b>Тип доставки:</b> ${values.deliveryType.trim()}\n` +
-      `<b>Насeлений пункт:</b> ${values.city.trim()}\n` +
-      `<b>Номер відділення або поштомату:</b> ${values.branchNumber?.trim() || ""}\n` +
-      `<b>Адреса:</b> ${values.address?.trim() || ""}\n` +
+      deliveryDetails +
       `<b>Оплата:</b> ${values.payment.trim()}\n` +
       `<b>Повідомлення:</b> ${values.message?.trim()}\n` +
       `<b>Промокод:</b> ${promoCode || ""}\n` +
@@ -222,6 +231,8 @@ export const handleSubmitForm = async <T>(
           deliveryType: updatedCollectedOrderData.deliveryType.trim(),
           branchNumber: updatedCollectedOrderData.branchNumber.trim(),
           address: updatedCollectedOrderData.address.trim(),
+          internationalAddress: updatedCollectedOrderData.internationalAddress?.trim(),
+          internationalPhone: updatedCollectedOrderData.internationalPhone?.trim(),
           paymentMethod: updatedCollectedOrderData.payment.trim(),
           cart: updatedCollectedOrderData.cart,
           totalOrderSum: updatedCollectedOrderData.totalOrderSum,

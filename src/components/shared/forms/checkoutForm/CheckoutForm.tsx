@@ -30,6 +30,8 @@ export interface ValuesCheckoutFormType {
   city: string;
   branchNumber: string;
   address: string;
+  internationalAddress: string;
+  internationalPhone: string;
   payment: string;
   message: string;
   promocode: string;
@@ -79,6 +81,8 @@ export default function CheckoutForm({
     city: "",
     branchNumber: "",
     address: "",
+    internationalAddress: "",
+    internationalPhone: "",
     payment: "Оплата картою онлайн Visa, Mastercard",
     message: "",
     promocode: promoCode || "",
