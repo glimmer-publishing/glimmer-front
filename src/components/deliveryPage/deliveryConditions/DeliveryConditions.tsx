@@ -8,18 +8,18 @@ import {
 } from "@/utils/animationVariants";
 
 export default function DeliveryConditions() {
-  const deliveryCostsUkraine = [
-    {
-      icon: "/images/deliveryPage/deliveryConditions/novaPost.svg",
-      title: "Нова пошта",
-      url: "https://novaposhta.ua/shipping-cost/",
-    },
-    {
-      icon: "/images/deliveryPage/deliveryConditions/ukrPost.svg",
-      title: "Укрпошта",
-      url: "https://calc.ukrposhta.ua/domestic-calculator",
-    },
-  ];
+  // const deliveryCostsUkraine = [
+  //   {
+  //     icon: "/images/deliveryPage/deliveryConditions/novaPost.svg",
+  //     title: "Нова пошта",
+  //     url: "https://novaposhta.ua/shipping-cost/",
+  //   },
+  //   {
+  //     icon: "/images/deliveryPage/deliveryConditions/ukrPost.svg",
+  //     title: "Укрпошта",
+  //     url: "https://calc.ukrposhta.ua/domestic-calculator",
+  //   },
+  // ];
 
   const domesticMethods = [
     {
@@ -89,9 +89,7 @@ export default function DeliveryConditions() {
                   className="text-[14px] lg:text-[15px] leading-[150%]"
                 >
                   Доставка здійснюється по всій території України, де працюють
-                  відділення поштових перевізників. Вартість доставки
-                  розраховується згідно з тарифами транспортних компаній та
-                  оплачується отримувачем при врученні.
+                  відділення поштових перевізників. Фіксована вартість доставки — 100 грн для всіх замовлень по Україні та оплачується отримувачем при врученні.
                 </motion.p>
 
                 {domesticMethods.map((item, idx) => (
@@ -144,17 +142,9 @@ export default function DeliveryConditions() {
                     розділу &quot;Обмін та повернення&quot;.
                   </p>
                 </motion.div>
-
-                <motion.p
-                  viewport={{ once: true, amount: 0.2 }}
-                  variants={listItemVariants}
-                  className="text-[14px] lg:text-[15px] leading-[150%]"
-                >
-                  Розрахувати вартість доставки по Україні:
-                </motion.p>
               </motion.div>
 
-              <motion.ul
+              {/* <motion.ul
                 initial="hidden"
                 whileInView="visible"
                 exit="exit"
@@ -191,12 +181,12 @@ export default function DeliveryConditions() {
                     </a>
                   </motion.li>
                 ))}
-              </motion.ul>
+              </motion.ul> */}
             </div>
           </div>
 
           {/* Міжнародна доставка */}
-          <div className="flex flex-col md:flex-row gap-4 md:gap-8 pt-8">
+          {/* <div className="flex flex-col md:flex-row gap-4 md:gap-8 pt-8">
             <motion.div
               initial="hidden"
               whileInView="visible"
@@ -253,7 +243,7 @@ export default function DeliveryConditions() {
               </motion.div>
 
             </div>
-          </div>
+          </div> */}
         </div>
       </Container>
     </section>

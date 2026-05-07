@@ -5,6 +5,7 @@ export default function NavMenu() {
     { title: "Про нас", link: "/about" },
     { title: "Контакти", link: "/contacts" },
     { title: "Доставка та оплата", link: "/delivery" },
+    { title: "Повернення і обмін", link: "/return-policy" },
     { title: "Публічний договір", link: "/public-contract" },
     { title: "Політика конфіденційності", link: "/privacy-policy" },
   ];

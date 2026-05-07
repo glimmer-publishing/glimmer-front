@@ -14,18 +14,10 @@ export default function PaymentBlock() {
   }>();
 
   useEffect(() => {
-    if (
-      values.deliveryService === "Укрпошта" ||
-      values.deliveryService === "Міжнародна доставка"
-    ) {
+    if (values.deliveryService === "Укрпошта") {
       setFieldValue("payment", "Оплата картою онлайн Visa, Mastercard");
     }
   }, [values.deliveryService, setFieldValue]);
-
-  const hideCashOnDelivery =
-    values.deliveryService === "Укрпошта" ||
-    values.deliveryService === "Міжнародна доставка" ||
-    hasPreorderProducts;
 
   return (
     <div className="flex flex-col gap-4">
@@ -39,7 +31,7 @@ export default function PaymentBlock() {
         label={"Оплата програмою «єКнига» (Дія.Картка)"}
         value="Оплата програмою «єКнига» (Дія.Картка)"
       />
-      {hideCashOnDelivery ? null : (
+      {(values.deliveryService === "Укрпошта" || hasPreorderProducts) ? null : (
         <RadioButtonInput
           fieldName="payment"
           label={"Оплата під час отримання товару"}

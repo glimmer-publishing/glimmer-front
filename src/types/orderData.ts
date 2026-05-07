@@ -14,8 +14,6 @@ export interface OrderData {
   city: string;
   branchNumber?: string;
   address?: string;
-  internationalAddress?: string;
-  internationalPhone?: string;
   payment: string;
   message?: string;
   cart: CartItem[];
