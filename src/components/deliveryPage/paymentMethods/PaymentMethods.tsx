@@ -74,6 +74,16 @@ export default function PaymentMethods() {
             </motion.li>
           ))}
         </motion.ul>
+        <motion.p
+          initial="hidden"
+          whileInView="visible"
+          exit="exit"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={fadeInAnimation({ y: 10 })}
+          className="mt-6 lg:mt-8 text-[13px] lg:text-[14px] leading-[150%] text-black/60"
+        >
+          <span className="font-semibold text-black">Зверніть увагу:</span> книги, доступні для передзамовлення (з відправкою після дати релізу), відправляються лише за умови повної передоплати. Оплата при отриманні для таких товарів недоступна.
+        </motion.p>
       </Container>
     </section>
   );
