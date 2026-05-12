@@ -9,7 +9,7 @@ export default function DeliveryInfo() {
   return (
     <section>
       <Container>
-        <div className="pb-8 lg:pb-10 border-b border-black/60">
+        <div className="pb-8 lg:pb-10 border-b border-black/10">
           <div className="flex flex-col gap-3 lg:flex-row lg:gap-0 lg:justify-between lg:items-center mb-8 lg:mb-12">
             <PageTitle>Доставка та оплата</PageTitle>
             <SectionDescription className="lg:max-w-[363px]">
