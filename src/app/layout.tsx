@@ -13,7 +13,6 @@ import GoogleTagManagerScript from "@/components/shared/gtm/GoogleTagManagerScri
 import GoogleTagManagerNoScript from "@/components/shared/gtm/GoogleTagManagerNoScript";
 import MetaPixel from "@/components/shared/gtm/MetaPixel";
 import UtmTracker from "@/components/shared/utmTracker/UtmTracker";
-import Head from "next/head";
 
 const GTM_ID = "GTM-53NZVT3H";
 
@@ -35,11 +34,11 @@ export default async function RootLayout({
 
   return (
     <html lang="uk" className="scroll-smooth antialiased">
-      <Head>
-        <GoogleTagManagerScript gtmId={GTM_ID} />
+      <head>
         <GoogleBaseTag />
+        <GoogleTagManagerScript gtmId={GTM_ID} />
         <MetaPixel />
-      </Head>
+      </head>
       <body
         className={`${montserrat.variable} flex min-h-dvh flex-col antialiased text-[12px] lg:text-[15px] font-light leading-[120%]`}
       >
