@@ -34,13 +34,15 @@ export default async function RootLayout({
 
   return (
     <html lang="uk" className="scroll-smooth antialiased">
+      <head>
+        <GoogleBaseTag />
+        <GoogleTagManagerScript gtmId={GTM_ID} />
+        <MetaPixel />
+      </head>
       <body
         className={`${montserrat.variable} flex min-h-dvh flex-col antialiased text-[12px] lg:text-[15px] font-light leading-[120%]`}
       >
         <GoogleTagManagerNoScript gtmId={GTM_ID} />
-        <GoogleTagManagerScript gtmId={GTM_ID} />
-        <GoogleBaseTag />
-        <MetaPixel />
         <UtmTracker />
         <Header categories={result?.categories} products={result?.products} />
         <main className="flex-1">{children}</main>

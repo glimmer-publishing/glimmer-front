@@ -4,6 +4,9 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL;
 
 export function getDefaultMetadata(): Metadata {
   return {
+    verification: {
+      google: "UebFIihnz9R_v-th8W3BHQi7BCcbYoyMP3PjncbUxcw",
+    },
     title: "Glimmer - твій книжковий всесвіт",
     description:
       "Величезний вибір художньої літератури. Glimmer — ваш улюблений книжковий простір. Швидка доставка, вигідні ціни, новинки й бестселери.",
