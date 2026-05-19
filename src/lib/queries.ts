@@ -317,4 +317,5 @@ export const productsByIds = `*[_type == "product" && _id in $ids]{
   price,
   discountPrice,
   status,
+  preOrderShippingDate,
  }`;
