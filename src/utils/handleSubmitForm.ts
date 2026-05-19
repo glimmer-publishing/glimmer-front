@@ -108,6 +108,8 @@ export const handleSubmitForm = async <T>(
         ...cartItem.product,
         price: productFromCms.price,
         discountPrice: productFromCms.discountPrice,
+        status: productFromCms.status,
+        preOrderShippingDate: productFromCms.preOrderShippingDate,
       },
     });
   });
@@ -120,6 +122,22 @@ export const handleSubmitForm = async <T>(
     setIsError(true);
     setIsUnavailable(true);
     setIsNotificationShown(true);
+    return;
+  }
+
+  // Блокуємо оплату при отриманні для передзамовлень (статус оновлено з CMS)
+  const hasPreorderInCart = updatedCartItems.some(
+    (item) => item.product.status === "preOrder"
+  );
+  if (
+    hasPreorderInCart &&
+    values.payment === "Оплата під час отримання товару"
+  ) {
+    setFieldError(
+      "payment",
+      "Оплата під час отримання недоступна для передзамовлень"
+    );
+    setIsLoading(false);
     return;
   }
 

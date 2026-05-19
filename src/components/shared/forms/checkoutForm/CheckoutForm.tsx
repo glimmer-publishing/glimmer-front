@@ -1,6 +1,6 @@
 "use client";
 import { Form, Formik, FormikHelpers } from "formik";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { listVariants, listItemVariants } from "@/utils/animationVariants";
 import { useRouter } from "next/navigation";
@@ -10,7 +10,7 @@ import { useCartStore } from "@/store/cartStore";
 import { useMonopayBasketOrder } from "@/hooks/useMonopayBasletOrder";
 import CustomizedInput from "../../formComponents/CustomizedInput";
 import CheckoutSubTitle from "./CheckoutSubtitle";
-import { promocodeByCodeQuery } from "@/lib/queries";
+import { productsByIds, promocodeByCodeQuery } from "@/lib/queries";
 import CartList from "../../cartModal/CartList";
 import RecommendedProducts from "./RecommendedProducts";
 import CartTotal from "../../cartModal/CartTotal";
@@ -66,6 +66,32 @@ export default function CheckoutForm({
   const [isLoadingPromocode, setIsLoadingPromocode] = useState(false);
 
   const basketOrder = useMonopayBasketOrder();
+
+  useEffect(() => {
+    if (!hydrated || cart.length === 0) return;
+
+    const ids = cart.map((item) => item.product.id);
+    fetchSanityDataClient(productsByIds, { ids }).then((freshProducts) => {
+      const updatedCart = cart.map((item) => {
+        const fresh = freshProducts.find(
+          (p: { id: string }) => p.id === item.product.id
+        );
+        if (!fresh) return item;
+        return {
+          ...item,
+          product: {
+            ...item.product,
+            price: fresh.price,
+            discountPrice: fresh.discountPrice,
+            status: fresh.status,
+            preOrderShippingDate: fresh.preOrderShippingDate,
+          },
+        };
+      });
+      useCartStore.setState({ cart: updatedCart });
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated]);
 
   if (!hydrated) return null;
 
