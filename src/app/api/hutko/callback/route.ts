@@ -9,7 +9,7 @@ const HUTKO_PASSWORD = process.env.HUTKO_PASSWORD!;
 const CRM_API_KEY = process.env.CRM_API_KEY;
 
 const HUTKO_CRM_PAYMENT_METHOD_ID = 9;
-const HUTKO_CRM_PAYMENT_METHOD_NAME = "Національний кешбек, єПідтримка"; // Placeholder — replace with actual name in KeyCRM
+const HUTKO_CRM_PAYMENT_METHOD_NAME = "Національний кешбек, єПідтримка";
 
 export async function POST(req: NextRequest) {
   try {

@@ -4,11 +4,9 @@ export const fetchSanityDataClient = async (
   query: string,
   params: Record<string, unknown> = {}
 ) => {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
-
   try {
     const response = await axios.post(
-      `${baseUrl}/api/sanity`,
+      `/api/sanity`,
       {
         query,
         params,
