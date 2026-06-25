@@ -15,6 +15,12 @@ export default function PaymentMethods() {
       icon: "/images/deliveryPage/paymentMethods/card.svg",
     },
     {
+      title: "Оплата карткою «Національний кешбек» та «єПідтримка»",
+      description:
+        "Оплата карткою з використанням програм «Національний кешбек» та «єПідтримка» безпосередньо на сайті.",
+      icon: "/images/deliveryPage/paymentMethods/card.svg",
+    },
+    {
       title: "Оплата програмою «єКнига» (Дія.Картка)",
       description: "Оплата програмою «єКнига» безпосередньо на сайті.",
       icon: "/images/deliveryPage/paymentMethods/card.svg",
@@ -49,7 +55,7 @@ export default function PaymentMethods() {
             staggerChildren: 0.2,
             delayChildren: 0.2,
           })}
-          className="grid md:grid-cols-3 gap-6 lg:gap-8"
+          className="grid md:grid-cols-2 gap-6 lg:gap-6"
         >
           {paymentMethods.map(({ title, description, icon }, idx) => (
             <motion.li

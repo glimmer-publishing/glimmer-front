@@ -12,6 +12,7 @@ import { Product } from "@/types/product";
 import { useRouter } from "next/navigation";
 import { sendDataToKeyCrm } from "./sendDataToKeyCrm";
 import { BasketOrder } from "@/hooks/useMonopayBasletOrder";
+import { PaymentOption } from "@/constants/enums";
 
 export const handleSubmitForm = async <T>(
   { resetForm, setFieldError }: FormikHelpers<T>,
@@ -290,6 +291,32 @@ export const handleSubmitForm = async <T>(
       }
     }
 
+    if (updatedCollectedOrderData.payment === PaymentOption.HUTKO) {
+      try {
+        const response = await fetch("/api/hutko/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            amount: totalOrderSum * 100, // Hutko приймає суму в копійках
+            orderNumber,
+            orderDescription: `Замовлення #${orderNumber}`,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.checkoutUrl) {
+          if (typeof window !== "undefined") {
+            window.location.href = data.checkoutUrl;
+          }
+        } else {
+          console.error("Hutko error", data);
+        }
+      } catch (err) {
+        console.error("Hutko error", err);
+      }
+    }
+
     //Очищаємо форму
     resetForm();
     //Очищаємо кошик
@@ -302,7 +329,8 @@ export const handleSubmitForm = async <T>(
     {
       if (
         collectedOrderData.payment !== "Оплата картою онлайн Visa, Mastercard" &&
-        collectedOrderData.payment !== "Оплата програмою «єКнига» (Дія.Картка)"
+        collectedOrderData.payment !== "Оплата програмою «єКнига» (Дія.Картка)" &&
+        collectedOrderData.payment !== PaymentOption.HUTKO
       )
         router.push("/confirmation");
     }

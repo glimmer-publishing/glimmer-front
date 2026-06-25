@@ -2,6 +2,7 @@ import axios from "axios";
 import { OrderData } from "@/types/orderData";
 import { useCartStore } from "@/store/cartStore";
 import { useUtmStore } from "@/store/utmStore";
+import { PaymentOption } from "@/constants/enums";
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
 
@@ -56,7 +57,9 @@ export async function sendDataToKeyCrm(data: OrderData) {
   };
 
   const crmOrderData =
-    payment !== "Оплата картою онлайн Visa, Mastercard"
+    payment !== "Оплата картою онлайн Visa, Mastercard" &&
+    payment !== "Оплата програмою «єКнига» (Дія.Картка)" &&
+    payment !== PaymentOption.HUTKO
       ? {
           ...baseOrderData,
           payments: [
