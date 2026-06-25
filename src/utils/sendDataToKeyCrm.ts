@@ -56,7 +56,9 @@ export async function sendDataToKeyCrm(data: OrderData) {
   };
 
   const crmOrderData =
-    payment !== "Оплата картою онлайн Visa, Mastercard"
+    payment !== "Оплата картою онлайн Visa, Mastercard" &&
+    payment !== "Оплата програмою «єКнига» (Дія.Картка)" &&
+    payment !== "Оплата карткою «Національний кешбек» та «єПідтримка»"
       ? {
           ...baseOrderData,
           payments: [

@@ -43,7 +43,7 @@ export default function DeliveryConditions() {
   return (
     <section>
       <Container>
-        <div className="py-8 lg:py-10 border-b border-black/10">
+        <div className="py-8 lg:py-10">
           {/* Доставка по Україні */}
           <div className="flex flex-col md:flex-row-reverse gap-4 md:gap-8 pb-8 border-b border-black/10">
             <motion.div

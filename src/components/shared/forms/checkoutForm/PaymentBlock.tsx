@@ -2,6 +2,7 @@ import { useFormikContext } from "formik";
 import { useEffect } from "react";
 import RadioButtonInput from "../../formComponents/RadioButtonInput";
 import { useCartStore } from "@/store/cartStore";
+import { PaymentOption } from "@/constants/enums";
 
 export default function PaymentBlock() {
   const { cart } = useCartStore();
@@ -12,6 +13,7 @@ export default function PaymentBlock() {
     deliveryService: string;
     payment: string;
   }>();
+  
 
   useEffect(() => {
     if (values.deliveryService === "Укрпошта") {
@@ -25,6 +27,11 @@ export default function PaymentBlock() {
         fieldName="payment"
         label={"Оплата картою онлайн Visa, Mastercard"}
         value="Оплата картою онлайн Visa, Mastercard"
+      />
+      <RadioButtonInput
+        fieldName="payment"
+        label={PaymentOption.HUTKO}
+        value={PaymentOption.HUTKO}
       />
       <RadioButtonInput
         fieldName="payment"
