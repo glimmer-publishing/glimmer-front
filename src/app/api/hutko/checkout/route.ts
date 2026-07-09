@@ -24,7 +24,9 @@ export async function POST(req: NextRequest) {
       amount: String(amount),
       currency: "UAH",
       version: "1.0.1",
-      response_url: `${SITE_URL}/confirmation`,
+      // Hutko POSTs to response_url, so we use a dedicated API route
+      // that accepts POST and redirects the browser to /confirmation
+      response_url: `${SITE_URL}/api/hutko/response`,
       server_callback_url: `${SITE_URL}/api/hutko/callback`,
     };
 
