@@ -20,10 +20,12 @@ export async function POST(req: NextRequest) {
       const body = await req.json();
       data = body.response || body;
     } else {
-      // Handle form-encoded callback
+      // Handle form-encoded callback (Hutko may send this format)
       const formData = await req.formData();
       data = Object.fromEntries(formData.entries()) as Record<string, string>;
     }
+
+    console.log("Hutko callback received:", JSON.stringify(data));
 
     // Verify signature
     const isValid = verifyHutkoSignature(
@@ -33,7 +35,7 @@ export async function POST(req: NextRequest) {
     );
 
     if (!isValid) {
-      console.error("Hutko callback: invalid signature");
+      console.error("Hutko callback: invalid signature. Data:", JSON.stringify(data));
       return new NextResponse("Invalid signature", { status: 403 });
     }
 
@@ -41,41 +43,63 @@ export async function POST(req: NextRequest) {
       const orderId = data.order_id;
       const amount = Number(data.amount) / 100; // Convert from kopecks
 
-      // Send Telegram notification
+      // Send Telegram notification via our internal endpoint (same as MonoPay)
       const message = `✅ Оплата через Hutko успішна!\nСума: ${amount} грн\nЗамовлення: #${orderId}`;
 
-      await axios({
-        method: "post",
-        url: `${SITE_URL}/api/telegram`,
-        data: message,
-        headers: { "Content-Type": "application/json" },
-      });
+      try {
+        await axios({
+          method: "post",
+          url: `${SITE_URL}api/telegram`,
+          data: message,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      } catch (telegramError) {
+        // Log but don't fail the whole callback — CRM update is more critical
+        console.error("Hutko callback: Telegram notification failed:", telegramError);
+      }
 
       // Update payment status in KeyCRM
       const now = new Date();
       now.setHours(now.getHours() + 3);
       const payment_date = now.toISOString().slice(0, 19).replace("T", " ");
 
-      await axios.post(
-        `${CRM_API_URL}/order/${orderId}/payment`,
-        {
-          payment_method_id: HUTKO_CRM_PAYMENT_METHOD_ID,
-          payment_method: HUTKO_CRM_PAYMENT_METHOD_NAME,
-          amount,
-          status: "paid",
-          description: "Оплата через Hutko (Національний кешбек / єПідтримка)",
-          payment_date,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${CRM_API_KEY}`,
-            "Content-Type": "application/json",
+      try {
+        await axios.post(
+          `${CRM_API_URL}/order/${orderId}/payment`,
+          {
+            payment_method_id: HUTKO_CRM_PAYMENT_METHOD_ID,
+            payment_method: HUTKO_CRM_PAYMENT_METHOD_NAME,
+            amount,
+            status: "paid",
+            description: "Оплата через Hutko (Національний кешбек / єПідтримка)",
+            payment_date,
           },
+          {
+            headers: {
+              Authorization: `Bearer ${CRM_API_KEY}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      } catch (crmError) {
+        if (axios.isAxiosError(crmError)) {
+          console.error(
+            "Hutko callback: CRM payment update failed:",
+            crmError.response?.status,
+            JSON.stringify(crmError.response?.data)
+          );
+        } else {
+          console.error("Hutko callback: CRM payment update failed:", crmError);
         }
-      );
+        // Still return 200 to Hutko so it doesn't retry endlessly
+      }
+    } else {
+      console.log(`Hutko callback: order ${data.order_id} status = ${data.order_status}, skipping payment update`);
     }
 
-    // Return HTTP 200 to acknowledge receipt
+    // Always return HTTP 200 to acknowledge receipt
     return NextResponse.json({ ok: true, status: data.order_status });
   } catch (error) {
     console.error("Hutko callback error:", error);
