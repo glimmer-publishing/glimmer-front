@@ -3,7 +3,8 @@ import { verifyHutkoSignature } from "@/utils/hutkoSignature";
 import axios from "axios";
 import { CRM_API_URL } from "@/constants/constants";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL!;
+// Strip any trailing slash so we always build clean URLs (no double slashes)
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL!.replace(/\/+$/, "");
 const HUTKO_MERCHANT_ID = process.env.HUTKO_MERCHANT_ID!;
 const HUTKO_PASSWORD = process.env.HUTKO_PASSWORD!;
 const CRM_API_KEY = process.env.CRM_API_KEY;
@@ -49,7 +50,7 @@ export async function POST(req: NextRequest) {
       try {
         await axios({
           method: "post",
-          url: `${SITE_URL}api/telegram`,
+          url: `${SITE_URL}/api/telegram`,
           data: message,
           headers: {
             "Content-Type": "application/json",
