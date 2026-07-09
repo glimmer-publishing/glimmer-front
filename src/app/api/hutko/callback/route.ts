@@ -5,7 +5,6 @@ import { CRM_API_URL } from "@/constants/constants";
 
 // Strip any trailing slash so we always build clean URLs (no double slashes)
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL!.replace(/\/+$/, "");
-const HUTKO_MERCHANT_ID = process.env.HUTKO_MERCHANT_ID!;
 const HUTKO_PASSWORD = process.env.HUTKO_PASSWORD!;
 const CRM_API_KEY = process.env.CRM_API_KEY;
 
@@ -29,14 +28,16 @@ export async function POST(req: NextRequest) {
     console.log("Hutko callback received:", JSON.stringify(data));
 
     // Verify signature
-    const isValid = verifyHutkoSignature(
-      HUTKO_MERCHANT_ID,
+    const { isValid, expected, received, base } = verifyHutkoSignature(
       HUTKO_PASSWORD,
       data
     );
 
     if (!isValid) {
-      console.error("Hutko callback: invalid signature. Data:", JSON.stringify(data));
+      console.error(
+        "Hutko callback: invalid signature.",
+        JSON.stringify({ expected, received, base })
+      );
       return new NextResponse("Invalid signature", { status: 403 });
     }
 

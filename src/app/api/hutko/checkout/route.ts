@@ -5,10 +5,7 @@ const HUTKO_MERCHANT_ID = process.env.HUTKO_MERCHANT_ID!;
 const HUTKO_PASSWORD = process.env.HUTKO_PASSWORD!;
 // Strip any trailing slash so we always build clean URLs (no double slashes)
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL!.replace(/\/+$/, "");
-// TEMPORARY: point Hutko's server callback at an external inspector for debugging.
-// Revert to `${SITE_URL}/api/hutko/callback` once done.
-const HUTKO_CALLBACK_URL =
-  "https://webhook.site/c939f28b-3744-469c-b36b-7ea4c2e51e48";
+const HUTKO_CALLBACK_URL = `${SITE_URL}/api/hutko/callback`;
 
 const HUTKO_CHECKOUT_URL = "https://pay.hutko.org/api/checkout/url/";
 
@@ -33,20 +30,16 @@ export async function POST(req: NextRequest) {
       // that accepts POST and redirects the browser to /confirmation
       response_url: `${SITE_URL}/api/hutko/response`,
       server_callback_url: HUTKO_CALLBACK_URL,
+      merchant_id: HUTKO_MERCHANT_ID,
     };
 
     console.log("Hutko checkout request params:", JSON.stringify(params));
 
-    const signature = generateHutkoSignature(
-      HUTKO_MERCHANT_ID,
-      HUTKO_PASSWORD,
-      params
-    );
+    const signature = generateHutkoSignature(HUTKO_PASSWORD, params);
 
     const requestBody = {
       request: {
         ...params,
-        merchant_id: HUTKO_MERCHANT_ID,
         signature,
       },
     };
