@@ -5,6 +5,7 @@ import StarEmptyIcon from "@/components/shared/icons/StarEmptyIcon";
 import StarFilledIcon from "@/components/shared/icons/StarFilledIcon";
 import * as motion from "motion/react-client";
 import { fadeInAnimation } from "@/utils/animationVariants";
+import Link from "next/link";
 
 interface ProductDetailsProps {
   currentProduct: Product;
@@ -50,9 +51,13 @@ export default function ProductDetails({
           {title}
         </h1>
         {author ? (
-          <p className="text-[14px] lg:text-[18px] font-light leading-[120%]">
+          <Link
+            href={`/author/${encodeURIComponent(author)}`}
+            aria-label={`Переглянути всі книги автора ${author}`}
+            className="text-[14px] lg:text-[18px] font-light leading-[120%] transition duration-300 ease-out xl:hover:text-main focus-visible:text-main active:text-main outline-none"
+          >
             {author}
-          </p>
+          </Link>
         ) : null}
       </motion.div>
       <motion.div
