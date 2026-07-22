@@ -319,3 +319,33 @@ export const productsByIds = `*[_type == "product" && _id in $ids]{
   status,
   preOrderShippingDate,
  }`;
+
+export const productsByAuthorQuery = `
+*[_type == "product" && author == $authorName] | order(title asc) {
+  "id": _id,
+  "slug": slug.current,
+  title,
+  author,
+  price,
+  discountPrice,
+  "mainImage": gallery[0].asset->url,
+  status,
+  isBestseller,
+  isNew,
+  sku,
+  preOrderShippingDate,
+  features[]{
+    "featureName": feature->name,
+    value
+  },
+  "reviews": reviews[]{
+    author,
+    rating,
+    text
+  },
+  "categorySlug": category->slug.current,
+  "categoryTitle": category->title,
+  "genreSlug": genre->slug.current,
+  "genreTitle": genre->name
+}
+`;
