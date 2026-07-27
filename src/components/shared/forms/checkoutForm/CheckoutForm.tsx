@@ -85,6 +85,7 @@ export default function CheckoutForm({
             discountPrice: fresh.discountPrice,
             status: fresh.status,
             preOrderShippingDate: fresh.preOrderShippingDate,
+            isNationalCashback: fresh.isNationalCashback,
           },
         };
       });
