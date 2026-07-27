@@ -31,6 +31,7 @@ export const allCategoriesAndProductsQuery = `
     status,
     isBestseller,
     isNew,
+    isNationalCashback,
     sku,
      preOrderShippingDate,
     features[] {
@@ -83,6 +84,7 @@ export const homepageCombinedQuery = `{
     status,
     isBestseller,
     isNew,
+    isNationalCashback,
     sku,
     preOrderShippingDate,
     features[]{
@@ -127,6 +129,7 @@ export const allDiscountedProductsQuery = `
     status,
     isBestseller,
     isNew,
+    isNationalCashback,
     sku,
     preOrderShippingDate,
     features[]{
@@ -173,6 +176,7 @@ export const allProductsByCategoryQuery = `
       preOrderShippingDate,
       isBestseller,
       isNew,
+      isNationalCashback,
       sku,
       preOrderShippingDate,
       features[]{
@@ -208,6 +212,7 @@ export const allProductsByCategoryQuery = `
     status,
     isBestseller,
     isNew,
+    isNationalCashback,
     sku,
     preOrderShippingDate,
     features[]{
@@ -232,6 +237,7 @@ export const productBySlugQuery = `
     status,
     isBestseller,
     isNew,
+    isNationalCashback,
     "categorySlug": category->slug.current,
     "categoryTitle": category->title,
     "genreSlug": genre->slug.current,
@@ -266,6 +272,7 @@ export const allRecommendedProductsQuery = `
     status,
     isBestseller,
     isNew,
+    isNationalCashback,
     sku,
     features[]{
       "featureName": feature->name,
@@ -318,6 +325,7 @@ export const productsByIds = `*[_type == "product" && _id in $ids]{
   discountPrice,
   status,
   preOrderShippingDate,
+  isNationalCashback,
  }`;
 
 export const productsByAuthorQuery = `
@@ -332,6 +340,7 @@ export const productsByAuthorQuery = `
   status,
   isBestseller,
   isNew,
+  isNationalCashback,
   sku,
   preOrderShippingDate,
   features[]{

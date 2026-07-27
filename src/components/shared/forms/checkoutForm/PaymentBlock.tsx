@@ -9,6 +9,10 @@ export default function PaymentBlock() {
 
   const hasPreorderProducts = cart.some(item => item.product.status === "preOrder");
 
+  const isNationalCashbackAvailable =
+    cart.length > 0 &&
+    cart.every((item) => item.product.isNationalCashback === true);
+
   const { values, setFieldValue } = useFormikContext<{
     deliveryService: string;
     payment: string;
@@ -21,6 +25,12 @@ export default function PaymentBlock() {
     }
   }, [values.deliveryService, setFieldValue]);
 
+  useEffect(() => {
+    if (values.payment === PaymentOption.HUTKO && !isNationalCashbackAvailable) {
+      setFieldValue("payment", "Оплата картою онлайн Visa, Mastercard");
+    }
+  }, [isNationalCashbackAvailable, values.payment, setFieldValue]);
+
   return (
     <div className="flex flex-col gap-4">
       <RadioButtonInput
@@ -28,11 +38,13 @@ export default function PaymentBlock() {
         label={"Оплата картою онлайн Visa, Mastercard"}
         value="Оплата картою онлайн Visa, Mastercard"
       />
-      <RadioButtonInput
-        fieldName="payment"
-        label={PaymentOption.HUTKO}
-        value={PaymentOption.HUTKO}
-      />
+      {isNationalCashbackAvailable && (
+        <RadioButtonInput
+          fieldName="payment"
+          label={PaymentOption.HUTKO}
+          value={PaymentOption.HUTKO}
+        />
+      )}
       <RadioButtonInput
         fieldName="payment"
         label={"Оплата програмою «єКнига» (Дія.Картка)"}

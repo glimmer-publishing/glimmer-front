@@ -11,6 +11,7 @@ export type Product = {
   status: "inStock" | "preOrder";
   isBestseller: boolean;
   isNew: boolean;
+  isNationalCashback?: boolean;
   categorySlug: string;
   categoryTitle: string;
   genreSlug?: string;

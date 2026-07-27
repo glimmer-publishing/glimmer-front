@@ -111,6 +111,7 @@ export const handleSubmitForm = async <T>(
         discountPrice: productFromCms.discountPrice,
         status: productFromCms.status,
         preOrderShippingDate: productFromCms.preOrderShippingDate,
+        isNationalCashback: productFromCms.isNationalCashback,
       },
     });
   });
@@ -137,6 +138,21 @@ export const handleSubmitForm = async <T>(
     setFieldError(
       "payment",
       "Оплата під час отримання недоступна для передзамовлень"
+    );
+    setIsLoading(false);
+    return;
+  }
+
+  // Блокуємо оплату «Національний кешбек», якщо не всі товари в кошику доступні для НК
+  // (перевірка по свіжих даних з CMS, не лише по фронтенду)
+  const allNkAvailable =
+    updatedCartItems.length > 0 &&
+    updatedCartItems.every((item) => item.product.isNationalCashback === true);
+
+  if (values.payment === PaymentOption.HUTKO && !allNkAvailable) {
+    setFieldError(
+      "payment",
+      "Оплата «Національний кешбек» доступна лише коли всі товари в кошику підтримують цю програму"
     );
     setIsLoading(false);
     return;
