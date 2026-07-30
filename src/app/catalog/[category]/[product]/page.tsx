@@ -8,6 +8,7 @@ import ProductInfo from "@/components/productPage/productInfo/ProductInfo";
 import type { Metadata } from "next";
 import { getDefaultMetadata } from "@/utils/getDefaultMetadata";
 import Breadcrumbs from "@/components/shared/breadcrumbs/Breadcrumbs";
+import { getProductGenreSlugs } from "@/utils/getProductGenreSlugs";
 
 interface ProductPageProps {
   params: Promise<{ category: string; product: string }>;
@@ -56,23 +57,33 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   if (!currentProduct) return null;
 
-  const { categorySlug, categoryTitle, genreTitle, genreSlug, title, slug } =
+  const { categorySlug, categoryTitle, genreTitle, genreSlug, genres, title, slug } =
     currentProduct;
+
+  // Build the category+genre label — omit the genre part when none is set
+  const categoryCrumbLabel = genreTitle
+    ? `${categoryTitle} - ${genreTitle}`
+    : categoryTitle;
+
+  // Build the category crumb href — only append subcategory when we have a slug
+  const categoryCrumbHref = genreSlug
+    ? `/catalog/${categorySlug}?subcategory=${genreSlug}`
+    : `/catalog/${categorySlug}`;
 
   const crumbs = [
     { label: "Головна", href: "/" },
-    {
-      label: `${categoryTitle} - ${genreTitle}`,
-      href: `/catalog/${categorySlug}?subcategory=${genreSlug}`,
-    },
+    { label: categoryCrumbLabel, href: categoryCrumbHref },
     { label: title, href: slug },
   ];
+
+  // Collect all genre slugs for the "match any" recommendation query
+  const genreSlugs = getProductGenreSlugs({ genres, genreSlug });
 
   return (
     <div className="pt-[85px]">
       <Breadcrumbs crumbs={crumbs} />
       <ProductInfo currentProduct={currentProduct} />
-      <RecommendedProducts currentSlug={product} genreSlug={genreSlug} />
+      <RecommendedProducts currentSlug={product} genreSlugs={genreSlugs} />
       <ReviewedProducts />
       <MarqueeLine />
       <TelegramCTA />

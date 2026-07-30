@@ -8,16 +8,16 @@ import RecommendedSlider from "./RecommendedSlider";
 
 interface RecommendedProductsProps {
   currentSlug: string;
-  genreSlug: string;
+  genreSlugs: string[];
 }
 
 export default async function RecommendedProducts({
   currentSlug,
-  genreSlug,
+  genreSlugs,
 }: RecommendedProductsProps) {
   const recommendedProducts = await fetchSanityDataServer(
     allRecommendedProductsQuery,
-    { genreSlug, currentSlug }
+    { genreSlugs, currentSlug }
   );
 
   if (!recommendedProducts || !recommendedProducts?.length) return null;

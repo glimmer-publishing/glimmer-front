@@ -14,6 +14,7 @@ export type Product = {
   isNationalCashback?: boolean;
   categorySlug: string;
   categoryTitle: string;
+  genres?: { slug: string; title: string }[];
   genreSlug?: string;
   genreTitle?: string;
   description?: string;
