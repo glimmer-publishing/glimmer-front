@@ -3,6 +3,7 @@ import Link from "next/link";
 import ArrowIcon from "../icons/ArrowIcon";
 import CatalogMenuDesk from "./catalogMenu/CatalogMenuDesk";
 import { Category } from "@/types/category";
+import { buildCatalogList } from "@/utils/buildCatalogList";
 
 interface NavMenuProps {
   categories: Category[];
@@ -21,9 +22,7 @@ export default function NavMenu({
   isOpenCatalogMenu,
   setIsOpenCatalogMenu,
 }: NavMenuProps) {
-  const sortedCategories = categories.sort((a, b) => a.order - b.order);
-
-  const catalogList = [{ title: "Акції", slug: "promo" }, ...sortedCategories];
+  const catalogList = buildCatalogList(categories);
 
   return (
     <nav className="hidden lg:block">

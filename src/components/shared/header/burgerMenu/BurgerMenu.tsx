@@ -4,6 +4,7 @@ import BurgerMenuButton from "./BurgerMenuButton";
 import BurgerMenuContent from "./BurgerMenuContent";
 import Backdrop from "../../backdrop/Backdrop";
 import { Category } from "@/types/category";
+import { buildCatalogList } from "@/utils/buildCatalogList";
 
 interface BurgerMenuProps {
   categories: Category[];
@@ -16,9 +17,8 @@ export default function BurgerMenu({
   isOpenBurgerMenu,
   setIsOpenBurgerMenu,
 }: BurgerMenuProps) {
-  const sortedCategories = categories.sort((a, b) => a.order - b.order);
+  const catalogList = buildCatalogList(categories);
 
-  const catalogList = [{ title: "Акції", slug: "promo" }, ...sortedCategories];
   return (
     <>
       <BurgerMenuButton
