@@ -23,6 +23,7 @@ interface CatalogProps {
     products: Product[];
   }[];
   currentCategory: string;
+  emptyMessage?: string;
 }
 
 export default function Catalog({
@@ -30,6 +31,7 @@ export default function Catalog({
   allProducts,
   subcategories,
   currentCategory,
+  emptyMessage,
 }: CatalogProps) {
   const hasSubcategories = subcategories && subcategories?.length > 0;
 
@@ -153,7 +155,7 @@ export default function Catalog({
           {sortedProducts?.length ? (
             <CatalogList currentProducts={sortedProducts} />
           ) : (
-            <NoItems />
+            <NoItems message={emptyMessage} />
           )}
         </div>
       </Container>

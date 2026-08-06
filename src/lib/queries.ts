@@ -186,6 +186,47 @@ export const allDiscountedProductsQuery = `
 }
 `;
 
+// Whole catalog — books and stationery together, for /catalog/all.
+// Keeps the same card projection as the category query, `reviews` included, so
+// the default "за рейтингом" sort actually has data to work with.
+export const allProductsQuery = `
+{
+  "allProducts": *[_type == "product"]{
+    "id": _id,
+    "slug": slug.current,
+    title,
+    author,
+    price,
+    discountPrice,
+    "mainImage": gallery[0].asset->url,
+    status,
+    isBestseller,
+    isNew,
+    isNationalCashback,
+    sku,
+    preOrderShippingDate,
+    features[]{
+      "featureName": feature->name,
+      value
+    },
+    "reviews": reviews[]{
+      author,
+      rating,
+      text
+    },
+    "categorySlug": category->slug.current,
+    "categoryTitle": category->title,
+    ${genresProjection}
+  },
+  "catalogBanner": *[
+    _type == "homepageBanner" && showOnCatalog == true
+  ][0]{
+    "imageCatalog": imageCatalog.asset->url,
+    link
+  }
+}
+`;
+
 export const allProductsByCategoryQuery = `
 *[_type == "category" && slug.current == $categorySlug][0]{
   "categoryTitle": title,

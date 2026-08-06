@@ -7,6 +7,13 @@ const promoItem: CatalogItem = {
   href: "/catalog/promo",
 };
 
+// Весь каталог — книги і канцелярія в одному списку, без жанрових чіпів.
+const allProductsItem: CatalogItem = {
+  slug: "all",
+  title: "Весь каталог",
+  href: "/catalog/all",
+};
+
 // Категорія з жанрами не показується в меню окремим пунктом — замість неї
 // виводяться її жанри, щоб каталог залишався одного рівня.
 export function buildCatalogList(categories: Category[] = []): CatalogItem[] {
@@ -28,5 +35,5 @@ export function buildCatalogList(categories: Category[] = []): CatalogItem[] {
           ]
     );
 
-  return [promoItem, ...items];
+  return [promoItem, allProductsItem, ...items];
 }
