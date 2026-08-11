@@ -4,7 +4,9 @@ import { createClient } from "next-sanity";
 
 export const client = createClient({
   projectId: "us9jz0mn",
-  dataset: "production",
+  // Mirrors src/lib/sanityClient.ts — see the note below on why this file
+  // cannot import from it.
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
   apiVersion: "2025-08-07",
   useCdn: true,
 });
