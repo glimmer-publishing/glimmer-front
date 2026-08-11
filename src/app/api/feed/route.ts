@@ -3,7 +3,7 @@ import { allProductsForFeedQuery } from "@/lib/queries";
 
 export const revalidate = 3600;
 
-const SITE_URL = "https://www.glimmer.com.ua";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL!.replace(/\/+$/, "");
 const BRAND = "Glimmer";
 
 const GOOGLE_PRODUCT_CATEGORY = "784"; // Media > Books

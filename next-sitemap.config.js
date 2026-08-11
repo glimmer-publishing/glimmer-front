@@ -11,6 +11,11 @@ export const client = createClient({
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL;
 
+// Duplicated from src/lib/env.ts on purpose: this file is plain ESM run by
+// Node in the postbuild step, so it cannot import a .ts module without relying
+// on Node's type stripping (Node 23+ only). Keep the two in sync.
+const isProduction = process.env.VERCEL_ENV === "production";
+
 export const fetchSanityDataServer = async (query, params = {}) => {
   try {
     return await client.fetch(query, params);
@@ -62,10 +67,13 @@ const sitemapConfig = {
   exclude: ["/api/*"],
   generateRobotsTxt: true,
   robotsTxtOptions: {
-    policies: [
-      { userAgent: "*", allow: "/" },
-      { userAgent: "*", disallow: "/api/*" },
-    ],
+    // preview must never compete with it in search results.
+    policies: isProduction
+      ? [
+          { userAgent: "*", allow: "/" },
+          { userAgent: "*", disallow: "/api/*" },
+        ]
+      : [{ userAgent: "*", disallow: "/" }],
   },
   additionalPaths: async (config) => {
     const staticPages = [

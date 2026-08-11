@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyHutkoSignature } from "@/utils/hutkoSignature";
 import axios from "axios";
 import { CRM_API_URL } from "@/constants/constants";
+import { isProduction } from "@/lib/env";
 
 // Strip any trailing slash so we always build clean URLs (no double slashes)
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL!.replace(/\/+$/, "");
@@ -66,6 +67,15 @@ export async function POST(req: NextRequest) {
       const now = new Date();
       now.setHours(now.getHours() + 3);
       const payment_date = now.toISOString().slice(0, 19).replace("T", " ");
+
+      // Outside production the order was never created in CRM (see /api/keycrm),
+      // so there is nothing to update — log and acknowledge the callback.
+      if (!isProduction) {
+        console.log(
+          `KeyCRM payment update NOT sent for order ${orderId}, amount ${amount}`
+        );
+        return NextResponse.json({ ok: true, status: data.order_status });
+      }
 
       try {
         await axios.post(
