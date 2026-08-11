@@ -4,8 +4,8 @@ import { Product } from "@/types/product";
 // Shared GROQ helpers
 // ---------------------------------------------------------------------------
 
-// Full genre projection for a product — reads `genres[]` (new field) and
-// falls back to legacy `genre` (single ref) when `genres` is not yet set.
+// Full genre projection for a product — reads `genres[]`, the only genre field
+// on the product schema. The first entry is treated as the primary genre.
 // Produces:
 //   genres     → array of { slug, title }  (may be empty)
 //   genreSlug  → primary genre slug        (null when no genre at all)
@@ -13,27 +13,14 @@ import { Product } from "@/types/product";
 const genresProjection = `
     "genres": select(
       count(genres) > 0 => genres[]->{ "slug": slug.current, "title": name },
-      defined(genre)    => [genre->{ "slug": slug.current, "title": name }],
       []
     ),
-    "genreSlug": select(
-      count(genres) > 0 => genres[0]->slug.current,
-      defined(genre)    => genre->slug.current,
-      null
-    ),
-    "genreTitle": select(
-      count(genres) > 0 => genres[0]->name,
-      defined(genre)    => genre->name,
-      null
-    )`;
+    "genreSlug": genres[0]->slug.current,
+    "genreTitle": genres[0]->name`;
 
 // Slimmer variant when only genreTitle is needed (e.g. feed).
 const genreTitleProjection = `
-    "genreTitle": select(
-      count(genres) > 0 => genres[0]->name,
-      defined(genre)    => genre->name,
-      null
-    )`;
+    "genreTitle": genres[0]->name`;
 
 // Card projection reused wherever a product needs to render as a recommendation
 // card (genre-based matches, manual recommendations).
@@ -362,11 +349,7 @@ export const allRecommendedProductsQuery = `
   *[_type == "product"
     && slug.current != $currentSlug
     && count(
-         (select(
-           count(genres) > 0 => genres[]->slug.current,
-           defined(genre)    => [genre->slug.current],
-           []
-         ))[@ in $genreSlugs]
+         (genres[]->slug.current)[@ in $genreSlugs]
        ) > 0
   ]{
     ${recommendedProductCardProjection}
