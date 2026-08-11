@@ -1,3 +1,5 @@
+import { Product } from "@/types/product";
+
 // ---------------------------------------------------------------------------
 // Shared GROQ helpers
 // ---------------------------------------------------------------------------
@@ -32,6 +34,29 @@ const genreTitleProjection = `
       defined(genre)    => genre->name,
       null
     )`;
+
+// Card projection reused wherever a product needs to render as a recommendation
+// card (genre-based matches, manual recommendations).
+const recommendedProductCardProjection = `
+    "id": _id,
+    "slug": slug.current,
+    title,
+    author,
+    price,
+    discountPrice,
+    "mainImage": gallery[0].asset->url,
+    status,
+    isBestseller,
+    isNew,
+    isNationalCashback,
+    sku,
+    features[]{
+      "featureName": feature->name,
+      value
+    },
+    "categorySlug": category->slug.current,
+    "categoryTitle": category->title,
+    ${genresProjection}`;
 
 // ---------------------------------------------------------------------------
 // Queries
@@ -344,27 +369,35 @@ export const allRecommendedProductsQuery = `
          ))[@ in $genreSlugs]
        ) > 0
   ]{
-    "id": _id,
-    "slug": slug.current,
-    title,
-    author,
-    price,
-    discountPrice,
-    "mainImage": gallery[0].asset->url,
-    status,
-    isBestseller,
-    isNew,
-    isNationalCashback,
-    sku,
-    features[]{
-      "featureName": feature->name,
-      value
-    },
-    "categorySlug": category->slug.current,
-    "categoryTitle": category->title,
-    ${genresProjection}
+    ${recommendedProductCardProjection}
   }
 `;
+
+// Accepts $slugs (string[]) and returns one entry per matching product, so a
+// caller holding several products (the checkout cart) collects all their
+// curated picks in a single round trip. Kept separate from `productBySlugQuery`
+// so the resolved cards never ride along on the current product object — that
+// object is persisted to the cart and reviewed-products stores.
+//
+// GROQ does not preserve the order of `$slugs`, so callers that care about
+// ordering must reorder by slug themselves — see `orderManualRecommendations`.
+export const manualRecommendationsBySlugsQuery = `
+  *[_type == "product" && slug.current in $slugs]{
+    "slug": slug.current,
+    "manualRecommendations": manualRecommendations[]->{
+      ${recommendedProductCardProjection}
+    }
+  }
+`;
+
+// Shape of one `manualRecommendationsBySlugsQuery` entry, kept next to the
+// query so the projection aliases and the properties the components read stay
+// tied together. Inner entries are null for picks that no longer resolve (the
+// reference is weak, so the target can be removed).
+export type ManualRecommendationsBySlug = {
+  slug: string;
+  manualRecommendations: Array<Product | null> | null;
+};
 
 export const promocodeByCodeQuery = `
   *[_type == "promocode" && code == $promocode][0]{

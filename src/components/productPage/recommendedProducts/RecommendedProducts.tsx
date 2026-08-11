@@ -3,7 +3,16 @@ import Container from "../../shared/container/Container";
 import SectionTitle from "../../shared/titles/SectionTitle";
 import Loader from "../../shared/loader/Loader";
 import { fetchSanityDataServer } from "@/utils/fetchSanityDataServer";
-import { allRecommendedProductsQuery } from "@/lib/queries";
+import {
+  allRecommendedProductsQuery,
+  manualRecommendationsBySlugsQuery,
+  type ManualRecommendationsBySlug,
+} from "@/lib/queries";
+import {
+  mergeRecommendedProducts,
+  orderManualRecommendations,
+} from "@/utils/mergeRecommendedProducts";
+import { Product } from "@/types/product";
 import RecommendedSlider from "./RecommendedSlider";
 
 interface RecommendedProductsProps {
@@ -15,12 +24,25 @@ export default async function RecommendedProducts({
   currentSlug,
   genreSlugs,
 }: RecommendedProductsProps) {
-  const recommendedProducts = await fetchSanityDataServer(
-    allRecommendedProductsQuery,
-    { genreSlugs, currentSlug }
+  const [genreBasedProducts, manualResults]: [
+    Product[] | undefined,
+    ManualRecommendationsBySlug[] | undefined,
+  ] = await Promise.all([
+    fetchSanityDataServer(allRecommendedProductsQuery, {
+      genreSlugs,
+      currentSlug,
+    }),
+    fetchSanityDataServer(manualRecommendationsBySlugsQuery, {
+      slugs: [currentSlug],
+    }),
+  ]);
+
+  const recommendedProducts = mergeRecommendedProducts(
+    orderManualRecommendations(manualResults, [currentSlug]),
+    genreBasedProducts
   );
 
-  if (!recommendedProducts || !recommendedProducts?.length) return null;
+  if (!recommendedProducts.length) return null;
 
   return (
     <section className="py-8 lg:py-10">
