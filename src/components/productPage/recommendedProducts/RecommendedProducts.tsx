@@ -5,10 +5,13 @@ import Loader from "../../shared/loader/Loader";
 import { fetchSanityDataServer } from "@/utils/fetchSanityDataServer";
 import {
   allRecommendedProductsQuery,
-  productManualRecommendationsQuery,
-  type ManualRecommendationsResult,
+  manualRecommendationsBySlugsQuery,
+  type ManualRecommendationsBySlug,
 } from "@/lib/queries";
-import { mergeRecommendedProducts } from "@/utils/mergeRecommendedProducts";
+import {
+  mergeRecommendedProducts,
+  orderManualRecommendations,
+} from "@/utils/mergeRecommendedProducts";
 import { Product } from "@/types/product";
 import RecommendedSlider from "./RecommendedSlider";
 
@@ -21,19 +24,21 @@ export default async function RecommendedProducts({
   currentSlug,
   genreSlugs,
 }: RecommendedProductsProps) {
-  const [genreBasedProducts, manualResult]: [
+  const [genreBasedProducts, manualResults]: [
     Product[] | undefined,
-    ManualRecommendationsResult | undefined,
+    ManualRecommendationsBySlug[] | undefined,
   ] = await Promise.all([
     fetchSanityDataServer(allRecommendedProductsQuery, {
       genreSlugs,
       currentSlug,
     }),
-    fetchSanityDataServer(productManualRecommendationsQuery, { currentSlug }),
+    fetchSanityDataServer(manualRecommendationsBySlugsQuery, {
+      slugs: [currentSlug],
+    }),
   ]);
 
   const recommendedProducts = mergeRecommendedProducts(
-    manualResult?.manualRecommendations,
+    orderManualRecommendations(manualResults, [currentSlug]),
     genreBasedProducts
   );
 

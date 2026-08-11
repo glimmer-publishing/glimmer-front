@@ -5,13 +5,16 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   allRecommendedProductsQuery,
-  productManualRecommendationsQuery,
-  type ManualRecommendationsResult,
+  manualRecommendationsBySlugsQuery,
+  type ManualRecommendationsBySlug,
 } from "@/lib/queries";
 import { useCartStore } from "@/store/cartStore";
 import { fetchSanityDataClient } from "@/utils/fetchSanityDataClient";
 import { getProductGenreSlugs } from "@/utils/getProductGenreSlugs";
-import { mergeRecommendedProducts } from "@/utils/mergeRecommendedProducts";
+import {
+  mergeRecommendedProducts,
+  orderManualRecommendations,
+} from "@/utils/mergeRecommendedProducts";
 import { trackAddToCart } from "@/utils/ecommerceTracking";
 import { Product } from "@/types/product";
 import CheckoutSubTitle from "./CheckoutSubtitle";
@@ -32,6 +35,16 @@ export default function RecommendedProducts() {
     [firstCartProduct]
   );
 
+  // Curated picks are gathered from every product in the cart, so editorial
+  // work on a book is not lost just because the customer added it second.
+  // Keyed on the slugs themselves rather than on `cart`, so changing a
+  // quantity does not look like a new set of products and refetch.
+  const cartSlugsKey = cart.map((item) => item.product.slug).join("\n");
+  const cartSlugs = useMemo(
+    () => (cartSlugsKey ? cartSlugsKey.split("\n") : []),
+    [cartSlugsKey]
+  );
+
   useEffect(() => {
     setIsClient(true);
   }, []);
@@ -46,9 +59,9 @@ export default function RecommendedProducts() {
     const loadRecommended = async () => {
       // Each query is caught on its own: a failure of the curated list should
       // still leave the genre-based suggestions on screen, and vice versa.
-      const [genreBasedProducts, manualResult]: [
+      const [genreBasedProducts, manualResults]: [
         Product[] | undefined,
-        ManualRecommendationsResult | undefined,
+        ManualRecommendationsBySlug[] | undefined,
       ] = await Promise.all([
         fetchSanityDataClient(allRecommendedProductsQuery, {
           genreSlugs,
@@ -57,8 +70,8 @@ export default function RecommendedProducts() {
           console.error("Sanity fetch failed:", error);
           return undefined;
         }),
-        fetchSanityDataClient(productManualRecommendationsQuery, {
-          currentSlug,
+        fetchSanityDataClient(manualRecommendationsBySlugsQuery, {
+          slugs: cartSlugs,
         }).catch((error) => {
           console.error("Sanity fetch failed:", error);
           return undefined;
@@ -69,7 +82,7 @@ export default function RecommendedProducts() {
 
       setRecommendedProducts(
         mergeRecommendedProducts(
-          manualResult?.manualRecommendations,
+          orderManualRecommendations(manualResults, cartSlugs),
           genreBasedProducts
         )
       );
@@ -80,7 +93,7 @@ export default function RecommendedProducts() {
     return () => {
       isStale = true;
     };
-  }, [genreSlugs, currentSlug]);
+  }, [genreSlugs, currentSlug, cartSlugs]);
 
   // Filtered at render rather than at fetch time, so adding a suggestion to
   // the cart removes it immediately instead of triggering a refetch.

@@ -1,6 +1,27 @@
 import { Product } from "@/types/product";
+import type { ManualRecommendationsBySlug } from "@/lib/queries";
 
 type MaybeProducts = Array<Product | null | undefined> | null | undefined;
+
+/**
+ * Flattens the curated picks of several products into one list, following the
+ * given slug order rather than the order the query happened to return rows in
+ * — so on checkout the first cart item's picks lead.
+ *
+ * Nullish entries are left in place for `mergeRecommendedProducts` to drop.
+ */
+export function orderManualRecommendations(
+  results: ManualRecommendationsBySlug[] | null | undefined,
+  orderedSlugs: string[]
+): Array<Product | null | undefined> {
+  if (!results?.length) return [];
+
+  const bySlug = new Map(
+    results.map((result) => [result.slug, result.manualRecommendations ?? []])
+  );
+
+  return orderedSlugs.flatMap((slug) => bySlug.get(slug) ?? []);
+}
 
 /**
  * Merges manually curated recommendations with genre-derived ones: manual
