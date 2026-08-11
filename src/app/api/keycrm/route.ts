@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    // KeyCRM has no sandbox, so outside production we log the order instead of
+    // KeyCRM has no sandbox, so outside production we log the order instead of test
     // creating it. The synthetic id keeps the rest of the checkout flow intact:
     // it becomes orderNumber and is passed to the payment gateway as order_id.
     if (!isProduction) {
