@@ -1,3 +1,5 @@
+import { Product } from "@/types/product";
+
 // ---------------------------------------------------------------------------
 // Shared GROQ helpers
 // ---------------------------------------------------------------------------
@@ -32,6 +34,29 @@ const genreTitleProjection = `
       defined(genre)    => genre->name,
       null
     )`;
+
+// Card projection reused wherever a product needs to render as a recommendation
+// card (genre-based matches, manual recommendations).
+const recommendedProductCardProjection = `
+    "id": _id,
+    "slug": slug.current,
+    title,
+    author,
+    price,
+    discountPrice,
+    "mainImage": gallery[0].asset->url,
+    status,
+    isBestseller,
+    isNew,
+    isNationalCashback,
+    sku,
+    features[]{
+      "featureName": feature->name,
+      value
+    },
+    "categorySlug": category->slug.current,
+    "categoryTitle": category->title,
+    ${genresProjection}`;
 
 // ---------------------------------------------------------------------------
 // Queries
@@ -344,27 +369,29 @@ export const allRecommendedProductsQuery = `
          ))[@ in $genreSlugs]
        ) > 0
   ]{
-    "id": _id,
-    "slug": slug.current,
-    title,
-    author,
-    price,
-    discountPrice,
-    "mainImage": gallery[0].asset->url,
-    status,
-    isBestseller,
-    isNew,
-    isNationalCashback,
-    sku,
-    features[]{
-      "featureName": feature->name,
-      value
-    },
-    "categorySlug": category->slug.current,
-    "categoryTitle": category->title,
-    ${genresProjection}
+    ${recommendedProductCardProjection}
   }
 `;
+
+// Accepts $currentSlug (string). Fetches only the editor-curated
+// recommendations, kept separate from `productBySlugQuery` so the resolved
+// cards never ride along on the current product object — that object is
+// persisted to the cart and reviewed-products stores.
+export const productManualRecommendationsQuery = `
+  *[_type == "product" && slug.current == $currentSlug][0]{
+    "manualRecommendations": manualRecommendations[]->{
+      ${recommendedProductCardProjection}
+    }
+  }
+`;
+
+// Shape of `productManualRecommendationsQuery`, kept next to the query so the
+// projection alias and the property the components read stay tied together.
+// Null when no product matches the slug; entries are null for picks that no
+// longer resolve (the reference is weak, so the target can be removed).
+export type ManualRecommendationsResult = {
+  manualRecommendations: Array<Product | null> | null;
+} | null;
 
 export const promocodeByCodeQuery = `
   *[_type == "promocode" && code == $promocode][0]{

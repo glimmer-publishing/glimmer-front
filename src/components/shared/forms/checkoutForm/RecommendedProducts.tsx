@@ -3,10 +3,15 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { allRecommendedProductsQuery } from "@/lib/queries";
+import {
+  allRecommendedProductsQuery,
+  productManualRecommendationsQuery,
+  type ManualRecommendationsResult,
+} from "@/lib/queries";
 import { useCartStore } from "@/store/cartStore";
 import { fetchSanityDataClient } from "@/utils/fetchSanityDataClient";
 import { getProductGenreSlugs } from "@/utils/getProductGenreSlugs";
+import { mergeRecommendedProducts } from "@/utils/mergeRecommendedProducts";
 import { trackAddToCart } from "@/utils/ecommerceTracking";
 import { Product } from "@/types/product";
 import CheckoutSubTitle from "./CheckoutSubtitle";
@@ -32,35 +37,67 @@ export default function RecommendedProducts() {
   }, []);
 
   useEffect(() => {
-    if (!genreSlugs.length || !currentSlug) return;
+    if (!currentSlug) return;
 
-    const cartProductIds = new Set(cart.map((item) => item.product.id));
+    // The first cart item can change while this block is on screen, so drop
+    // the result of any run that has been superseded before it resolved.
+    let isStale = false;
 
     const loadRecommended = async () => {
-      try {
-        const products: Product[] = await fetchSanityDataClient(
-          allRecommendedProductsQuery,
-          { genreSlugs, currentSlug }
-        );
+      // Each query is caught on its own: a failure of the curated list should
+      // still leave the genre-based suggestions on screen, and vice versa.
+      const [genreBasedProducts, manualResult]: [
+        Product[] | undefined,
+        ManualRecommendationsResult | undefined,
+      ] = await Promise.all([
+        fetchSanityDataClient(allRecommendedProductsQuery, {
+          genreSlugs,
+          currentSlug,
+        }).catch((error) => {
+          console.error("Sanity fetch failed:", error);
+          return undefined;
+        }),
+        fetchSanityDataClient(productManualRecommendationsQuery, {
+          currentSlug,
+        }).catch((error) => {
+          console.error("Sanity fetch failed:", error);
+          return undefined;
+        }),
+      ]);
 
-        setRecommendedProducts(
-          products.filter((product) => !cartProductIds.has(product.id))
-        );
-      } catch (error) {
-        console.error("Sanity fetch failed:", error);
-      }
+      if (isStale) return;
+
+      setRecommendedProducts(
+        mergeRecommendedProducts(
+          manualResult?.manualRecommendations,
+          genreBasedProducts
+        )
+      );
     };
 
     loadRecommended();
-  }, [genreSlugs, currentSlug, cart]);
 
-  if (!recommendedProducts.length) return null;
+    return () => {
+      isStale = true;
+    };
+  }, [genreSlugs, currentSlug]);
+
+  // Filtered at render rather than at fetch time, so adding a suggestion to
+  // the cart removes it immediately instead of triggering a refetch.
+  const visibleProducts = useMemo(() => {
+    const cartProductIds = new Set(cart.map((item) => item.product.id));
+    return recommendedProducts
+      .filter((product) => !cartProductIds.has(product.id))
+      .slice(0, MAX_RECOMMENDED);
+  }, [recommendedProducts, cart]);
+
+  if (!visibleProducts.length) return null;
 
   return (
     <div className="py-3 px-2.5 md:p-6 mt-6 rounded-[12px] bg-main/40">
       <CheckoutSubTitle>Рекомендовані товари</CheckoutSubTitle>
       <ul className="flex flex-col gap-4">
-        {recommendedProducts.slice(0, MAX_RECOMMENDED).map((product) => (
+        {visibleProducts.map((product) => (
           <RecommendedItem
             key={product.id}
             product={product}
