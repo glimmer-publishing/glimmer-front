@@ -3,8 +3,8 @@ import { fadeInAnimation } from "@/utils/animationVariants";
 import Container from "../shared/container/Container";
 import { EMAIL_CLIENTS } from "@/constants/constants";
 
-const PHONE_DISPLAY = "+38 (077) 837-84-53";
-const PHONE_HREF = "tel:+380778378453";
+const PHONE_DISPLAY = "+38 (073) 919-25-23";
+const PHONE_HREF = "tel:+380739192523";
 const ADDRESS = "03179, м. Київ, вул. Ушакова Миколи, буд. 1-Д";
 
 const sections = [
