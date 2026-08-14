@@ -202,43 +202,29 @@
     }
   }
 
-  .genres .swiper-button-prev {
-    left: calc(50dvw - 88px - 20px) !important;
+  @media screen and (max-width: 1023.98px) {
+    .genres .swiper-button-prev {
+      left: calc(50dvw - 88px - 20px) !important;
 
-    @media screen and (min-width: 640px) {
-      left: calc(50dvw - 88px - 20px - (100vw - 640px) / 2) !important;
+      @media screen and (min-width: 640px) {
+        left: calc(50dvw - 88px - 20px - (100vw - 640px) / 2) !important;
+      }
+
+      @media screen and (min-width: 768px) {
+        left: calc(50dvw - 88px - 20px - (100vw - 768px) / 2) !important;
+      }
     }
 
-    @media screen and (min-width: 768px) {
-      left: calc(50dvw - 88px - 20px - (100vw - 768px) / 2) !important;
-    }
+    .genres .swiper-button-next {
+      right: calc(50dvw - 88px + 20px) !important;
 
-    @media screen and (min-width: 1024px) {
-      left: calc(50dvw - 112px - 50px - (100vw - 1024px) / 2) !important;
-    }
+      @media screen and (min-width: 640px) {
+        right: calc(50dvw - 88px + 20px + (100vw - 640px) / 2) !important;
+      }
 
-    @media screen and (min-width: 1280px) {
-      left: calc(50% - 112px) !important;
-    }
-  }
-
-  .genres .swiper-button-next {
-    right: calc(50dvw - 88px + 20px) !important;
-
-    @media screen and (min-width: 640px) {
-      right: calc(50dvw - 88px + 20px + (100vw - 640px) / 2) !important;
-    }
-
-    @media screen and (min-width: 768px) {
-      right: calc(50dvw - 88px + 20px + (100vw - 768px) / 2) !important;
-    }
-
-    @media screen and (min-width: 1024px) {
-      right: calc(50dvw - 112px + 50px + (100vw - 1024px) / 2) !important;
-    }
-
-    @media screen and (min-width: 1280px) {
-      right: calc(50% - 112px) !important;
+      @media screen and (min-width: 768px) {
+        right: calc(50dvw - 88px + 20px + (100vw - 768px) / 2) !important;
+      }
     }
   }
 
@@ -284,23 +270,17 @@
     background: url("/images/icons/arrowRightWhite.svg") center no-repeat;
   }
 
-  .genres .swiper-pagination {
-    left: -20px !important;
+  @media screen and (max-width: 1023.98px) {
+    .genres .swiper-pagination {
+      left: -20px !important;
 
-    @media screen and (min-width: 640px) {
-      left: calc(-20px - (100vw - 640px) / 2) !important;
-    }
+      @media screen and (min-width: 640px) {
+        left: calc(-20px - (100vw - 640px) / 2) !important;
+      }
 
-    @media screen and (min-width: 768px) {
-      left: calc(-20px - (100vw - 768px) / 2) !important;
-    }
-
-    @media screen and (min-width: 1024px) {
-      left: calc(-50px - (100vw - 1024px) / 2) !important;
-    }
-
-    @media screen and (min-width: 1280px) {
-      left: 0 !important;
+      @media screen and (min-width: 768px) {
+        left: calc(-20px - (100vw - 768px) / 2) !important;
+      }
     }
   }
 
