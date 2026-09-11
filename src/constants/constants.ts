@@ -5,9 +5,9 @@ export const socials = {
   facebook: "https://www.facebook.com",
 };
 
-export const TELEGRAM_NAME = "@publishingglimmer";
+export const TELEGRAM_NAME = "@glimmerhelp";
 
-export const TELEGRAM_URL = "https://t.me/publishingglimmer";
+export const TELEGRAM_URL = "https://t.me/glimmerhelp";
 
 export const TELEGRAM_URL_CHANNEL = "https://t.me/glimmerpublishing";
 
