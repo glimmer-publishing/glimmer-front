@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, Dispatch, SetStateAction } from "react";
 import ImageGallery from "react-image-gallery";
 import MainButton from "@/components/shared/buttons/MainButton";
 import Modal from "@/components/shared/modals/Modal";
@@ -18,27 +18,31 @@ import { trackAddToCart } from "@/utils/ecommerceTracking";
 interface ReadPassageProps {
   bookScreens: string[];
   currentProduct: Product;
+  isModalShown: boolean;
+  setIsModalShown: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function ReadPassage({
   bookScreens,
   currentProduct,
+  isModalShown,
+  setIsModalShown,
 }: ReadPassageProps) {
   const screenWidth = useScreenWidth();
   const isDesktop = screenWidth >= 768;
 
   const { addToCart } = useCartStore();
 
-  const [isReadPassageModalShown, setIsReadPassageModalShown] = useState(false);
-
   const [currentIndex, setCurrentIndex] = useState(0);
   const galleryRef = useRef<ImageGallery | null>(null);
 
-  const galleryItems = bookScreens.map((photo) => ({
+  const altPrefix = `Уривок книги: ${currentProduct.title}`;
+
+  const galleryItems = bookScreens.map((photo, index) => ({
     original: photo,
     thumbnail: photo,
-    originalAlt: "image",
-    thumbnailAlt: "thumbnail",
+    originalAlt: `${altPrefix}, сторінка ${index + 1}`,
+    thumbnailAlt: `${altPrefix}, мініатюра ${index + 1}`,
     thumbnailHeight: 48,
     thumbnailWidth: 48,
     originalClass:
@@ -60,7 +64,7 @@ export default function ReadPassage({
         variants={fadeInAnimation({ scale: 0.95, delay: 0.4 })}
       >
         <MainButton
-          onClick={() => setIsReadPassageModalShown(true)}
+          onClick={() => setIsModalShown(true)}
           variant="bordered"
           className="h-[45px]"
         >
@@ -69,8 +73,8 @@ export default function ReadPassage({
       </motion.div>
       <Modal
         headerTitle="Читати уривок"
-        isPopUpShown={isReadPassageModalShown}
-        setIsPopUpShown={setIsReadPassageModalShown}
+        isPopUpShown={isModalShown}
+        setIsPopUpShown={setIsModalShown}
       >
         <div className="book-screens w-full max-w-[320px] md:max-w-[580px] mx-auto lg:mx-0 overflow-visible">
           <ImageGallery
@@ -88,6 +92,7 @@ export default function ReadPassage({
             thumbnailPosition="left"
             startIndex={currentIndex}
             onSlide={handleSlide}
+            disableKeyDown={!isModalShown}
             renderLeftNav={(onClick, disabled) => (
               <button
                 type="button"
@@ -112,9 +117,7 @@ export default function ReadPassage({
             )}
           />
           <div className="fixed bottom-0 left-0 md:hidden w-full">
-            {isReadPassageModalShown && (
-              <MarqueeLine className="md:hidden mt-2.5 mb-4" />
-            )}
+            {isModalShown && <MarqueeLine className="md:hidden mt-2.5 mb-4" />}
             <div className="flex justify-between gap-4 px-5 w-full my-4">
               <FavoriteButton currentProduct={currentProduct} />
               <MainButton
@@ -131,9 +134,9 @@ export default function ReadPassage({
         </div>
       </Modal>
       <Backdrop
-        isVisible={isReadPassageModalShown}
+        isVisible={isModalShown}
         onClick={() => {
-          setIsReadPassageModalShown(false);
+          setIsModalShown(false);
         }}
       />
     </div>
