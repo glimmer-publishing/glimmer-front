@@ -411,4 +411,23 @@
   .image-gallery-content .image-gallery-slide .image-gallery-image {
     max-height: 100dvh !important;
   }
+
+  /* Swiper sets `touch-action: pan-y` on horizontal sliders, which disables the
+     browser's own pinch-zoom. The viewer keeps horizontal swipe but hands the
+     pinch back to the browser, so zooming behaves exactly as it does anywhere
+     else on the web. */
+  .image-viewer-swiper,
+  .image-viewer-swiper .swiper-wrapper {
+    touch-action: pan-y pinch-zoom !important;
+  }
+
+  /* swiper.css forces `display: block` on every slide, which defeats any flex
+     centering set from the component. Specificity cannot win here: this file is
+     inside `@layer utilities` and swiper.css is imported unlayered, and
+     unlayered rules beat layered ones outright. Only `!important` reverses that. */
+  .image-viewer-swiper .swiper-slide {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+  }
 }
