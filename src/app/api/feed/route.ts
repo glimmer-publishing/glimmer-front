@@ -14,7 +14,7 @@ type FeedProduct = {
   title: string;
   description?: string;
   price: number;
-  discountPrice?: number;
+  discountPrice?: number | null;
   status: "inStock" | "preOrder";
   preOrderShippingDate?: string;
   mainImage?: string;

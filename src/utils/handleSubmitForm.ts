@@ -11,7 +11,7 @@ import { CartItem } from "@/types/cartItem";
 import { Product } from "@/types/product";
 import { useRouter } from "next/navigation";
 import { sendDataToKeyCrm } from "./sendDataToKeyCrm";
-import { BasketOrder } from "@/hooks/useMonopayBasletOrder";
+import { getMonopayBasketOrder } from "@/hooks/useMonopayBasletOrder";
 import { PaymentOption } from "@/constants/enums";
 
 export const handleSubmitForm = async <T>(
@@ -21,8 +21,7 @@ export const handleSubmitForm = async <T>(
   setIsUnavailable: Dispatch<SetStateAction<boolean>>,
   setIsNotificationShown: Dispatch<SetStateAction<boolean>>,
   values: ValuesCheckoutFormType,
-  router: ReturnType<typeof useRouter>,
-  basketOrder: BasketOrder
+  router: ReturnType<typeof useRouter>
 ) => {
   const {
     clearCart,
@@ -158,7 +157,11 @@ export const handleSubmitForm = async <T>(
     return;
   }
 
+  // Everything below is built from the re-priced cart, so the order, the
+  // receipt and the MonoPay basket all agree with the amount charged - e.g. a
+  // scheduled discount that ended between opening checkout and submitting.
   const totalOrderSum = getCartTotal();
+  const basketOrder = getMonopayBasketOrder();
 
   const collectedOrderData = {
     orderDate,
@@ -175,7 +178,7 @@ export const handleSubmitForm = async <T>(
     address: values.address.trim(),
     payment: values.payment.trim(),
     message: values.message.trim(),
-    cart,
+    cart: updatedCartItems,
     promoCode,
     promoDiscountPercent,
     promoPublishers,
@@ -184,7 +187,7 @@ export const handleSubmitForm = async <T>(
   };
 
   // Формуємо список товарів з переносами на новий рядок для Telegram
-  const orderedListProducts = cart
+  const orderedListProducts = updatedCartItems
     .map((cartItem) => {
       const quantityLine = ` - ${cartItem.quantity} шт.`;
       const authorLine = cartItem.product?.author

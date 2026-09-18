@@ -6,7 +6,7 @@ export type Product = {
   title: string;
   author: string;
   price: number;
-  discountPrice?: number;
+  discountPrice?: number | null;
   mainImage: string;
   status: "inStock" | "preOrder";
   isBestseller: boolean;

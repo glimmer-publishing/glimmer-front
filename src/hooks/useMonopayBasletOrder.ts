@@ -22,12 +22,11 @@ export interface BasketOrderItem {
 
 export type BasketOrder = BasketOrderItem[];
 
-export const useMonopayBasketOrder = (): BasketOrder => {
-  const {
-    cart,
-
-    getItemFinalPrice,
-  } = useCartStore.getState();
+// Not a React hook - it reads the store at call time. Call it only after the
+// cart has been re-priced against Sanity, so the basket lines match the amount
+// charged (see handleSubmitForm).
+export const getMonopayBasketOrder = (): BasketOrder => {
+  const { cart, getItemFinalPrice } = useCartStore.getState();
 
   const basketFromCartItems = cart.map((item) => {
     const itemBasePrice = getItemFinalPrice(item.product.id);
