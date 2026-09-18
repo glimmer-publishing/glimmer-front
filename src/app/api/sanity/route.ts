@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { client } from "@/lib/sanityClient";
+import { sanityFetch } from "@/lib/sanityClient";
 
 export async function POST(req: NextRequest) {
   const { query, params } = await req.json();
@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const data = await client.fetch(query, params || {});
+    const data = await sanityFetch(query, params || {});
     return NextResponse.json(data);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {

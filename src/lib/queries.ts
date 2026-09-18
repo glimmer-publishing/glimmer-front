@@ -22,6 +22,26 @@ const genresProjection = `
 const genreTitleProjection = `
     "genreTitle": genres[0]->name`;
 
+// A discount is only live inside its scheduled window. Both bounds are
+// inclusive and either may be absent, in which case that side is unbounded -
+// so a product with a discount price and no dates is on sale permanently,
+// which is how every product behaved before scheduling existed.
+//
+// $today is the Kyiv calendar date, injected by sanityFetch in
+// src/lib/sanityClient.ts. Date-only strings sort chronologically, so plain
+// string comparison is correct here. The Studio list caption repeats this rule
+// (glimmer-adm/schemaTypes/product.ts, preview.prepare) - keep the two in sync.
+const activeDiscountFilter = `defined(discountPrice)
+    && (!defined(discountDateFrom) || discountDateFrom <= $today)
+    && (!defined(discountDateTo) || discountDateTo >= $today)`;
+
+// Projected instead of a bare `discountPrice`, so an out-of-window product
+// arrives with discountPrice null. Every consumer on the storefront already
+// treats "no discount price" as "no discount", so nothing downstream has to
+// know that scheduling exists.
+const activeDiscountProjection = `
+    "discountPrice": select(${activeDiscountFilter} => discountPrice)`;
+
 // Card projection reused wherever a product needs to render as a recommendation
 // card (genre-based matches, manual recommendations).
 const recommendedProductCardProjection = `
@@ -30,7 +50,7 @@ const recommendedProductCardProjection = `
     title,
     author,
     price,
-    discountPrice,
+    ${activeDiscountProjection},
     "mainImage": gallery[0].asset->url,
     status,
     isBestseller,
@@ -77,7 +97,7 @@ export const allCategoriesAndProductsQuery = `
     title,
     author,
     price,
-    discountPrice,
+    ${activeDiscountProjection},
     "mainImage": gallery[0].asset->url,
     status,
     isBestseller,
@@ -129,7 +149,7 @@ export const homepageCombinedQuery = `{
     title,
     author,
     price,
-    discountPrice,
+    ${activeDiscountProjection},
     "mainImage": gallery[0].asset->url,
     status,
     isBestseller,
@@ -167,13 +187,13 @@ export const homepageCombinedQuery = `{
 
 export const allDiscountedProductsQuery = `
 {
-  "allProducts": *[_type == "product" && defined(discountPrice)]{
+  "allProducts": *[_type == "product" && ${activeDiscountFilter}]{
     "id": _id,
     "slug": slug.current,
     title,
     author,
     price,
-    discountPrice,
+    ${activeDiscountProjection},
     "mainImage": gallery[0].asset->url,
     status,
     isBestseller,
@@ -209,7 +229,7 @@ export const allProductsQuery = `
     title,
     author,
     price,
-    discountPrice,
+    ${activeDiscountProjection},
     "mainImage": gallery[0].asset->url,
     status,
     isBestseller,
@@ -252,7 +272,7 @@ export const allProductsByCategoryQuery = `
       author,
       "slug": slug.current,
       price,
-      discountPrice,
+      ${activeDiscountProjection},
       "mainImage": gallery[0].asset->url,
       "reviews": reviews[]{
         author,
@@ -285,7 +305,7 @@ export const allProductsByCategoryQuery = `
     author,
     "slug": slug.current,
     price,
-    discountPrice,
+    ${activeDiscountProjection},
     description,
     "mainImage": gallery[0].asset->url,
     "reviews": reviews[]{
@@ -316,7 +336,7 @@ export const productBySlugQuery = `
     title,
     author,
     price,
-    discountPrice,
+    ${activeDiscountProjection},
     "mainImage": gallery[0].asset->url,
     status,
     isBestseller,
@@ -402,7 +422,7 @@ export const allProductsForFeedQuery = `
   title,
   "description": coalesce(description, title),
   price,
-  discountPrice,
+  ${activeDiscountProjection},
   status,
   preOrderShippingDate,
   "mainImage": gallery[0].asset->url,
@@ -419,7 +439,7 @@ export const allProductsForFeedQuery = `
 export const productsByIds = `*[_type == "product" && _id in $ids]{
   "id": _id,
   price,
-  discountPrice,
+  ${activeDiscountProjection},
   status,
   preOrderShippingDate,
   isNationalCashback,
@@ -432,7 +452,7 @@ export const productsByAuthorQuery = `
   title,
   author,
   price,
-  discountPrice,
+  ${activeDiscountProjection},
   "mainImage": gallery[0].asset->url,
   status,
   isBestseller,

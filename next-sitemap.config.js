@@ -18,6 +18,9 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL;
 // on Node's type stripping (Node 23+ only). Keep the two in sync.
 const isProduction = process.env.VERCEL_ENV === "production";
 
+// Unlike sanityFetch in src/lib/sanityClient.ts, this does not inject $today,
+// so product queries using the discount-window fragments from
+// src/lib/queries.ts cannot run here. It only needs slugs.
 export const fetchSanityDataServer = async (query, params = {}) => {
   try {
     return await client.fetch(query, params);

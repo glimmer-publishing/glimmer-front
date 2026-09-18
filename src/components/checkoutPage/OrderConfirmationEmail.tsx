@@ -19,7 +19,7 @@ type CartItem = {
     title: string;
     author?: string;
     price: number;
-    discountPrice?: number;
+    discountPrice?: number | null;
     mainImage?: string;
     preOrderShippingDate?: string;
     status?: "inStock" | "preOrder";
