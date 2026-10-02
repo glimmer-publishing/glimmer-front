@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, Dispatch, SetStateAction } from "react";
+import { useState, useRef, useEffect, Dispatch, SetStateAction } from "react";
 import ImageGallery from "react-image-gallery";
 import MainButton from "@/components/shared/buttons/MainButton";
 import Modal from "@/components/shared/modals/Modal";
@@ -14,6 +14,11 @@ import { useCartStore } from "@/store/cartStore";
 import * as motion from "motion/react-client";
 import { fadeInAnimation } from "@/utils/animationVariants";
 import { trackAddToCart } from "@/utils/ecommerceTracking";
+import {
+  PRODUCT_IMAGE_QUALITY,
+  sanityImageSrcSet,
+  sanityImageUrl,
+} from "@/utils/sanityImage";
 
 interface ReadPassageProps {
   bookScreens: string[];
@@ -38,9 +43,26 @@ export default function ReadPassage({
 
   const altPrefix = `Уривок книги: ${currentProduct.title}`;
 
+  /* Modal keeps its children mounted while closed, so the gallery is only
+     rendered once the modal has been opened - no passage page is fetched
+     before that. Latched: once opened it stays mounted and keeps its
+     position. */
+  const [hasBeenOpened, setHasBeenOpened] = useState(false);
+  useEffect(() => {
+    if (isModalShown) setHasBeenOpened(true);
+  }, [isModalShown]);
+
   const galleryItems = bookScreens.map((photo, index) => ({
-    original: photo,
-    thumbnail: photo,
+    original: sanityImageUrl(photo, {
+      width: 842,
+      quality: PRODUCT_IMAGE_QUALITY,
+    }),
+    srcSet: sanityImageSrcSet(photo, [480, 640, 842, 1080]),
+    sizes: "(min-width: 768px) 421px, 320px",
+    thumbnail: sanityImageUrl(photo, {
+      width: 96,
+      quality: PRODUCT_IMAGE_QUALITY,
+    }),
     originalAlt: `${altPrefix}, сторінка ${index + 1}`,
     thumbnailAlt: `${altPrefix}, мініатюра ${index + 1}`,
     thumbnailHeight: 48,
@@ -77,45 +99,48 @@ export default function ReadPassage({
         setIsPopUpShown={setIsModalShown}
       >
         <div className="book-screens w-full max-w-[320px] md:max-w-[580px] mx-auto lg:mx-0 overflow-visible">
-          <ImageGallery
-            ref={(ref) => {
-              galleryRef.current = ref;
-            }}
-            items={galleryItems}
-            showPlayButton={false}
-            showFullscreenButton={false}
-            showThumbnails={isDesktop}
-            useBrowserFullscreen={false}
-            showBullets={false}
-            slideOnThumbnailOver={true}
-            disableThumbnailScroll={false}
-            thumbnailPosition="left"
-            startIndex={currentIndex}
-            onSlide={handleSlide}
-            disableKeyDown={!isModalShown}
-            renderLeftNav={(onClick, disabled) => (
-              <button
-                type="button"
-                className="cursor-pointer rotate-90 absolute -left-4 lg:-left-6 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full will-change-transform 
-            active:scale-95 active:text-main xl:hover:text-main transition duration-300 ease-in-out"
-                onClick={onClick}
-                disabled={disabled}
-              >
-                <ArrowIcon className="size-6 lg:size-10" />
-              </button>
-            )}
-            renderRightNav={(onClick, disabled) => (
-              <button
-                type="button"
-                className="cursor-pointer -rotate-90 absolute -right-4 lg:-right-6 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full will-change-transform 
-            active:scale-95 active:text-main xl:hover:text-main transition duration-300 ease-in-out"
-                onClick={onClick}
-                disabled={disabled}
-              >
-                <ArrowIcon className="size-6 lg:size-10" />
-              </button>
-            )}
-          />
+          {hasBeenOpened ? (
+            <ImageGallery
+              ref={(ref) => {
+                galleryRef.current = ref;
+              }}
+              items={galleryItems}
+              lazyLoad
+              showPlayButton={false}
+              showFullscreenButton={false}
+              showThumbnails={isDesktop}
+              useBrowserFullscreen={false}
+              showBullets={false}
+              slideOnThumbnailOver={true}
+              disableThumbnailScroll={false}
+              thumbnailPosition="left"
+              startIndex={currentIndex}
+              onSlide={handleSlide}
+              disableKeyDown={!isModalShown}
+              renderLeftNav={(onClick, disabled) => (
+                <button
+                  type="button"
+                  className="cursor-pointer rotate-90 absolute -left-4 lg:-left-6 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full will-change-transform 
+              active:scale-95 active:text-main xl:hover:text-main transition duration-300 ease-in-out"
+                  onClick={onClick}
+                  disabled={disabled}
+                >
+                  <ArrowIcon className="size-6 lg:size-10" />
+                </button>
+              )}
+              renderRightNav={(onClick, disabled) => (
+                <button
+                  type="button"
+                  className="cursor-pointer -rotate-90 absolute -right-4 lg:-right-6 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full will-change-transform 
+              active:scale-95 active:text-main xl:hover:text-main transition duration-300 ease-in-out"
+                  onClick={onClick}
+                  disabled={disabled}
+                >
+                  <ArrowIcon className="size-6 lg:size-10" />
+                </button>
+              )}
+            />
+          ) : null}
           <div className="fixed bottom-0 left-0 md:hidden w-full">
             {isModalShown && <MarqueeLine className="md:hidden mt-2.5 mb-4" />}
             <div className="flex justify-between gap-4 px-5 w-full my-4">

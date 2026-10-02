@@ -10,6 +10,7 @@ import ArrowIcon from "@/components/shared/icons/ArrowIcon";
 import CrossIcon from "@/components/shared/icons/CrossIcon";
 import IconButton from "@/components/shared/buttons/IconButton";
 import { TAP_TOLERANCE_PX } from "@/hooks/useImageTap";
+import { PRODUCT_IMAGE_QUALITY, sanityImageUrl } from "@/utils/sanityImage";
 
 interface ImageViewerProps {
   photos: string[];
@@ -124,8 +125,15 @@ export default function ImageViewer({
             >
               {photos.map((photo, index) => (
                 <SwiperSlide key={`${photo}-${index}`}>
+                  {/* One 2000px copy, no srcset: the browser picks a srcset
+                      candidate once and never re-picks on pinch zoom, and
+                      this <img> has no CSS width, so a descriptor larger than
+                      a small original would also shrink it on screen. */}
                   <img
-                    src={photo}
+                    src={sanityImageUrl(photo, {
+                      width: 2000,
+                      quality: PRODUCT_IMAGE_QUALITY,
+                    })}
                     alt={`${altPrefix}, фото ${index + 1}`}
                     draggable={false}
                     loading="lazy"

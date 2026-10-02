@@ -1,9 +1,10 @@
 import MainButton from "@/components/shared/buttons/MainButton";
 import Container from "@/components/shared/container/Container";
-import Image from "next/image";
+import { getImageProps } from "next/image";
 import Link from "next/link";
 import * as motion from "motion/react-client";
 import { fadeInAnimation } from "@/utils/animationVariants";
+import { BANNER_IMAGE_QUALITY, sanityImageLoader } from "@/utils/sanityImage";
 
 interface HeroSlideProps {
   banner: {
@@ -19,39 +20,50 @@ interface HeroSlideProps {
     };
     order: number;
   };
+  /* First banner on the page: fetched eagerly at high priority. */
+  isPriority?: boolean;
+  /* The slide on screen or next to it: fetched now rather than lazily, so
+     autoplay or a swipe never lands on a blank slide. */
+  isEager?: boolean;
 }
 
-export default function HeroSlide({ banner }: HeroSlideProps) {
+export default function HeroSlide({
+  banner,
+  isPriority = false,
+  isEager = false,
+}: HeroSlideProps) {
   const { title, description, imageMob, imageTab, imageDesk, button } = banner;
+
+  /* One <picture>, never three CSS-toggled <Image>s: the browser downloads
+     only the variant whose media query matches. Do not use `priority` on
+     <Image> here - its preload carries no media query and fetches every
+     variant regardless of viewport. */
+  const common = {
+    alt: "hero banner",
+    fill: true,
+    sizes: "100vw",
+    loader: sanityImageLoader,
+    quality: BANNER_IMAGE_QUALITY,
+    // getImageProps does not turn `priority` into a fetch priority on its own.
+    fetchPriority: isPriority ? ("high" as const) : undefined,
+    loading: isPriority || isEager ? ("eager" as const) : ("lazy" as const),
+  };
+  const {
+    props: { srcSet: deskSrcSet },
+  } = getImageProps({ ...common, src: imageDesk });
+  const {
+    props: { srcSet: tabSrcSet },
+  } = getImageProps({ ...common, src: imageTab });
+  const { props: mobProps } = getImageProps({ ...common, src: imageMob });
+
   return (
     <div className="relative flex z-10 w-dvw pt-[235px] lg:pt-[155px] pb-[116px] lg:pb-[103px] overflow-hidden h-full min-h-[500px] lg:min-h-[550px]">
-      <Image
-        src={imageMob}
-        alt="hero banner"
-        fill
-        sizes="100vw"
-        unoptimized
-        priority
-        className="sm:hidden -z-10 object-cover"
-      />
-      <Image
-        src={imageTab}
-        alt="hero banner"
-        fill
-        sizes="100vw"
-        unoptimized
-        priority
-        className="hidden sm:block lg:hidden -z-10 object-cover"
-      />
-      <Image
-        src={imageDesk}
-        alt="hero banner"
-        fill
-        sizes="100vw"
-        unoptimized
-        priority
-        className="hidden lg:block -z-10 object-cover"
-      />
+      <picture>
+        <source media="(min-width: 1024px)" srcSet={deskSrcSet} sizes="100vw" />
+        <source media="(min-width: 640px)" srcSet={tabSrcSet} sizes="100vw" />
+        {/* src, srcSet and fill styles come from getImageProps. */}
+        <img {...mobProps} alt={mobProps.alt} className="-z-10 object-cover" />
+      </picture>
       <Container
         className={`flex min-h-full flex-1 ${button.position === "bottomLeft" ? "flex-col justify-between" : button.position === "bottomRight" ? "flex-col justify-between" : "flex-col-reverse justify-between"}`}
       >

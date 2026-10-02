@@ -8,6 +8,11 @@ import ArrowIcon from "@/components/shared/icons/ArrowIcon";
 import ImageViewer from "@/components/shared/imageViewer/ImageViewer";
 import * as motion from "motion/react-client";
 import { fadeInAnimation } from "@/utils/animationVariants";
+import {
+  PRODUCT_IMAGE_QUALITY,
+  sanityImageSrcSet,
+  sanityImageUrl,
+} from "@/utils/sanityImage";
 
 interface ImagePickerProps {
   photos: string[];
@@ -31,9 +36,22 @@ export default function ImagePicker({
   const altPrefix = `Обкладинка: ${productTitle}`;
   const imageTapHandlers = useImageTap(() => setIsViewerShown(true));
 
+  /* The gallery box (.image-gallery-image in globals.css) is a fixed portrait
+     box with object-fit: cover, so a wider photo is drawn at the box height.
+     `sizes` therefore declares the height, which is never too small. The
+     fullscreen viewer gets the raw photos and sizes them itself. */
   const galleryItems = photos.map((photo, index) => ({
-    original: photo,
-    thumbnail: photo,
+    original: sanityImageUrl(photo, {
+      width: 810,
+      quality: PRODUCT_IMAGE_QUALITY,
+    }),
+    srcSet: sanityImageSrcSet(photo, [480, 810, 1200]),
+    sizes:
+      "(min-width: 1280px) 560px, (min-width: 1024px) 456px, (min-width: 768px) 488px, 440px",
+    thumbnail: sanityImageUrl(photo, {
+      width: 96,
+      quality: PRODUCT_IMAGE_QUALITY,
+    }),
     originalAlt: `${altPrefix}, фото ${index + 1}`,
     thumbnailAlt: `${altPrefix}, мініатюра ${index + 1}`,
     thumbnailHeight: 48,
@@ -62,6 +80,7 @@ export default function ImagePicker({
             galleryRef.current = ref;
           }}
           items={galleryItems}
+          lazyLoad
           showPlayButton={false}
           showFullscreenButton={false}
           showThumbnails={isDesktop}

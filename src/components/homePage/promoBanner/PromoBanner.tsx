@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import * as motion from "motion/react-client";
 import { fadeInAnimation } from "@/utils/animationVariants";
+import { BANNER_IMAGE_QUALITY, sanityImageLoader } from "@/utils/sanityImage";
 
 interface PromoBanner {
   banner: HomepageBanner;
@@ -18,6 +19,11 @@ export default function PromoBanner({
 }: PromoBanner) {
   const { imageSmall, imageLarge, link } = banner;
 
+  /* Full container width below md, half of it from md; the container caps at
+     1280px minus padding. The variant hidden by CSS is lazy, so it is never
+     fetched. */
+  const sizes = "(min-width: 1280px) 590px, (min-width: 768px) 50vw, 100vw";
+
   const content = (
     <>
       <Image
@@ -25,7 +31,9 @@ export default function PromoBanner({
         alt="promo banner"
         width={320}
         height={268}
-        unoptimized
+        loader={sanityImageLoader}
+        quality={BANNER_IMAGE_QUALITY}
+        sizes={sizes}
         className="w-full h-auto xs:hidden"
       />
       <Image
@@ -33,7 +41,9 @@ export default function PromoBanner({
         alt="promo banner"
         width={320}
         height={268}
-        unoptimized
+        loader={sanityImageLoader}
+        quality={BANNER_IMAGE_QUALITY}
+        sizes={sizes}
         className="w-full h-auto hidden xs:block"
       />
     </>

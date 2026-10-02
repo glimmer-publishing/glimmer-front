@@ -1,5 +1,6 @@
 import { fetchSanityDataServer } from "@/utils/fetchSanityDataServer";
 import { allProductsForFeedQuery } from "@/lib/queries";
+import { sanityImageUrl } from "@/utils/sanityImage";
 
 export const revalidate = 3600;
 
@@ -46,13 +47,6 @@ function isValidGtin13(value: string): boolean {
     .reduce((acc, d, i) => acc + parseInt(d) * (i % 2 === 0 ? 1 : 3), 0);
   const checkDigit = (10 - (sum % 10)) % 10;
   return checkDigit === parseInt(digits[12]);
-}
-
-function optimizeImageUrl(url: string): string {
-  // Resize via Sanity's CDN image transformation params — keeps the larger
-  // dimension at 1000px so Google's crawler loads images quickly
-  const separator = url.includes("?") ? "&" : "?";
-  return `${url}${separator}w=1000&fit=max&auto=format`;
 }
 
 function formatAvailabilityDate(date: string): string {
@@ -112,8 +106,9 @@ function buildItem(product: FeedProduct): string {
   lines.push(`      <g:link>${escapeXml(link)}</g:link>`);
 
   if (mainImage) {
+    // 1000px wide is plenty for Merchant Center and keeps its crawler fast.
     lines.push(
-      `      <g:image_link>${escapeXml(optimizeImageUrl(mainImage))}</g:image_link>`
+      `      <g:image_link>${escapeXml(sanityImageUrl(mainImage, { width: 1000 }))}</g:image_link>`
     );
   }
 
