@@ -379,6 +379,14 @@
     }
   }
 
+  /* react-image-gallery sets `touch-action: none` on the slides, which also
+     kills the browser's pinch-zoom. The passage pages need to be zoomable on a
+     phone, so hand the pinch back to the browser - same approach as
+     .image-viewer-swiper. Horizontal swipes are still handled by the gallery. */
+  .book-screens .image-gallery-slides {
+    touch-action: pan-y pinch-zoom !important;
+  }
+
   .book-screens .image-gallery-image {
     width: 320px !important;
     height: 457px !important;
