@@ -13,6 +13,7 @@ import { sortProducts } from "@/utils/sortProducts";
 import NoItems from "./NoItems";
 import * as motion from "motion/react-client";
 import { fadeInAnimation } from "@/utils/animationVariants";
+import { BANNER_IMAGE_QUALITY, sanityImageLoader } from "@/utils/sanityImage";
 
 interface CatalogProps {
   catalogBanner?: { imageCatalog: string; link?: string };
@@ -125,7 +126,8 @@ export default function Catalog({
                     alt="banner"
                     width={240}
                     height={619}
-                    unoptimized
+                    loader={sanityImageLoader}
+                    quality={BANNER_IMAGE_QUALITY}
                   />
                 </motion.div>
               </Link>
@@ -148,6 +150,8 @@ export default function Catalog({
                   alt="banner"
                   width={240}
                   height={619}
+                  loader={sanityImageLoader}
+                  quality={BANNER_IMAGE_QUALITY}
                 />
               </motion.div>
             )

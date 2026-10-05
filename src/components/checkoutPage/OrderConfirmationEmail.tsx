@@ -13,6 +13,7 @@ import {
   Button,
 } from "@react-email/components";
 import * as React from "react";
+import { sanityImageUrl } from "@/utils/sanityImage";
 
 type CartItem = {
   product: {
@@ -110,7 +111,7 @@ export function OrderConfirmationEmail({
                   {mainImage && (
                     <Column style={{ width: "80px" }}>
                       <Img
-                        src={mainImage}
+                        src={sanityImageUrl(mainImage, { width: 160 })}
                         alt={title}
                         width="80"
                         height="80"

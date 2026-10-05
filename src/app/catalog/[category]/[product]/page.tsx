@@ -9,6 +9,7 @@ import type { Metadata } from "next";
 import { getDefaultMetadata } from "@/utils/getDefaultMetadata";
 import Breadcrumbs from "@/components/shared/breadcrumbs/Breadcrumbs";
 import { getProductGenreSlugs } from "@/utils/getProductGenreSlugs";
+import { sanityImageUrl } from "@/utils/sanityImage";
 
 interface ProductPageProps {
   params: Promise<{ category: string; product: string }>;
@@ -37,12 +38,19 @@ export async function generateMetadata({
       currentProduct?.description || getDefaultMetadata().description,
     openGraph: {
       images: [
-        {
-          url: currentProduct?.mainImage || "/opengraph-image.jpg",
-          width: 1200,
-          height: 630,
-          alt: "Glimmer",
-        },
+        // A sized copy of the cover, with no declared size (covers are
+        // portrait); the site-wide fallback's real size is declared.
+        currentProduct?.mainImage
+          ? {
+              url: sanityImageUrl(currentProduct.mainImage, { width: 1200 }),
+              alt: "Glimmer",
+            }
+          : {
+              url: "/opengraph-image.jpg",
+              width: 1200,
+              height: 638,
+              alt: "Glimmer",
+            },
       ],
     },
   };
