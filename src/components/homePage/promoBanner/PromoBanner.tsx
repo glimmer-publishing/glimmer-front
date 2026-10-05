@@ -4,7 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import * as motion from "motion/react-client";
 import { fadeInAnimation } from "@/utils/animationVariants";
-import { BANNER_IMAGE_QUALITY, sanityImageLoader } from "@/utils/sanityImage";
+import {
+  PROMO_BANNER_IMAGE_QUALITY,
+  sanityImageLoader,
+} from "@/utils/sanityImage";
 
 interface PromoBanner {
   banner: HomepageBanner;
@@ -19,10 +22,12 @@ export default function PromoBanner({
 }: PromoBanner) {
   const { imageSmall, imageLarge, link } = banner;
 
-  /* Full container width below md, half of it from md; the container caps at
-     1280px minus padding. The variant hidden by CSS is lazy, so it is never
-     fetched. */
-  const sizes = "(min-width: 1280px) 590px, (min-width: 768px) 50vw, 100vw";
+  /* Rendered at full container width below md and half of it from md (the
+     container caps at 1280px minus padding). `sizes` declares twice that, so
+     the text is downscaled from a larger file the way it was from the
+     original - in practice retina screens get the full-resolution original.
+     The variant hidden by CSS is lazy, so it is never fetched. */
+  const sizes = "(min-width: 1280px) 1180px, (min-width: 768px) 100vw, 200vw";
 
   const content = (
     <>
@@ -32,7 +37,7 @@ export default function PromoBanner({
         width={320}
         height={268}
         loader={sanityImageLoader}
-        quality={BANNER_IMAGE_QUALITY}
+        quality={PROMO_BANNER_IMAGE_QUALITY}
         sizes={sizes}
         className="w-full h-auto xs:hidden"
       />
@@ -42,7 +47,7 @@ export default function PromoBanner({
         width={320}
         height={268}
         loader={sanityImageLoader}
-        quality={BANNER_IMAGE_QUALITY}
+        quality={PROMO_BANNER_IMAGE_QUALITY}
         sizes={sizes}
         className="w-full h-auto hidden xs:block"
       />

@@ -14,7 +14,11 @@ import type { ImageLoader } from "next/image";
 //   once). Do not add a global `images.loaderFile`: it would also reroute
 //   those and every local /public image.
 
-export const BANNER_IMAGE_QUALITY = 85;
+// Banners (hero, promo, catalog) carry text, which compression smears first.
+export const BANNER_IMAGE_QUALITY = 90;
+// Promo banners are mostly thin lettering at a small display size; even q90
+// at display resolution reads as soft there.
+export const PROMO_BANNER_IMAGE_QUALITY = 95;
 export const PRODUCT_IMAGE_QUALITY = 80;
 
 const SANITY_CDN_HOST = "cdn.sanity.io";
@@ -50,6 +54,16 @@ export const sanityImageUrl = (
   parsed.searchParams.set("auto", "format");
 
   return parsed.toString();
+};
+
+// Width / height of the original, read from the asset filename Sanity
+// generates (`<hash>-<width>x<height>.<ext>`). Null for anything else.
+export const sanityImageAspectRatio = (url: string): number | null => {
+  const match = url.match(/-(\d+)x(\d+)\.[a-z0-9]+(?:\?|$)/i);
+  if (!match) return null;
+  const width = Number(match[1]);
+  const height = Number(match[2]);
+  return width > 0 && height > 0 ? width / height : null;
 };
 
 // For next/image's `loader` prop. Applied per component rather than through
