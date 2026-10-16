@@ -6,6 +6,7 @@ import {
   listVariants,
   listItemVariants,
 } from "@/utils/animationVariants";
+import { PaymentOption } from "@/constants/enums";
 
 export default function PaymentMethods() {
   const paymentMethods = [
@@ -15,14 +16,9 @@ export default function PaymentMethods() {
       icon: "/images/deliveryPage/paymentMethods/card.svg",
     },
     {
-      title: "Оплата карткою «Національний кешбек» та «єПідтримка»",
+      title: PaymentOption.NATIONAL_CASHBACK,
       description:
-        "Оплата карткою з використанням програм «Національний кешбек» та «єПідтримка» безпосередньо на сайті.",
-      icon: "/images/deliveryPage/paymentMethods/card.svg",
-    },
-    {
-      title: "Оплата програмою «єКнига» (Дія.Картка)",
-      description: "Оплата програмою «єКнига» безпосередньо на сайті.",
+        "Оплата коштами програм «єКнига» (Дія.Картка), «Національний кешбек» та «єПідтримка» безпосередньо на сайті. Доступна, якщо всі книги в замовленні беруть участь у програмі.",
       icon: "/images/deliveryPage/paymentMethods/card.svg",
     },
     {

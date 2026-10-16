@@ -26,7 +26,10 @@ export default function PaymentBlock() {
   }, [values.deliveryService, setFieldValue]);
 
   useEffect(() => {
-    if (values.payment === PaymentOption.HUTKO && !isNationalCashbackAvailable) {
+    if (
+      values.payment === PaymentOption.NATIONAL_CASHBACK &&
+      !isNationalCashbackAvailable
+    ) {
       setFieldValue("payment", "Оплата картою онлайн Visa, Mastercard");
     }
   }, [isNationalCashbackAvailable, values.payment, setFieldValue]);
@@ -41,15 +44,10 @@ export default function PaymentBlock() {
       {isNationalCashbackAvailable && (
         <RadioButtonInput
           fieldName="payment"
-          label={PaymentOption.HUTKO}
-          value={PaymentOption.HUTKO}
+          label={PaymentOption.NATIONAL_CASHBACK}
+          value={PaymentOption.NATIONAL_CASHBACK}
         />
       )}
-      <RadioButtonInput
-        fieldName="payment"
-        label={"Оплата програмою «єКнига» (Дія.Картка)"}
-        value="Оплата програмою «єКнига» (Дія.Картка)"
-      />
       {(values.deliveryService === "Укрпошта" || hasPreorderProducts) ? null : (
         <RadioButtonInput
           fieldName="payment"
