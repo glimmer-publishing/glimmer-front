@@ -148,10 +148,10 @@ export const handleSubmitForm = async <T>(
     updatedCartItems.length > 0 &&
     updatedCartItems.every((item) => item.product.isNationalCashback === true);
 
-  if (values.payment === PaymentOption.HUTKO && !allNkAvailable) {
+  if (values.payment === PaymentOption.NATIONAL_CASHBACK && !allNkAvailable) {
     setFieldError(
       "payment",
-      "Оплата «Національний кешбек» доступна лише коли всі товари в кошику підтримують цю програму"
+      "Оплата програмою «ЄКнига», Нацкешбек, ЄПідтримка доступна лише коли всі товари в кошику підтримують цю програму"
     );
     setIsLoading(false);
     return;
@@ -273,8 +273,7 @@ export const handleSubmitForm = async <T>(
     if (
       updatedCollectedOrderData.payment ===
       "Оплата картою онлайн Visa, Mastercard" ||
-      updatedCollectedOrderData.payment ===
-        "Оплата програмою «єКнига» (Дія.Картка)"
+      updatedCollectedOrderData.payment === PaymentOption.NATIONAL_CASHBACK
     ) {
       try {
         const response = await fetch("/api/monopay/invoice", {
@@ -284,8 +283,9 @@ export const handleSubmitForm = async <T>(
             amount: totalOrderSum * 100,
             orderNumber, // додаємо айді замовлення KeyCRM
             basketOrder,
-            isNationalCashback: updatedCollectedOrderData.payment ===
-              "Оплата програмою «єКнига» (Дія.Картка)",
+            isNationalCashback:
+              updatedCollectedOrderData.payment ===
+              PaymentOption.NATIONAL_CASHBACK,
           }),
         });
 
@@ -310,32 +310,6 @@ export const handleSubmitForm = async <T>(
       }
     }
 
-    if (updatedCollectedOrderData.payment === PaymentOption.HUTKO) {
-      try {
-        const response = await fetch("/api/hutko/checkout", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            amount: totalOrderSum * 100, // Hutko приймає суму в копійках
-            orderNumber,
-            orderDescription: `Замовлення #${orderNumber}`,
-          }),
-        });
-
-        const data = await response.json();
-
-        if (response.ok && data.checkoutUrl) {
-          if (typeof window !== "undefined") {
-            window.location.href = data.checkoutUrl;
-          }
-        } else {
-          console.error("Hutko error", data);
-        }
-      } catch (err) {
-        console.error("Hutko error", err);
-      }
-    }
-
     //Очищаємо форму
     resetForm();
     //Очищаємо кошик
@@ -348,8 +322,7 @@ export const handleSubmitForm = async <T>(
     {
       if (
         collectedOrderData.payment !== "Оплата картою онлайн Visa, Mastercard" &&
-        collectedOrderData.payment !== "Оплата програмою «єКнига» (Дія.Картка)" &&
-        collectedOrderData.payment !== PaymentOption.HUTKO
+        collectedOrderData.payment !== PaymentOption.NATIONAL_CASHBACK
       )
         router.push("/confirmation");
     }
