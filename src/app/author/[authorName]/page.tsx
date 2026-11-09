@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Breadcrumbs from "@/components/shared/breadcrumbs/Breadcrumbs";
 import MarqueeLine from "@/components/shared/marquee/MarqueeLine";
 import TelegramCTA from "@/components/shared/telegramCTA/TelegramCTA";
-import AuthorCatalog from "@/components/authorPage/AuthorCatalog";
+import ListingCatalog from "@/components/shared/listingCatalog/ListingCatalog";
 import { productsByAuthorQuery } from "@/lib/queries";
 import { fetchSanityDataServer } from "@/utils/fetchSanityDataServer";
 import { Product } from "@/types/product";
@@ -49,7 +49,7 @@ export default async function AuthorPage({ params }: AuthorPageProps) {
   return (
     <div className="pt-[85px]">
       <Breadcrumbs crumbs={crumbs} />
-      <AuthorCatalog authorName={decodedAuthor} products={products} />
+      <ListingCatalog title={decodedAuthor} products={products} />
       <MarqueeLine />
       <TelegramCTA />
     </div>
