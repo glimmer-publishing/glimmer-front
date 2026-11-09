@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { Product } from "@/types/product";
 import Container from "@/components/shared/container/Container";
 import FiltersSortPanel from "@/components/shared/filtersSortPanel/FiltersSortPanel";
+import { SortOption } from "@/components/shared/filtersSortPanel/Sorting";
 import CatalogList from "@/components/catalogPage/CatalogList";
 import NoItems from "@/components/catalogPage/NoItems";
 import { filterProducts } from "@/utils/filterProducts";
@@ -11,18 +12,24 @@ import { sortProducts } from "@/utils/sortProducts";
 import * as motion from "motion/react-client";
 import { fadeInAnimation } from "@/utils/animationVariants";
 
-interface AuthorCatalogProps {
-  authorName: string;
+/* A titled product list with the filter/sort panel - the author and series
+   pages. */
+interface ListingCatalogProps {
+  title: string;
   products: Product[];
+  defaultSort?: string;
+  extraSortOptions?: SortOption[];
 }
 
-export default function AuthorCatalog({
-  authorName,
+export default function ListingCatalog({
+  title,
   products,
-}: AuthorCatalogProps) {
+  defaultSort = "rating",
+  extraSortOptions,
+}: ListingCatalogProps) {
   const searchParams = useSearchParams();
   const filterParam = searchParams.get("filter") || "all";
-  const sortParam = searchParams.get("sort") || "rating";
+  const sortParam = searchParams.get("sort") || defaultSort;
 
   const filteredProducts = useMemo(
     () => filterProducts(products, filterParam),
@@ -45,9 +52,12 @@ export default function AuthorCatalog({
           variants={fadeInAnimation({ y: 10 })}
           className="text-[22px] lg:text-[32px] font-semibold leading-[120%] mb-4 lg:mb-6"
         >
-          {authorName}
+          {title}
         </motion.h1>
-        <FiltersSortPanel />
+        <FiltersSortPanel
+          defaultSort={defaultSort}
+          extraOptions={extraSortOptions}
+        />
         <div className="pt-8 lg:pt-10">
           {sortedProducts.length ? (
             <CatalogList currentProducts={sortedProducts} />

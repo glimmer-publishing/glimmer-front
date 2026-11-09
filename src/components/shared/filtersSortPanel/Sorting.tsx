@@ -6,27 +6,45 @@ import ArrowIcon from "../icons/ArrowIcon";
 import * as motion from "motion/react-client";
 import { fadeInAnimation } from "@/utils/animationVariants";
 
-export default function Sorting() {
+export interface SortOption {
+  title: string;
+  value: string;
+}
+
+const baseSortingOptions: SortOption[] = [
+  { title: "За найвищим рейтингом", value: "rating" },
+  { title: "За збільшенням ціни", value: "price-ascending" },
+  { title: "За зменшенням ціни", value: "price-descending" },
+];
+
+export interface SortingProps {
+  /* Page-specific options, listed before the standard ones. */
+  extraOptions?: SortOption[];
+  /* What is selected when the URL has no ?sort. Must match the default the
+     page sorts by, or the dropdown shows one order and the grid another. */
+  defaultSort?: string;
+}
+
+export default function Sorting({
+  extraOptions = [],
+  defaultSort = "rating",
+}: SortingProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const sortingOptions = [
-    { title: "За найвищим рейтингом", value: "rating" },
-    { title: "За збільшенням ціни", value: "price-ascending" },
-    { title: "За зменшенням ціни", value: "price-descending" },
-  ];
+  const sortingOptions = [...extraOptions, ...baseSortingOptions];
 
-  const initialSort = searchParams.get("sort") || "rating";
-  const initialSelected =
-    sortingOptions.find((opt) => opt.value === initialSort) ||
+  /* Derived from the URL on every render rather than held in state, so it
+     follows browser back/forward and always matches what the grid sorts by. */
+  const currentSort = searchParams.get("sort") || defaultSort;
+  const selected =
+    sortingOptions.find((opt) => opt.value === currentSort) ||
     sortingOptions[0];
 
   const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState(initialSelected);
 
-  const handleOptionClick = (option: { value: string; title: string }) => {
-    setSelected(option);
+  const handleOptionClick = (option: SortOption) => {
     setIsOpen(false);
 
     const newParams = new URLSearchParams(Array.from(searchParams.entries()));

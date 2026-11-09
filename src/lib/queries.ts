@@ -445,8 +445,9 @@ export const productsByIds = `*[_type == "product" && _id in $ids]{
   isNationalCashback,
 }`;
 
-export const productsByAuthorQuery = `
-*[_type == "product" && author == $authorName] | order(title asc) {
+/* Card projection for the author and series listings. `features` is needed by
+   the series page to sort by position in series. */
+const listingCardProjection = `{
   "id": _id,
   "slug": slug.current,
   title,
@@ -472,5 +473,17 @@ export const productsByAuthorQuery = `
   "categorySlug": category->slug.current,
   "categoryTitle": category->title,
   ${genresProjection}
-}
+}`;
+
+export const productsByAuthorQuery = `
+*[_type == "product" && author == $authorName] | order(title asc) ${listingCardProjection}
+`;
+
+/* Series is a "Серія" characteristic row, not a field - see
+   src/utils/getSeriesInfo.ts. Pass SERIES_FEATURE as $seriesFeature. */
+export const productsBySeriesQuery = `
+*[
+  _type == "product" &&
+  count(features[feature->name == $seriesFeature && value == $seriesName]) > 0
+] | order(title asc) ${listingCardProjection}
 `;

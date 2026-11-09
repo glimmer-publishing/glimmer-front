@@ -36,6 +36,10 @@ export const GET_DYNAMIC_PAGES_SLUGS = `{
   "products": *[_type == "product"] {
     "slug": slug.current,
     "categorySlug": category->slug.current,
+     },
+  // Feature name mirrors SERIES_FEATURE in src/utils/getSeriesInfo.ts.
+  "series": *[_type == "product"] {
+    "names": features[feature->name == "Серія"].value,
      }
 }`;
 
@@ -55,11 +59,23 @@ async function getDynamicPages() {
     (product) => `/catalog/${product.categorySlug}/${product.slug}`
   );
 
+  // Same URL shape as getSeriesHref in src/utils/getSeriesInfo.ts. Names are
+  // not trimmed, because the series page matches the stored value exactly.
+  const seriesNames = new Set(
+    (res?.series || [])
+      .flatMap((product) => product.names || [])
+      .filter((name) => typeof name === "string" && name.trim())
+  );
+  const seriesPages = [...seriesNames].map(
+    (name) => `/series/${encodeURIComponent(name)}`
+  );
+
   return [
     ...articlesPages,
     ...categoriesPages,
     "/catalog/promo",
     ...productsPages,
+    ...seriesPages,
   ];
 }
 
