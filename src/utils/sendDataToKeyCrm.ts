@@ -22,6 +22,7 @@ export async function sendDataToKeyCrm(data: OrderData) {
     branchNumber,
     address,
     deliveryService,
+    deliveryType,
     message,
     promoCode,
     payment,
@@ -36,6 +37,12 @@ export async function sendDataToKeyCrm(data: OrderData) {
     sku: item.product.sku,
   }));
 
+  // Укрпошта адресує відділення та поштомати поштовим індексом, тому в KeyCRM
+  // номер має потрапляти в поле «Індекс», а не в пункт отримання (адресу).
+  const isUkrposhtaPickup =
+    deliveryService === "Укрпошта" &&
+    (deliveryType === "Відділення" || deliveryType === "Поштомат");
+
   // Базовий об'єкт замовлення
   const baseOrderData = {
     source_id: 1,
@@ -49,7 +56,9 @@ export async function sendDataToKeyCrm(data: OrderData) {
       shipping_service: deliveryService,
       shipping_address_city: city,
       shipping_secondary_line: address,
-      shipping_receive_point: branchNumber,
+      ...(isUkrposhtaPickup
+        ? { shipping_address_zip: branchNumber }
+        : { shipping_receive_point: branchNumber }),
     },
     products,
     // Додаємо UTM-дані, якщо вони є
