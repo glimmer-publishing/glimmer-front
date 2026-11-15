@@ -47,6 +47,7 @@ export default function AddToCartAnimation({
           src={image}
           alt="product image"
           fill
+          sizes="70px"
           className="w-full h-full object-cover"
         />
       </div>

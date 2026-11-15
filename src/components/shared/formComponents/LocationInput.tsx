@@ -21,6 +21,8 @@ interface LocationInputProps {
   placeholder: string;
   options: Option[];
   isLoading?: boolean;
+  /* Shown in the open dropdown when there is nothing to pick. */
+  emptyMessage?: string;
   isDropDownOpen: boolean;
   setIsDropDownOpen: Dispatch<SetStateAction<boolean>>;
   onSelect: (option: Option) => void;
@@ -32,6 +34,7 @@ export default function LocationInput({
   placeholder,
   options,
   isLoading = false,
+  emptyMessage,
   setIsDropDownOpen,
   isDropDownOpen,
   onSelect,
@@ -97,6 +100,9 @@ export default function LocationInput({
         scrollbar scrollbar-w-[2px] scrollbar-h-[2px] scrollbar-thumb-rounded-full scrollbar-track-rounded-full 
         scrollbar-thumb-main popup-scroll`}
       >
+        {!isLoading && options.length === 0 && emptyMessage ? (
+          <li className="p-2 text-black/50">{emptyMessage}</li>
+        ) : null}
         {options.map((item: Option) => (
           <li
             key={item.key}

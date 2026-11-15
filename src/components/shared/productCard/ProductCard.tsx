@@ -95,6 +95,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           src={mainImage || ""}
           alt={title}
           fill
+          sizes="(min-width: 1024px) 280px, 200px"
           className="object-contain will-change-transform xl:group-hover:scale-[105%] transition duration-700 ease-in-out"
         />
       </Link>

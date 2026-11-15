@@ -12,14 +12,12 @@ import { Category } from "@/types/category";
 import BurgerMenu from "./burgerMenu/BurgerMenu";
 import Cart from "./Cart";
 import { headerVariants, fadeInAnimation } from "@/utils/animationVariants";
-import { Product } from "@/types/product";
 
 interface HeaderProps {
   categories: Category[];
-  products: Product[];
 }
 
-export default function Header({ categories, products }: HeaderProps) {
+export default function Header({ categories }: HeaderProps) {
   const [isOpenCatalogMenu, setIsOpenCatalogMenu] = useState(false);
   const [isOpenBurgerMenu, setIsOpenBurgerMenu] = useState(false);
   const [isCartModalOpened, setIsCartModalOpened] = useState(false);
@@ -81,7 +79,6 @@ export default function Header({ categories, products }: HeaderProps) {
             <Search
               isOpen={isOpenSearch}
               setIsOpen={setIsOpenSearch}
-              products={products}
             />
             <Link href="/favorites" className="group">
               <HeartIcon className="text-white xl:group-hover:text-main group-focus-visible:text-main group-active:text-main transition duration-300 ease-in-out" />

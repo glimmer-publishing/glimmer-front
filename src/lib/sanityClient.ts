@@ -16,7 +16,26 @@ const client = createClient({
 // The client itself is deliberately not exported so no call can bypass this.
 // $today is set after the caller's params, so a browser request through
 // /api/sanity cannot override which prices it is offered.
+//
+// Caching is opt-in at this level: `revalidate` and `tags` store the result in
+// Next's fetch data cache, keyed by query and params. Without them the fetch
+// is uncached, which is what /api/sanity relies on for current checkout
+// prices. Server rendering goes through fetchSanityDataServer, which always
+// passes them.
+export interface SanityFetchOptions {
+  revalidate?: number;
+  tags?: string[];
+}
+
 export const sanityFetch = (
   query: string,
-  params: Record<string, unknown> = {}
-) => client.fetch(query, { ...params, today: getKyivDate() });
+  params: Record<string, unknown> = {},
+  { revalidate, tags }: SanityFetchOptions = {}
+) =>
+  client.fetch(
+    query,
+    { ...params, today: getKyivDate() },
+    revalidate === undefined && tags === undefined
+      ? {}
+      : { next: { revalidate, tags } }
+  );

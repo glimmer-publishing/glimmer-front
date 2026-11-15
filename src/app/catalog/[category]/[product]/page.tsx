@@ -2,6 +2,7 @@ import RecommendedProducts from "@/components/productPage/recommendedProducts/Re
 import ReviewedProducts from "@/components/productPage/reviewedProducts/ReviewedProducts";
 import MarqueeLine from "@/components/shared/marquee/MarqueeLine";
 import TelegramCTA from "@/components/shared/telegramCTA/TelegramCTA";
+import { notFound } from "next/navigation";
 import { fetchSanityDataServer } from "@/utils/fetchSanityDataServer";
 import { productBySlugQuery } from "@/lib/queries";
 import ProductInfo from "@/components/productPage/productInfo/ProductInfo";
@@ -15,25 +16,36 @@ interface ProductPageProps {
   params: Promise<{ category: string; product: string }>;
 }
 
+/* No paths at build time, but declaring the function makes the route ISR:
+   each book is rendered on its first visit and then served from cache until
+   /api/revalidate or the hourly fallback invalidates it. */
+export function generateStaticParams(): { category: string; product: string }[] {
+  return [];
+}
+
+/* Shared by generateMetadata and the page; Next dedupes the identical cached
+   fetch within one render. Throws on a Sanity error, so a failed rebuild
+   keeps the cached page rather than caching a 404. */
+const getProduct = (productSlug: string) =>
+  fetchSanityDataServer(productBySlugQuery, { productSlug });
+
 export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {
   const { product } = await params;
 
-  const currentProduct = await fetchSanityDataServer(productBySlugQuery, {
-    productSlug: product,
-  });
+  const currentProduct = await getProduct(product);
+
+  if (!currentProduct) return getDefaultMetadata();
 
   const currentPrice =
-    currentProduct?.discountPrice &&
-    currentProduct?.discountPrice < currentProduct?.price
-      ? currentProduct?.discountPrice
-      : currentProduct?.price;
+    currentProduct.discountPrice &&
+    currentProduct.discountPrice < currentProduct.price
+      ? currentProduct.discountPrice
+      : currentProduct.price;
 
   return {
-    title:
-      `${currentProduct?.title}, ${currentProduct?.author}. Купити книгу за ${currentPrice} грн` ||
-      getDefaultMetadata().title,
+    title: `${currentProduct.title}, ${currentProduct.author}. Купити книгу за ${currentPrice} грн`,
     description:
       currentProduct?.description || getDefaultMetadata().description,
     openGraph: {
@@ -59,11 +71,11 @@ export async function generateMetadata({
 export default async function ProductPage({ params }: ProductPageProps) {
   const { product } = await params;
 
-  const currentProduct = await fetchSanityDataServer(productBySlugQuery, {
-    productSlug: product,
-  });
+  const currentProduct = await getProduct(product);
 
-  if (!currentProduct) return null;
+  if (!currentProduct) {
+    notFound();
+  }
 
   const { categorySlug, categoryTitle, genreTitle, genreSlug, genres, title, slug } =
     currentProduct;

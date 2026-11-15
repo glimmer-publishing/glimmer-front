@@ -7,7 +7,9 @@ import {
   allProductsByCategoryQuery,
   allProductsQuery,
 } from "@/lib/queries";
+import { notFound } from "next/navigation";
 import { fetchSanityDataServer } from "@/utils/fetchSanityDataServer";
+import { connection } from "next/server";
 
 interface CategoryPageProps {
   params: Promise<{ category: string }>;
@@ -32,13 +34,24 @@ const staticCatalogPages: Partial<
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { category } = await params;
 
+  // Rendered per request: the list for the current ?sort/filter/page/
+  // subcategory is in the server HTML from the first paint. Sanity data still
+  // comes from the tagged data cache, so this costs a render, not a query.
+  await connection();
+
   const staticPage = staticCatalogPages[category];
 
+  // Throws on a Sanity error, so an outage shows an error page rather than
+  // telling visitors (and crawlers) the page does not exist.
   const res = staticPage
     ? await fetchSanityDataServer(staticPage.query)
     : await fetchSanityDataServer(allProductsByCategoryQuery, {
         categorySlug: category,
       });
+
+  if (!staticPage && !res?.categorySlug) {
+    notFound();
+  }
 
   const currentCategory = staticPage
     ? { label: staticPage.label, href: `/catalog/${category}` }

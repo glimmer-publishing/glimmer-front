@@ -16,7 +16,12 @@ export default async function ContactsPage() {
     },
   ];
 
-  const allInstagramPosts = await fetchSanityDataServer(allInstagramPostsQuery);
+  // Optional section: a Sanity failure hides the posts, not the page.
+  const allInstagramPosts = await fetchSanityDataServer(
+    allInstagramPostsQuery,
+    {},
+    { throwError: false }
+  );
 
   return (
     <div className="pt-[85px]">

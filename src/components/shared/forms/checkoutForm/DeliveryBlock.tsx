@@ -1,16 +1,17 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useFormikContext, ErrorMessage } from "formik";
 import CustomizedInput from "../../formComponents/CustomizedInput";
 import RadioButtonInput from "../../formComponents/RadioButtonInput";
 import LocationInput from "../../formComponents/LocationInput";
-import { City } from "@/types/city";
 import { getNPBranches } from "@/utils/getNpBranches";
+import { searchNPCities } from "@/utils/getNPCities";
 
-interface DeliveryBlockProps {
-  citiesNovaPost: City[];
-}
+/* Nova Poshta is searched once the customer has typed this many characters,
+   and this long after they stop typing. */
+const CITY_SEARCH_MIN_LENGTH = 2;
+const CITY_SEARCH_DEBOUNCE_MS = 300;
 
 interface Warehouse {
   Description: string;
@@ -33,11 +34,22 @@ const deliveryServices = [
   },
 ];
 
-export default function DeliveryBlock({ citiesNovaPost }: DeliveryBlockProps) {
+export default function DeliveryBlock() {
   const [isCitiesDropDownOpen, setIsCitiesDropDownOpen] = useState(false);
   const [filteredCities, setFilteredCities] = useState<
     { key: string; description: string }[]
   >([]);
+  const [isLoadingCities, setIsLoadingCities] = useState(false);
+  const [hasCitySearchResult, setHasCitySearchResult] = useState(false);
+  // The city picked from the dropdown, with the Ref its branches are loaded
+  // by. Only a picked city counts: LocationInput clears unpicked text on blur.
+  const [selectedCity, setSelectedCity] = useState<{
+    description: string;
+    ref: string;
+  } | null>(null);
+  const citySearchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Increments per search; a response for an older search is ignored.
+  const citySearchId = useRef(0);
   const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
   const [isLoadingWarehouses, setIsLoadingWarehouses] = useState(false);
   const [filteredWarehouses, setFilteredWarehouses] = useState<
@@ -69,15 +81,12 @@ export default function DeliveryBlock({ citiesNovaPost }: DeliveryBlockProps) {
       return;
     }
 
-    // Знаходимо Ref для нового міста
-    const selectedCity = citiesNovaPost.find(
-      (c) => c.Description === values.city
-    );
-    if (!selectedCity) return;
+    // Відділення вантажимо лише для міста, обраного зі списку
+    if (!selectedCity || selectedCity.description !== values.city) return;
 
     setIsLoadingWarehouses(true);
 
-    getNPBranches(selectedCity.Ref)
+    getNPBranches(selectedCity.ref)
       .then((data) => setWarehouses(data))
       .finally(() => setIsLoadingWarehouses(false));
 
@@ -85,7 +94,21 @@ export default function DeliveryBlock({ citiesNovaPost }: DeliveryBlockProps) {
     setFieldValue("branchNumber", "");
     setFilteredWarehouses([]);
     setIsWarehousesDropDownOpen(false);
-  }, [values.city, citiesNovaPost, setFieldValue]);
+  }, [values.city, selectedCity, setFieldValue]);
+
+  const cancelCitySearch = () => {
+    if (citySearchTimer.current) clearTimeout(citySearchTimer.current);
+    citySearchTimer.current = null;
+    citySearchId.current += 1;
+    setIsLoadingCities(false);
+  };
+
+  useEffect(
+    () => () => {
+      if (citySearchTimer.current) clearTimeout(citySearchTimer.current);
+    },
+    []
+  );
 
   useEffect(() => {
     if (!values.deliveryService) return;
@@ -96,7 +119,9 @@ export default function DeliveryBlock({ citiesNovaPost }: DeliveryBlockProps) {
     setFieldValue("address", "");
 
     // Скидаємо локальні стейти
-
+    cancelCitySearch();
+    setSelectedCity(null);
+    setHasCitySearchResult(false);
     setWarehouses([]);
     setFilteredCities([]);
     setFilteredWarehouses([]);
@@ -108,25 +133,35 @@ export default function DeliveryBlock({ citiesNovaPost }: DeliveryBlockProps) {
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     handleChange(e);
-    const inputValue = e.target.value.trim().toLowerCase();
+    const inputValue = e.target.value.trim();
 
-    if (inputValue.length > 0) {
-      const filtered = citiesNovaPost
-        .filter((city) => {
-          const cityName = city.Description.split("(")[0].trim().toLowerCase();
-          return cityName.startsWith(inputValue);
-        })
-        .map((city) => ({
-          key: city.Ref,
-          description: city.Description,
-        }));
+    cancelCitySearch();
+    setHasCitySearchResult(false);
 
-      setFilteredCities(filtered);
-      setIsCitiesDropDownOpen(true);
-    } else {
+    if (inputValue.length < CITY_SEARCH_MIN_LENGTH) {
       setFilteredCities([]);
       setIsCitiesDropDownOpen(false);
+      return;
     }
+
+    const searchId = citySearchId.current;
+    setIsLoadingCities(true);
+    setIsCitiesDropDownOpen(true);
+
+    citySearchTimer.current = setTimeout(() => {
+      searchNPCities(inputValue).then((cities) => {
+        if (searchId !== citySearchId.current) return;
+
+        setFilteredCities(
+          cities.map((city) => ({
+            key: city.Ref,
+            description: city.Description,
+          }))
+        );
+        setHasCitySearchResult(true);
+        setIsLoadingCities(false);
+      });
+    }, CITY_SEARCH_DEBOUNCE_MS);
   };
 
   const onWarehousesInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -235,10 +270,19 @@ export default function DeliveryBlock({ citiesNovaPost }: DeliveryBlockProps) {
                 fieldName="city"
                 placeholder={"Назва населеного пункту"}
                 options={filteredCities}
+                isLoading={isLoadingCities}
+                emptyMessage={
+                  hasCitySearchResult ? "Нічого не знайдено" : undefined
+                }
                 isDropDownOpen={isCitiesDropDownOpen}
                 setIsDropDownOpen={setIsCitiesDropDownOpen}
                 onChange={onCitiesLocationInputChange}
                 onSelect={(city) => {
+                  cancelCitySearch();
+                  setSelectedCity({
+                    description: city.description,
+                    ref: city.key,
+                  });
                   setFieldValue("city", city.description);
                   setIsCitiesDropDownOpen(false);
                 }}

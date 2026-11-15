@@ -58,6 +58,7 @@ export default function DeliveryConditions() {
                 src="/images/deliveryPage/deliveryConditions/imageOne.webp"
                 alt="parcel"
                 fill
+                sizes="(min-width: 768px) 50vw, 100vw"
                 className="object-cover"
               />
             </motion.div>
@@ -174,6 +175,7 @@ export default function DeliveryConditions() {
                           src={icon}
                           alt={title}
                           fill
+                          sizes="24px"
                           className="object-contain"
                         />
                       </div>
@@ -199,6 +201,7 @@ export default function DeliveryConditions() {
                 src="/images/deliveryPage/deliveryConditions/imageTwo.webp"
                 alt="parcel"
                 fill
+                sizes="(min-width: 768px) 50vw, 100vw"
                 className="object-cover"
               />
             </motion.div>
