@@ -18,6 +18,7 @@ export default function AboutInfo() {
             src="/images/aboutPage/aboutInfo/imageOne.webp"
             alt="background"
             fill
+            sizes="(min-width: 768px) 50vw, 100vw"
             className="object-cover"
           />
         </motion.div>
@@ -79,6 +80,7 @@ export default function AboutInfo() {
                   src="/images/aboutPage/aboutInfo/imageTwo.webp"
                   alt="background"
                   fill
+                  sizes="50vw"
                   className="object-cover"
                 />
               </motion.div>
@@ -94,6 +96,7 @@ export default function AboutInfo() {
                   src="/images/aboutPage/aboutInfo/imageThree.webp"
                   alt="background"
                   fill
+                  sizes="50vw"
                   className="object-cover"
                 />
               </motion.div>
@@ -115,6 +118,7 @@ export default function AboutInfo() {
               src="/images/aboutPage/aboutInfo/imageFour.webp"
               alt="background"
               fill
+              sizes="(min-width: 768px) 50vw, 100vw"
               className="object-cover"
             />
           </motion.div>
@@ -131,6 +135,7 @@ export default function AboutInfo() {
                 src="/images/aboutPage/aboutInfo/imageTwo.webp"
                 alt="background"
                 fill
+                sizes="160px"
                 className="object-cover"
               />
             </motion.div>
@@ -146,6 +151,7 @@ export default function AboutInfo() {
                 src="/images/aboutPage/aboutInfo/imageThree.webp"
                 alt="background"
                 fill
+                sizes="160px"
                 className="object-cover"
               />
             </motion.div>
@@ -181,6 +187,7 @@ export default function AboutInfo() {
               src="/images/aboutPage/aboutInfo/imageFour.webp"
               alt="background"
               fill
+              sizes="100vw"
               className="object-cover"
             />
           </motion.div>

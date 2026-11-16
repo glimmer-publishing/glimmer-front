@@ -79,45 +79,30 @@ export const allInstagramPostsQuery = `
   }
 `;
 
-export const allCategoriesAndProductsQuery = `
-{
-  "categories": *[_type == "category"]{
-    "id": _id,
-    title,
+export const allCategoriesQuery = `
+*[_type == "category"]{
+  "id": _id,
+  title,
+  "slug": slug.current,
+  order,
+  genres[]-> | order(order asc){
+    "title": name,
     "slug": slug.current,
-    order,
-    genres[]-> | order(order asc){
-      "title": name,
-      "slug": slug.current,
-      order
-    }
-  },
-  "products": *[_type == "product"]{
-    "slug": slug.current,
-    title,
-    author,
-    price,
-    ${activeDiscountProjection},
-    "mainImage": gallery[0].asset->url,
-    status,
-    isBestseller,
-    isNew,
-    isNationalCashback,
-    sku,
-    preOrderShippingDate,
-    features[]{
-      "featureName": feature->name,
-      value
-    },
-    "reviews": reviews[]{
-      author,
-      rating,
-      text
-    },
-    "categorySlug": category->slug.current,
-    "categoryTitle": category->title,
-    ${genresProjection}
+    order
   }
+}
+`;
+
+// Header search: only what a result row shows and links to. No prices, so
+// it does not depend on $today.
+export const searchProductsQuery = `
+*[_type == "product"]{
+  sku,
+  title,
+  author,
+  "mainImage": gallery[0].asset->url,
+  "slug": slug.current,
+  "categorySlug": category->slug.current
 }
 `;
 

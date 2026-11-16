@@ -4,15 +4,12 @@ import { useState } from "react";
 import NotificationPopUp from "../shared/pop-ups/NotitficationPopUp";
 import Backdrop from "../shared/backdrop/Backdrop";
 import CheckoutForm from "../shared/forms/checkoutForm/CheckoutForm";
-import { City } from "@/types/city";
 
 interface CheckoutFormWithNotificationsProps {
-  citiesNovaPost: City[];
   className?: string;
 }
 
 export default function CheckoutFormWithNotifications({
-  citiesNovaPost,
   className,
 }: CheckoutFormWithNotificationsProps) {
   const [isUnavailable, setIsUnavailable] = useState(false);
@@ -26,7 +23,6 @@ export default function CheckoutFormWithNotifications({
         setIsUnavailable={setIsUnavailable}
         setIsNotificationShown={setIsNotificationShown}
         className={className}
-        citiesNovaPost={citiesNovaPost}
       />
 
       <NotificationPopUp

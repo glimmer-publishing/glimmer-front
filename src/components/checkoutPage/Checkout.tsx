@@ -2,13 +2,7 @@ import Container from "../shared/container/Container";
 import PageTitle from "../shared/titles/PageTitle";
 import SectionDescription from "../shared/sectionDescription/SectionDescription";
 import CheckoutFormWithNotifications from "./CheckoutFormWithNotifications";
-import { City } from "@/types/city";
-
-interface CheckoutProps {
-  citiesNovaPost: City[];
-}
-
-export default function Checkout({ citiesNovaPost }: CheckoutProps) {
+export default function Checkout() {
   return (
     <section className="lg:pb-10">
       <Container>
@@ -19,7 +13,7 @@ export default function Checkout({ citiesNovaPost }: CheckoutProps) {
             дорозі!
           </SectionDescription>
         </div>
-        <CheckoutFormWithNotifications citiesNovaPost={citiesNovaPost} />
+        <CheckoutFormWithNotifications />
       </Container>
     </section>
   );

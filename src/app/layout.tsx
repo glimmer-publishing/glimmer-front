@@ -1,4 +1,6 @@
-export const revalidate = 60;
+// Fallback only: pages are revalidated on demand when content is published
+// (see src/app/api/revalidate). Keep in sync with SANITY_DATA_REVALIDATE.
+export const revalidate = 3600;
 
 import { Montserrat } from "next/font/google";
 import "./globals.css";
@@ -6,7 +8,7 @@ import "react-image-gallery/styles/css/image-gallery.css";
 import Header from "@/components/shared/header/Header";
 import Footer from "@/components/shared/footer/Footer";
 import { fetchSanityDataServer } from "@/utils/fetchSanityDataServer";
-import { allCategoriesAndProductsQuery } from "@/lib/queries";
+import { allCategoriesQuery } from "@/lib/queries";
 import { getDefaultMetadata } from "@/utils/getDefaultMetadata";
 import GoogleBaseTag from "@/components/shared/gtm/GoogleBaseTag";
 import GoogleTagManagerScript from "@/components/shared/gtm/GoogleTagManagerScript";
@@ -31,7 +33,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const result = await fetchSanityDataServer(allCategoriesAndProductsQuery);
+  // Categories only: this lands in every page's HTML. Header search loads its
+  // product list from /api/search-products when it is first opened.
+  // Throws on a Sanity error, so a failed rebuild keeps the cached page
+  // instead of caching one with an empty catalog menu.
+  const categories = await fetchSanityDataServer(allCategoriesQuery);
 
   return (
     <html lang="uk" className="scroll-smooth antialiased">
@@ -49,7 +55,7 @@ export default async function RootLayout({
       >
         {isProduction && <GoogleTagManagerNoScript gtmId={GTM_ID} />}
         <UtmTracker />
-        <Header categories={result?.categories} products={result?.products} />
+        <Header categories={categories} />
         <main className="flex-1">{children}</main>
         <Footer />
       </body>

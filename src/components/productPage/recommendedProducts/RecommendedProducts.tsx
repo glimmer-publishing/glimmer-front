@@ -28,13 +28,17 @@ export default async function RecommendedProducts({
     Product[] | undefined,
     ManualRecommendationsBySlug[] | undefined,
   ] = await Promise.all([
-    fetchSanityDataServer(allRecommendedProductsQuery, {
-      genreSlugs,
-      currentSlug,
-    }),
-    fetchSanityDataServer(manualRecommendationsBySlugsQuery, {
-      slugs: [currentSlug],
-    }),
+    // Optional section: a Sanity failure hides recommendations, not the book.
+    fetchSanityDataServer(
+      allRecommendedProductsQuery,
+      { genreSlugs, currentSlug },
+      { throwError: false }
+    ),
+    fetchSanityDataServer(
+      manualRecommendationsBySlugsQuery,
+      { slugs: [currentSlug] },
+      { throwError: false }
+    ),
   ]);
 
   const recommendedProducts = mergeRecommendedProducts(

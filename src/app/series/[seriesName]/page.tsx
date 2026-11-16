@@ -5,6 +5,7 @@ import TelegramCTA from "@/components/shared/telegramCTA/TelegramCTA";
 import ListingCatalog from "@/components/shared/listingCatalog/ListingCatalog";
 import { productsBySeriesQuery } from "@/lib/queries";
 import { fetchSanityDataServer } from "@/utils/fetchSanityDataServer";
+import { connection } from "next/server";
 import { Product } from "@/types/product";
 import type { Metadata } from "next";
 import { getDefaultMetadata } from "@/utils/getDefaultMetadata";
@@ -64,6 +65,13 @@ export default async function SeriesPage({ params }: SeriesPageProps) {
     notFound();
   }
 
+  // Rendered per request: the list for the current ?sort/filter/page/
+  // subcategory is in the server HTML from the first paint. Sanity data still
+  // comes from the tagged data cache, so this costs a render, not a query.
+  await connection();
+
+  // Throws on a Sanity error, so an outage shows an error page rather than
+  // telling visitors (and crawlers) the page does not exist.
   const products: Product[] = await fetchSanityDataServer(
     productsBySeriesQuery,
     { seriesName: name, seriesFeature: SERIES_FEATURE }

@@ -150,11 +150,13 @@ function buildItem(product: FeedProduct): string {
 }
 
 export async function GET() {
+  // Failures throw rather than return a 500: Next caches whatever Response the
+  // handler returns, while a thrown error keeps serving the previous feed.
   const products: FeedProduct[] | undefined =
     await fetchSanityDataServer(allProductsForFeedQuery);
 
-  if (!products) {
-    return new Response("Failed to fetch products", { status: 500 });
+  if (!Array.isArray(products)) {
+    throw new Error("Feed products query did not return a list");
   }
 
   const items = products.map(buildItem).join("\n");

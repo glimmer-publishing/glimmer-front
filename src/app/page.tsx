@@ -17,6 +17,8 @@ import Genres from "@/components/homePage/genres/Genres";
 import { Genre } from "@/types/genre";
 
 export default async function HomePage() {
+  // Throws on a Sanity error: the whole page is this one query, and a soft
+  // failure would be cached as an empty home page until the next revalidation.
   const homePageData = await fetchSanityDataServer(homepageCombinedQuery);
   const allInstagramPosts = homePageData?.instagram;
   const allProducts = homePageData?.products;

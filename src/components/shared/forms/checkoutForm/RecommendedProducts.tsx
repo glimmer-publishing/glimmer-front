@@ -149,6 +149,7 @@ function RecommendedItem({
           src={product.mainImage}
           alt={product.title}
           fill
+          sizes="70px"
           className="object-cover xl:group-hover:scale-105 will-change-transform transition duration-700 ease-in-out"
         />
       </Link>

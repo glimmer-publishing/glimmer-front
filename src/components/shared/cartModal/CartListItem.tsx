@@ -59,7 +59,7 @@ export default function CartListItem({
                 src={mainImage}
                 alt={"product photo"}
                 fill
-                sizes="33vw"
+                sizes="70px"
                 className="w-full h-full object-cover"
               />
             </div>

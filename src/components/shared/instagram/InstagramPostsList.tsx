@@ -40,6 +40,7 @@ export default function InstagramPostsList({
                 src={image}
                 alt={alt || "instagram post"}
                 fill
+                sizes="(min-width: 640px) 25vw, 140px"
                 className="object-cover xl:group-hover:scale-105 transition duration-1000 ease-in-out"
               />
             </div>
