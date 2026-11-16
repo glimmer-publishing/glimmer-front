@@ -22,6 +22,12 @@ const client = createClient({
 // is uncached, which is what /api/sanity relies on for current checkout
 // prices. Server rendering goes through fetchSanityDataServer, which always
 // passes them.
+//
+// Cached reads skip Sanity's API CDN (useCdn: false) and query the live API.
+// Next's cache already sits in front of them, so the CDN only adds staleness:
+// right after a publish, the rebuild triggered by /api/revalidate could get
+// the previous version from the API CDN and Next would then keep that stale
+// copy until the next invalidation. Uncached calls (/api/sanity) keep the CDN.
 export interface SanityFetchOptions {
   revalidate?: number;
   tags?: string[];
@@ -37,5 +43,5 @@ export const sanityFetch = (
     { ...params, today: getKyivDate() },
     revalidate === undefined && tags === undefined
       ? {}
-      : { next: { revalidate, tags } }
+      : { useCdn: false, next: { revalidate, tags } }
   );
