@@ -1,3 +1,7 @@
+import type { Metadata } from "next";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL;
+
 export const socials = {
   instagram: "https://www.instagram.com/glimmer.publishing/",
   youtube: "https://www.youtube.com",
@@ -24,3 +28,28 @@ export const EMAIL_COOPERATION = "publishing@glimmer.com.ua";
 export const CRM_API_URL = "https://openapi.keycrm.app/v1";
 
 export const NOVA_POSHTA_API_URL = "https://api.novaposhta.ua/v2.0/json/";
+
+export const DEFAULT_METADATA: Metadata = {
+  verification: {
+    google: "UebFIihnz9R_v-th8W3BHQi7BCcbYoyMP3PjncbUxcw",
+  },
+  title: "Glimmer - твій книжковий всесвіт",
+  description:
+    "Величезний вибір художньої літератури. Glimmer — ваш улюблений книжковий простір. Швидка доставка, вигідні ціни, новинки й бестселери.",
+  openGraph: {
+    title: "Glimmer - твій книжковий всесвіт",
+    description:
+      "Величезний вибір художньої літератури. Glimmer — ваш улюблений книжковий простір. Швидка доставка, вигідні ціни, новинки й бестселери.",
+    images: [
+      {
+        url: `${SITE_URL}/opengraph-image.jpg`,
+        width: 1200,
+        height: 630,
+        alt: "Glimmer",
+      },
+    ],
+    type: "website",
+    locale: "uk_UA",
+    siteName: "Glimmer",
+  },
+};

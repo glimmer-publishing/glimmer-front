@@ -2,98 +2,81 @@ import { notFound } from "next/navigation";
 import Breadcrumbs from "@/components/shared/breadcrumbs/Breadcrumbs";
 import MarqueeLine from "@/components/shared/marquee/MarqueeLine";
 import TelegramCTA from "@/components/shared/telegramCTA/TelegramCTA";
-import ListingCatalog from "@/components/shared/listingCatalog/ListingCatalog";
-import { productsBySeriesQuery } from "@/lib/queries";
-import { fetchSanityDataServer } from "@/utils/fetchSanityDataServer";
-import { connection } from "next/server";
-import { Product } from "@/types/product";
+import CatalogTitled from "@/components/shared/catalog/CatalogTitled";
+import { CatalogService } from "@/services/CatalogService";
+import { readCatalogQuery } from "@/utils/catalogListing";
+import { CatalogSearchParams } from "@/types/catalog";
 import type { Metadata } from "next";
-import { getDefaultMetadata } from "@/utils/getDefaultMetadata";
-import { getSeriesHref, SERIES_FEATURE } from "@/utils/getSeriesInfo";
+import { DEFAULT_METADATA } from "@/constants/constants";
+import { decodePathParam } from "@/utils/decodePathParam";
+import { getSeriesHref } from "@/utils/getSeriesInfo";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "");
 
-const SERIES_SORT_OPTION = {
-  title: "За порядком у серії",
-  value: "series",
-};
-
 interface SeriesPageProps {
   params: Promise<{ seriesName: string }>;
-}
-
-/* A malformed escape ("%E0%A4%A") makes decodeURIComponent throw; treat it as
-   an unknown series rather than a 500. Not trimmed: the query matches the
-   stored value exactly (see getSeriesInfo.ts). */
-function decodeSeriesName(seriesName: string): string | null {
-  try {
-    const name = decodeURIComponent(seriesName);
-    return name.trim() ? name : null;
-  } catch {
-    return null;
-  }
+  searchParams: Promise<CatalogSearchParams>;
 }
 
 export async function generateMetadata({
   params,
 }: SeriesPageProps): Promise<Metadata> {
   const { seriesName } = await params;
-  const name = decodeSeriesName(seriesName);
-  const defaultMetadata = getDefaultMetadata();
+  const name = decodePathParam(seriesName);
 
-  if (!name) return defaultMetadata;
+  if (!name) return DEFAULT_METADATA;
 
   const title = `Серія «${name}» — книги серії. Купити онлайн`;
   const description = `Усі книги серії «${name}» у порядку читання. Glimmer — швидка доставка по Україні, новинки й передзамовлення.`;
 
   return {
-    ...defaultMetadata,
+    ...DEFAULT_METADATA,
     title,
     description,
-    openGraph: { ...defaultMetadata.openGraph, title, description },
+    openGraph: { ...DEFAULT_METADATA.openGraph, title, description },
     ...(SITE_URL
       ? { alternates: { canonical: `${SITE_URL}${getSeriesHref(name)}` } }
       : {}),
   };
 }
 
-export default async function SeriesPage({ params }: SeriesPageProps) {
-  const { seriesName } = await params;
-  const name = decodeSeriesName(seriesName);
+export default async function SeriesPage({
+  params,
+  searchParams,
+}: SeriesPageProps) {
+  const [{ seriesName }, query] = await Promise.all([params, searchParams]);
+  const name = decodePathParam(seriesName);
 
   if (!name) {
     notFound();
   }
 
-  // Rendered per request: the list for the current ?sort/filter/page/
-  // subcategory is in the server HTML from the first paint. Sanity data still
-  // comes from the tagged data cache, so this costs a render, not a query.
-  await connection();
-
-  // Throws on a Sanity error, so an outage shows an error page rather than
-  // telling visitors (and crawlers) the page does not exist.
-  const products: Product[] = await fetchSanityDataServer(
-    productsBySeriesQuery,
-    { seriesName: name, seriesFeature: SERIES_FEATURE }
+  const books = await CatalogService.getSeriesBooks(
+    name,
+    readCatalogQuery(query)
   );
 
-  if (!products || products.length === 0) {
+  if (!books) {
     notFound();
   }
 
+  const pathname = getSeriesHref(name);
   const crumbs = [
     { label: "Головна", href: "/" },
-    { label: `Серія «${name}»`, href: getSeriesHref(name) },
+    { label: `Серія «${name}»`, href: pathname },
   ];
 
   return (
     <div className="pt-[85px]">
       <Breadcrumbs crumbs={crumbs} />
-      <ListingCatalog
+      <CatalogTitled
         title={`Серія «${name}»`}
-        products={products}
-        defaultSort={SERIES_SORT_OPTION.value}
-        extraSortOptions={[SERIES_SORT_OPTION]}
+        pathname={pathname}
+        searchParams={query}
+        page={books.page}
+        filter={books.filter}
+        sort={books.sort}
+        sortOptions={books.sortOptions}
       />
       <MarqueeLine />
       <TelegramCTA />

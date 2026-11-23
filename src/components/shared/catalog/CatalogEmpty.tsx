@@ -1,13 +1,17 @@
 import * as motion from "motion/react-client";
 import { fadeInAnimation } from "@/utils/animationVariants";
 
-interface NoItemsProps {
+interface CatalogEmptyProps {
+  /* Text to show; defaults to the generic "no products yet" line. */
   message?: string;
 }
 
-export default function NoItems({
+/**
+ * Empty state of a catalog listing, shown when no product matches.
+ */
+export default function CatalogEmpty({
   message = "В даній категорії ще немає товарів",
-}: NoItemsProps) {
+}: CatalogEmptyProps) {
   return (
     <div className="flex flex-col items-center w-full py-[174px] lg:py-[208px]">
       <motion.h2

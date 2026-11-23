@@ -1,30 +1,6 @@
 import { Metadata } from "next";
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL;
+import { DEFAULT_METADATA } from "@/constants/constants";
 
 export function getDefaultMetadata(): Metadata {
-  return {
-    verification: {
-      google: "UebFIihnz9R_v-th8W3BHQi7BCcbYoyMP3PjncbUxcw",
-    },
-    title: "Glimmer - твій книжковий всесвіт",
-    description:
-      "Величезний вибір художньої літератури. Glimmer — ваш улюблений книжковий простір. Швидка доставка, вигідні ціни, новинки й бестселери.",
-    openGraph: {
-      title: "Glimmer - твій книжковий всесвіт",
-      description:
-        "Величезний вибір художньої літератури. Glimmer — ваш улюблений книжковий простір. Швидка доставка, вигідні ціни, новинки й бестселери.",
-      images: [
-        {
-          url: `${SITE_URL}/opengraph-image.jpg`,
-          width: 1200,
-          height: 630,
-          alt: "Glimmer",
-        },
-      ],
-      type: "website",
-      locale: "uk_UA",
-      siteName: "Glimmer",
-    },
-  };
+  return DEFAULT_METADATA;
 }

@@ -1,3 +1,4 @@
+import { StaticCategorySlug } from "@/types/catalog";
 import { Product } from "@/types/product";
 
 // ---------------------------------------------------------------------------
@@ -472,3 +473,8 @@ export const productsBySeriesQuery = `
   count(features[feature->name == $seriesFeature && value == $seriesName]) > 0
 ] | order(title asc) ${listingCardProjection}
 `;
+
+export const STATIC_CATEGORY_QUERIES: Record<StaticCategorySlug, string> = {
+  promo: allDiscountedProductsQuery,
+  all: allProductsQuery,
+};

@@ -1,73 +1,53 @@
-import Catalog from "@/components/catalogPage/Catalog";
+import { notFound } from "next/navigation";
 import Breadcrumbs from "@/components/shared/breadcrumbs/Breadcrumbs";
 import MarqueeLine from "@/components/shared/marquee/MarqueeLine";
 import TelegramCTA from "@/components/shared/telegramCTA/TelegramCTA";
-import {
-  allDiscountedProductsQuery,
-  allProductsByCategoryQuery,
-  allProductsQuery,
-} from "@/lib/queries";
-import { notFound } from "next/navigation";
-import { fetchSanityDataServer } from "@/utils/fetchSanityDataServer";
-import { connection } from "next/server";
+import CatalogCategory from "@/components/shared/catalog/CatalogCategory";
+import { CatalogService } from "@/services/CatalogService";
+import { readCatalogQuery } from "@/utils/catalogListing";
+import { CatalogSearchParams } from "@/types/catalog";
 
 interface CategoryPageProps {
   params: Promise<{ category: string }>;
+  searchParams: Promise<CatalogSearchParams>;
 }
 
-// Слаги, які не є категоріями в Sanity, а мають власний запит і власну назву
-// в хлібних крихтах. Жанрових чіпів на них немає — запити не повертають genres.
-const staticCatalogPages: Partial<
-  Record<string, { query: string; label: string; emptyMessage?: string }>
-> = {
-  promo: {
-    query: allDiscountedProductsQuery,
-    label: "Акції",
-  },
-  all: {
-    query: allProductsQuery,
-    label: "Весь каталог",
-    emptyMessage: "За обраним фільтром товарів не знайдено",
-  },
-};
+export default async function CategoryPage({
+  params,
+  searchParams,
+}: CategoryPageProps) {
+  const [{ category }, query] = await Promise.all([params, searchParams]);
 
-export default async function CategoryPage({ params }: CategoryPageProps) {
-  const { category } = await params;
+  const books = await CatalogService.getCategoryBooks(
+    category,
+    readCatalogQuery(query)
+  );
 
-  // Rendered per request: the list for the current ?sort/filter/page/
-  // subcategory is in the server HTML from the first paint. Sanity data still
-  // comes from the tagged data cache, so this costs a render, not a query.
-  await connection();
-
-  const staticPage = staticCatalogPages[category];
-
-  // Throws on a Sanity error, so an outage shows an error page rather than
-  // telling visitors (and crawlers) the page does not exist.
-  const res = staticPage
-    ? await fetchSanityDataServer(staticPage.query)
-    : await fetchSanityDataServer(allProductsByCategoryQuery, {
-        categorySlug: category,
-      });
-
-  if (!staticPage && !res?.categorySlug) {
+  if (!books) {
     notFound();
   }
 
-  const currentCategory = staticPage
-    ? { label: staticPage.label, href: `/catalog/${category}` }
-    : { label: res?.categoryTitle, href: `/catalog/${res?.categorySlug}` };
-
-  const crumbs = [{ label: "Головна", href: "/" }, currentCategory];
+  const pathname = `/catalog/${category}`;
+  const crumbs = [
+    { label: "Головна", href: "/" },
+    { label: books.title, href: pathname },
+  ];
 
   return (
     <div className="pt-[85px]">
       <Breadcrumbs crumbs={crumbs} />
-      <Catalog
-        catalogBanner={res?.catalogBanner}
-        allProducts={res?.allProducts}
-        subcategories={res?.genres}
-        currentCategory={category}
-        emptyMessage={staticPage?.emptyMessage}
+      <CatalogCategory
+        pathname={pathname}
+        searchParams={query}
+        page={books.page}
+        totalCount={books.totalCount}
+        filter={books.filter}
+        sort={books.sort}
+        sortOptions={books.sortOptions}
+        subcategories={books.subcategories}
+        activeSubcategory={books.activeSubcategory}
+        banner={books.banner}
+        emptyMessage={books.emptyMessage}
       />
       <MarqueeLine />
       <TelegramCTA />
