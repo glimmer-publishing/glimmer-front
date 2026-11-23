@@ -3,9 +3,8 @@ import Breadcrumbs from "@/components/shared/breadcrumbs/Breadcrumbs";
 import Instagram from "@/components/shared/instagram/Instagram";
 import MarqueeLine from "@/components/shared/marquee/MarqueeLine";
 import TelegramCTA from "@/components/shared/telegramCTA/TelegramCTA";
-import { fetchSanityDataServer } from "@/utils/fetchSanityDataServer";
-import { allInstagramPostsQuery } from "@/lib/queries";
-import About from "@/components/aboutPage/About";
+import { ContentService } from "@/services/ContentService";
+import AboutInfo from "@/components/aboutPage/AboutInfo";
 
 export default async function AboutPage() {
   const crumbs = [
@@ -16,19 +15,14 @@ export default async function AboutPage() {
     },
   ];
 
-  // Optional section: a Sanity failure hides the posts, not the page.
-  const allInstagramPosts = await fetchSanityDataServer(
-    allInstagramPostsQuery,
-    {},
-    { throwError: false }
-  );
+  const instagramPosts = await ContentService.getInstagramPosts();
 
   return (
     <div className="pt-[85px]">
       <Breadcrumbs crumbs={crumbs} />
       <AboutHero />
-      <About />
-      <Instagram instagramPosts={allInstagramPosts?.posts} />
+      <AboutInfo />
+      <Instagram instagramPosts={instagramPosts} />
       <MarqueeLine />
       <TelegramCTA />
     </div>

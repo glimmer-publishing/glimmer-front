@@ -1,3 +1,4 @@
+import { InstagramPost } from "@/types/instagram";
 import Section from "@/components/shared/section/Section";
 import SectionDescription from "@/components/shared/sectionDescription/SectionDescription";
 import SectionTitle from "@/components/shared/titles/SectionTitle";
@@ -5,7 +6,7 @@ import InstagramPostsList from "./InstagramPostsList";
 import Container from "@/components/shared/container/Container";
 
 interface InstagramProps {
-  instagramPosts: { image: string; alt?: string; url: string }[];
+  instagramPosts: InstagramPost[];
 }
 
 export default function Instagram({ instagramPosts }: InstagramProps) {
