@@ -1,4 +1,4 @@
-import { fetchSanityDataServer } from "@/utils/fetchSanityDataServer";
+import { fetchSanityDataServer } from "@/shared/api/sanity/fetch";
 import { allProductsForFeedQuery } from "@/lib/queries";
 import { sanityImageUrl } from "@/utils/sanityImage";
 

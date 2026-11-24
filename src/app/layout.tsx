@@ -7,7 +7,7 @@ import "./globals.css";
 import "react-image-gallery/styles/css/image-gallery.css";
 import Header from "@/components/shared/header/Header";
 import Footer from "@/components/shared/footer/Footer";
-import { fetchSanityDataServer } from "@/utils/fetchSanityDataServer";
+import { fetchSanityDataServer } from "@/shared/api/sanity/fetch";
 import { allCategoriesQuery } from "@/lib/queries";
 import { getDefaultMetadata } from "@/utils/getDefaultMetadata";
 import GoogleBaseTag from "@/components/shared/gtm/GoogleBaseTag";
@@ -16,6 +16,7 @@ import GoogleTagManagerNoScript from "@/components/shared/gtm/GoogleTagManagerNo
 import MetaPixel from "@/components/shared/gtm/MetaPixel";
 import UtmTracker from "@/components/shared/utmTracker/UtmTracker";
 import { isProduction } from "@/lib/env";
+import QueryProvider from "./_providers/QueryProvider";
 
 const GTM_ID = "GTM-53NZVT3H";
 
@@ -54,10 +55,12 @@ export default async function RootLayout({
         className={`${montserrat.variable} flex min-h-dvh flex-col antialiased text-[12px] lg:text-[15px] font-light leading-[120%]`}
       >
         {isProduction && <GoogleTagManagerNoScript gtmId={GTM_ID} />}
-        <UtmTracker />
-        <Header categories={categories} />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <QueryProvider>
+          <UtmTracker />
+          <Header categories={categories} />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </QueryProvider>
       </body>
     </html>
   );

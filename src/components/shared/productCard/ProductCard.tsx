@@ -85,7 +85,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             </div>
           ) : null}{" "}
         </div>
-        <FavoriteButton currentProduct={product} className="ml-auto" />
+        <FavoriteButton slug={product.slug} className="ml-auto" />
       </div>
       <Link
         href={`/catalog/${categorySlug}/${slug}`}

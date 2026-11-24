@@ -4,7 +4,7 @@ import Breadcrumbs from "@/components/shared/breadcrumbs/Breadcrumbs";
 import Instagram from "@/components/shared/instagram/Instagram";
 import MarqueeLine from "@/components/shared/marquee/MarqueeLine";
 import TelegramCTA from "@/components/shared/telegramCTA/TelegramCTA";
-import { ContentService } from "@/services/ContentService";
+import { getInstagramPosts } from "@/entities/instagram-post/api/getInstagramPosts";
 
 export default async function ContactsPage() {
   const crumbs = [
@@ -15,7 +15,7 @@ export default async function ContactsPage() {
     },
   ];
 
-  const instagramPosts = await ContentService.getInstagramPosts();
+  const instagramPosts = await getInstagramPosts();
 
   return (
     <div className="pt-[85px]">

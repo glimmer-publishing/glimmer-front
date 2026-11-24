@@ -144,7 +144,7 @@ export default function ReadPassage({
           <div className="fixed bottom-0 left-0 md:hidden w-full">
             {isModalShown && <MarqueeLine className="md:hidden mt-2.5 mb-4" />}
             <div className="flex justify-between gap-4 px-5 w-full my-4">
-              <FavoriteButton currentProduct={currentProduct} />
+              <FavoriteButton slug={currentProduct.slug} />
               <MainButton
                 onClick={() => {
                   addToCart(currentProduct, 1);

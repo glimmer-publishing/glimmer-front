@@ -3,7 +3,7 @@ import ReviewedProducts from "@/components/productPage/reviewedProducts/Reviewed
 import MarqueeLine from "@/components/shared/marquee/MarqueeLine";
 import TelegramCTA from "@/components/shared/telegramCTA/TelegramCTA";
 import { notFound } from "next/navigation";
-import { fetchSanityDataServer } from "@/utils/fetchSanityDataServer";
+import { fetchSanityDataServer } from "@/shared/api/sanity/fetch";
 import { productBySlugQuery } from "@/lib/queries";
 import ProductInfo from "@/components/productPage/productInfo/ProductInfo";
 import type { Metadata } from "next";

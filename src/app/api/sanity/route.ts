@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { sanityFetch } from "@/lib/sanityClient";
+import { sanityFetch } from "@/shared/api/sanity/client";
 
 export async function POST(req: NextRequest) {
   const { query, params } = await req.json();

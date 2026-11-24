@@ -1,15 +1,13 @@
 import { notFound } from "next/navigation";
-import Breadcrumbs from "@/components/shared/breadcrumbs/Breadcrumbs";
-import MarqueeLine from "@/components/shared/marquee/MarqueeLine";
-import TelegramCTA from "@/components/shared/telegramCTA/TelegramCTA";
-import CatalogCategory from "@/components/shared/catalog/CatalogCategory";
-import { CatalogService } from "@/services/CatalogService";
-import { readCatalogQuery } from "@/utils/catalogListing";
-import { CatalogSearchParams } from "@/types/catalog";
+import { parseListingParams } from "@/entities/product/model/listingParams";
+import { SearchParamsRecord } from "@/shared/lib/url";
+import CategoryView from "@/views/category/ui/CategoryView";
+import { parseCategoryParams } from "@/views/category/model/categoryParams";
+import { loadCategoryView } from "@/views/category/api/loadCategoryView";
 
 interface CategoryPageProps {
   params: Promise<{ category: string }>;
-  searchParams: Promise<CatalogSearchParams>;
+  searchParams: Promise<SearchParamsRecord>;
 }
 
 export default async function CategoryPage({
@@ -17,40 +15,13 @@ export default async function CategoryPage({
   searchParams,
 }: CategoryPageProps) {
   const [{ category }, query] = await Promise.all([params, searchParams]);
-
-  const books = await CatalogService.getCategoryBooks(
+  const view = await loadCategoryView(
     category,
-    readCatalogQuery(query)
+    parseListingParams(query),
+    parseCategoryParams(query)
   );
 
-  if (!books) {
-    notFound();
-  }
+  if (!view) notFound();
 
-  const pathname = `/catalog/${category}`;
-  const crumbs = [
-    { label: "Головна", href: "/" },
-    { label: books.title, href: pathname },
-  ];
-
-  return (
-    <div className="pt-[85px]">
-      <Breadcrumbs crumbs={crumbs} />
-      <CatalogCategory
-        pathname={pathname}
-        searchParams={query}
-        page={books.page}
-        totalCount={books.totalCount}
-        filter={books.filter}
-        sort={books.sort}
-        sortOptions={books.sortOptions}
-        subcategories={books.subcategories}
-        activeSubcategory={books.activeSubcategory}
-        banner={books.banner}
-        emptyMessage={books.emptyMessage}
-      />
-      <MarqueeLine />
-      <TelegramCTA />
-    </div>
-  );
+  return <CategoryView {...view} />;
 }

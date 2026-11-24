@@ -6,8 +6,8 @@
 //
 // Assembled from parts rather than from a locale's formatted string, so the
 // result is guaranteed to be YYYY-MM-DD - the shape that sorts chronologically
-// as a plain string, which the GROQ window comparison in src/lib/queries.ts
-// relies on.
+// as a plain string, which the GROQ window comparison in
+// src/shared/api/sanity/fragments.ts relies on.
 export const getKyivDate = (): string => {
   const parts = new Intl.DateTimeFormat("en-GB", {
     timeZone: "Europe/Kyiv",

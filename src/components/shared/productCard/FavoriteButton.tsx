@@ -1,37 +1,21 @@
 "use client";
-import { useState, useEffect } from "react";
-import EmptyHeartIcon from "../icons/EmptyHeartIcon";
-import { useFavoritesStore } from "@/store/favoritesStore";
-import { Product } from "@/types/product";
+import EmptyHeartIcon from "@/components/shared/icons/EmptyHeartIcon";
+import { useFavorite } from "@/entities/favorite/model/useFavorite";
 
 interface FavoriteButtonProps {
-  currentProduct: Product;
+  /* Slug of the product the heart saves. */
+  slug: string;
+  /* Extra classes for the button. */
   className?: string;
 }
 
 export default function FavoriteButton({
-  currentProduct,
+  slug,
   className = "",
 }: FavoriteButtonProps) {
-  const { addFavorite, removeFavorite, isFavorite } = useFavoritesStore();
+  const { hydrated, isFavorite, toggleFavorite } = useFavorite(slug);
 
-  const [hasMounted, setHasMounted] = useState(false);
-
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
-
-  if (!hasMounted) {
-    return null;
-  }
-
-  const toggleFavorite = () => {
-    if (isFavorite(currentProduct.slug)) {
-      removeFavorite(currentProduct.slug);
-    } else {
-      addFavorite(currentProduct);
-    }
-  };
+  if (!hydrated) return null;
 
   return (
     <button
@@ -41,7 +25,7 @@ export default function FavoriteButton({
     >
       <EmptyHeartIcon
         className={`w-auto h-5 lg:h-[25px] ${
-          isFavorite(currentProduct.slug)
+          isFavorite
             ? "text-main xl:hover:brightness-110 focus-visible:brightness-110"
             : "text-white xl:group-hover:text-main focus-visible:text-main"
         } transition duration-300 ease-in-out`}

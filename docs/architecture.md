@@ -1,241 +1,199 @@
-# Storefront target architecture
+# Storefront architecture
 
-> **Status: PROPOSAL — not the current structure.**
->
-> This describes where `glimmer-front` should move to over time. The code does
-> not follow it yet.
->
-> **AI agents and pipelines: do not apply this document.** Follow the existing
-> structure and conventions of the code you are touching (see the workspace
-> `CLAUDE.md`). Do not move files, create the folders below, rename things to
-> match this, or "align" code with it as a side effect of another task. Only act
-> on it when a task explicitly says it is a migration step from this document.
+> **Status: in migration.** The layered structure below is real for the
+> catalog (`/catalog/[category]`, including `all` and `promo`), `/author`,
+> `/series`, `/favorites` and `/about`. Every other page still lives in
+> `src/components/` and is moved over when it is next worked on. New code for
+> the migrated pages goes into the layers; code for the other pages follows
+> the existing structure until that page migrates.
 
-Drafted 2026-11-15.
+Rewritten 2026-11-24. It replaces the 2026-11-15 proposal (`server/`,
+`models/`, `elements/`, `components/`), which was never applied.
 
 ---
 
-## Why
-
-Today UI, data fetching, vendor calls and business rules sit together. The
-clearest example is checkout: `src/utils/handleSubmitForm.ts` runs the whole
-order flow in the browser — re-pricing, promo validation, building the KeyCRM
-order, the Telegram message, the email and the MonoPay amount — and the API
-routes forward whatever the browser sends. That is hard to change safely and is
-also a security problem (see [Known issues](#known-issues-found-during-the-review)).
-
-The goal is a structure where each kind of code has one obvious home, the
-browser never decides anything that costs money, and import rules can be
-enforced by lint rather than by memory.
-
-## Folder layout
+## Layers
 
 ```
 src/
-  app/            routes: config, data loading, composition — no logic
-  server/         server-only (`import "server-only"`)
-    integrations/ one folder per vendor: sanity, keycrm, monopay,
-                  novaPoshta, telegram, resend, (db)
-    services/     business rules: catalog, pricing, checkout, auth — no React
-  models/         shared app types: Product, Order, CartLine, User…
-  elements/       dumb UI: Button, Modal, Input, Price, Rating
-  components/     domain-aware UI: product/, review/, session/…
-  features/       user actions with state/side effects:
-                  cart/, favorites/, checkout/, auth/
-  lib/            env, generic utilities
+  app/        routes and route handlers: adapters only
+  views/      one slice per page: the page component and its loader
+  widgets/    composed blocks reused across pages (product grid, Instagram)
+  features/   things a user does: toggle a favorite, add to cart
+  entities/   domain objects: their types, reads, client stores and plain UI
+  shared/     no domain: Sanity client, UI kit, URL helpers
 ```
 
-### Naming
+A **slice** is one folder in a layer (`entities/product`, `views/category`).
+Inside a slice, code is split by segment: `ui/`, `api/` (data access),
+`model/` (types, stores, params, `constants.ts`), `lib/` (pure logic).
 
-- **Elements** — dumb UI. Know nothing about books, orders or users.
-- **Components** — domain-aware UI. Know what a product or review is and how it
-  looks, but do not change state or call the server.
-- **Features** — things a user *does*: add to cart, favorite, check out, log in.
-  Own their store, schema, server actions and the UI for that action.
+A slice that reads Sanity keeps its GROQ in `api/queries.ts`, next to the
+reads that use it. Fragments every product query shares (`genresProjection`,
+the discount window) live in `shared/api/sanity/fragments.ts`. Queries that
+only legacy pages use stay in `src/lib/queries.ts` until those pages
+migrate.
 
-"Component" here means this layer specifically, not "any React component".
+### Import rules
 
-## Import rules
+1. A slice imports only from **layers below** its own, never from another
+   slice of the same layer.
+2. Import **straight from the file** that defines the name
+   (`@/entities/product/ui/ProductCard`). There are no `index.ts` barrels and
+   nothing is re-exported: a barrel imported by a client component is bundled
+   whole, so it drags in code the page never uses.
+3. Inside a slice, imports are **relative**.
+4. Every file that only makes sense on the server (the Sanity client, entity
+   reads, view loaders) starts with `import "server-only"`, so the build
+   fails if a client component reaches it.
 
-1. Imports go **downwards only**:
-   `app → features → components → elements`, and everything may use `models`
-   and `lib`.
-2. Every folder in `features/` and `components/` exposes an `index.ts`. Nothing
-   imports past it (no `features/cart/store.ts` from outside `features/cart`).
-3. Sideways imports between features are allowed through that `index.ts`, with
-   no cycles.
-4. A shared thing lives with **its owner** — the code that changes it. It moves
-   down a layer only when it has no single owner.
-5. `server/` is imported only by pages, server components, server actions and
-   route handlers. Never by client components.
+`npm run lint` enforces 1 and 3 with `no-restricted-imports` (see
+`eslint.config.mjs`); `server-only` enforces 4 at build time.
 
-Enforce 1, 2 and 5 with `eslint-plugin-boundaries` or
-`import/no-restricted-paths`, so `npm run lint` catches violations.
+### Transitional rules
 
-## How the UI reaches the server
+- The legacy root modules `@/lib`, `@/utils`, `@/types`, `@/constants` and
+  `@/store` count as shared-level: the layers may import them, and they never
+  import the layers. They move into `shared/` or an entity as their last
+  legacy user migrates.
+- The layers never import `@/components`. When a migrated page needs a legacy
+  component, it is **duplicated** into `shared/ui` or the owning slice, and
+  the duplicate is removed when the last legacy user migrates.
+- Legacy code may import the layers.
+- There is one Sanity client and one cache tag, in `shared/api/sanity`;
+  legacy code imports them from there too.
 
-```
-Server component ──────────────┐
-Client component → action ─────┼─→ server/services → server/integrations → vendor
-External system → app/api/ ────┘
-```
+Current duplicates, to remove as pages migrate:
 
-- **Server components** (pages, async sections) call services directly.
-- **Client components** call **server actions** — `"use server"` files inside
-  their feature, e.g. `features/checkout/actions.ts`. A client import of such a
-  file only gets a stub; calling it is a POST to the server, which runs the real
-  function. This is the only bridge from browser code to server code.
-- **Route handlers** in `app/api/` are only for callers that are not our UI:
-  the MonoPay webhook, the product feed.
+| Layered copy | Legacy original |
+| --- | --- |
+| `shared/ui/*` (container, loader, dropdown, titles, section, section-description, main-button, icons, breadcrumbs, marquee-line, telegram-button) | `components/shared/*` |
+| `entities/product/ui/ProductCard` | `components/shared/productCard/ProductCard` |
+| `features/toggle-favorite` | `components/shared/productCard/FavoriteButton`, `components/productPage/productInfo/FavoriteButton` |
+| `features/add-to-cart` (with `AddToCartAnimation`) | `components/shared/productCard/CartButton`, `components/shared/addToCartAnimation` |
+| `widgets/telegram-cta`, `widgets/instagram` | `components/shared/telegramCTA`, `components/shared/instagram` |
 
-Server action rules:
+## Data
 
-- Thin: validate input → call one service → return a plain result.
-- Every action is a public endpoint. Validate input with the feature's schema,
-  and check the session inside the action once auth exists.
-- Arguments and return values must be serializable.
-- Never return secrets or raw vendor responses.
+| Layer | Holds |
+| --- | --- |
+| `shared/api` | raw clients (`sanityFetch`, `fetchSanityDataServer`) |
+| `entities` | reads (`getCategory`, `getProductSelection`, `getProductsBySlugs`), client stores (favorites), client queries over our own routes (`useListingBySlugs`) |
+| `features` | user actions and writes |
+| `views` | the page loader only (`loadCategoryView`), composing entity reads |
+| `widgets` | usually no data access: data comes in as props |
+| `app` | adapters: route files and route handlers call one loader or read |
 
-Client state (cart, favorites, UTM) stays in zustand stores inside its feature.
-It reaches the server only as action input — cart as ids and quantities, never
-prices.
+**Fetching:**
 
-## Shared UI and stores
+- The default is a Server Component reading `searchParams`, with `Suspense`
+  for slow sections.
+- No Server Actions for reads.
+- Data that exists only in the browser (favorites are slugs in
+  `localStorage`) goes through TanStack Query, calling a narrow route of our
+  own (`GET /api/products?slug=…`). `QueryProvider` sits in the root layout.
 
-**Composition over imports.** A domain component leaves slots for actions, and
-the page fills them:
+### URL params: parse once at the edge
+
+- `app/**/page.tsx` is the only place raw `searchParams` exist, and it parses
+  them right away.
+- Whoever owns a param defines its parser:
+  - `filter`, `sort` and `page` belong to the listing:
+    `entities/product/model/listingParams.ts` (`parseListingParams`,
+    `listingHref`).
+  - `subcategory` (the genre tab) only means something on a category page:
+    `views/category/model/categoryParams.ts` (`parseCategoryParams`,
+    `categoryHref`).
+- Everything below `app/` takes typed params. Links are built from typed
+  values: the page's own params make a `baseHref` (`categoryHref`), and
+  `listingHref` puts the listing's params on top.
+- `listProducts` returns the resolved choices as `listing.params`, with
+  defaults left out, so a value the listing rejected never travels into a
+  link.
+- Exception: `/favorites` is a static page, so its client component is the
+  edge and parses `useSearchParams()` itself.
+
+## Composition
+
+**Slots over imports.** An entity's UI leaves slots and a higher layer fills
+them, so entities never import features:
 
 ```tsx
-// components/product/ProductCard.tsx — renders a book, imports no feature
-export function ProductCard({ product, actions }: { product: Product; actions?: ReactNode }) { … }
-
-// in a page
-<ProductCard product={p} actions={<><AddToCartButton product={p} /><FavoriteToggle id={p.id} /></>} />
+// widgets/product-grid/ui/ProductList.tsx
+<ProductCard
+  product={product}
+  topAction={<ToggleFavorite slug={product.slug} />}
+  action={<AddToCart product={product} />}
+/>
 ```
 
-**Stores** live with their feature: the cart store in `features/cart/`, used
-elsewhere through `features/cart` exports such as `useCartCount`.
+**Route files stay thin:** read params, call the view's loader, render the
+view, or `notFound()`.
 
-**Auth** is two things:
-
-- "Who is the current user" — read everywhere → `components/session`
-  (`useSession()`) and `server/services/auth` (`getSession()`). The `User` type
-  is in `models/`.
-- "Log in / log out / register" — user actions → `features/auth`.
-
-## Types and models
-
-| Kind | Example | Lives in | Visible to |
-| --- | --- | --- | --- |
-| Source | Sanity document, KeyCRM payload, DB row | `server/integrations/<vendor>/types.ts` (Sanity: generated by TypeGen) | server only |
-| Model | `Product`, `Order`, `CartLine`, `User` | `models/` — types and pure helpers, no server or React imports | server and client |
-| Input | `CheckoutInput = InferType<typeof checkoutSchema>` | the feature, e.g. `features/checkout/schema.ts` | form and its action |
-| View | formatted price, badge text, grouped cart lines | next to the component, e.g. `components/product/productCard.view.ts` | client only |
-
-- Source → model mapping happens **once**, in the integration
-  (`toProduct`, `toKeyCrmOrder`). Only the integration knows the vendor shape.
-- Model and DTO are the same type unless they genuinely differ. The API between
-  server and client is the service's return type.
-- A GROQ projection is already a mapper. If the query returns exactly
-  `Product`'s fields, the TypeGen result *is* the model — no mapping function.
-
-## Pages
-
-A `page.tsx` contains:
-
-1. **Route config** — `revalidate`, `dynamic`, `generateStaticParams`,
-   `generateMetadata`. These must be literal exports in the route file.
-2. **Data loading** — service calls, in parallel where possible. Wrap shared
-   fetches (`getProduct`) in React `cache()` so metadata and page share one
-   request.
-3. **Composition** — features and components in page order. Pages own layout.
-4. **Nothing else** — no hooks, no `"use client"`, no business conditions.
-
-Rough guide: past ~80 lines, something belongs in a component.
-
-**Who fetches:** the page fetches what it cannot exist without (the product,
-the listing — needed for `notFound()` and metadata). Independent, slower
-sections (recommendations, reviews) are async server components that fetch
-their own data inside `<Suspense>`.
-
-**Page-only sections** (home hero, about text, delivery conditions, legal
-texts) are colocated in a private folder next to the route, not in a mirror
-tree under `components/<page>Page/`:
-
-```
-app/
-  page.tsx
-  _sections/Hero.tsx, PromoBanner.tsx
-  delivery/
-    page.tsx
-    _sections/DeliveryConditions.tsx
+```tsx
+const [{ category }, query] = await Promise.all([params, searchParams]);
+const view = await loadCategoryView(
+  category,
+  parseListingParams(query),
+  parseCategoryParams(query)
+);
+if (!view) notFound();
+return <CategoryView {...view} />;
 ```
 
-Promote a section to `components/` or `features/` when a second place needs it.
+**Shared types across entities.** Entities cannot import each other. A type
+two entities both return (the catalog banner) lives in a shared-level module
+(`@/types/promoBanner`), and both import it from there.
 
-**Caching:** route-level `revalidate` stays in the page. Data-level cache tags
-(what the Sanity webhook invalidates) are attached in
-`server/integrations/sanity`, per query. Anything session-dependent stays in a
-client component or a Suspense island, so catalog and product pages remain
-static after auth ships.
+## Conventions
 
-## Current → target mapping
-
-| Today | Target |
-| --- | --- |
-| `utils/handleSubmitForm.ts` | `features/checkout/actions.ts` → `server/services/checkout` |
-| `utils/fetchSanityDataClient.ts`, `app/api/sanity` | removed; server components or small actions |
-| `app/api/keycrm`, `telegram`, `send-email` | removed as routes; `server/integrations/*` called by services |
-| `app/api/monopay/invoice` | `server/integrations/monopay`, amount computed by `services/pricing` |
-| `app/api/monopay/webhook`, `app/api/feed` | stay as route handlers |
-| `lib/sanityClient.ts`, `lib/queries.ts` | `server/integrations/sanity/{client,queries/*}` + TypeGen |
-| `utils/sendDataToKeyCrm.ts` | `server/integrations/keycrm` |
-| `utils/getNPCities.ts`, `getNpBranches.ts` | `server/integrations/novaPoshta` + actions |
-| `types/*` | `models/*` |
-| `components/shared/productCard/` | `components/product/` |
-| `components/shared/buttons`, `modals`, `formComponents`… | `elements/` |
-| `store/cartStore.ts` | `features/cart/` |
-| `store/favoritesStore.ts` | `features/favorites/` |
-| `store/reviewedProductsStore.ts` | `components/product/` or `features/recentlyViewed/` |
-| `components/<page>Page/*` | `app/<route>/_sections/` or promoted to `components/` / `features/` |
-| styled-components | Tailwind, migrated when a file is touched anyway |
+- Components get a `/** */` doc; props get one-line `/* */` docs.
+- A comment longer than one line is always a `/** */` block, one ` * ` per
+  line, never `/* */` over several lines or a run of `//` lines.
+- No JSX in variables: extract a small component instead.
+- Conditionals are `cond && <X />`, with numbers coerced by `!!`.
+- No classes.
 
 ## Migration order
 
 No big-bang restructure.
 
-1. **Checkout and open routes — urgent.** One `createOrder` server action that
-   re-prices, validates, creates the KeyCRM order and MonoPay invoice with a
+1. **Checkout and open routes: urgent.** The order flow runs in the browser
+   today (`utils/handleSubmitForm.ts`). Move it to one `createOrder` action in
+   `features/checkout` that re-prices on the server, validates the promo
+   code, creates the KeyCRM order and the MonoPay invoice with a
    server-computed amount, and sends Telegram and email internally. Close the
-   open routes. Webhook compares `finalAmount` with the order total. This
-   creates `server/` in the process.
-2. **Before auth:** `server/integrations` layer, Sanity TypeGen, `models/`,
-   lint boundaries.
-3. **Gradually:** move code into `features/`, `components/`, `elements/` and
-   `_sections/`, and drop styled-components, as each area is touched for other
-   work.
+   open routes. The webhook compares `finalAmount` with the order total.
+2. **Remaining pages** (home, product, contacts, checkout UI, delivery,
+   legal) move into `views/` as they are worked on. Each move deletes the
+   duplicates it frees.
+3. **Stores:** `store/cartStore.ts` → `entities/cart`,
+   `store/reviewedProductsStore.ts` → `entities/product` or its own entity.
+4. **Before auth:** Sanity TypeGen, and the legacy root modules folded into
+   `shared/` and entities.
 
-Unit tests on `server/services/pricing` are the highest-value tests to add —
-pure logic, where the money is.
+Unit tests on pricing are the highest-value tests to add: pure logic, where
+the money is.
 
 ## Known issues found during the review
 
 Recorded 2026-11-15; check whether they still hold before acting.
 
-- `app/api/monopay/invoice` takes `amount` from the request body — a client can
-  pay any amount. The webhook marks the KeyCRM order `paid` without comparing
-  `finalAmount` with the order total.
+- `app/api/monopay/invoice` takes `amount` from the request body, so a
+  client can pay any amount. The webhook marks the KeyCRM order `paid`
+  without comparing `finalAmount` with the order total.
 - `app/api/keycrm` forwards any body to KeyCRM with the production key.
 - `app/api/send-email` sends any subject/HTML to any address from
   `hello@glimmer.com.ua`.
 - `app/api/telegram` posts any text to the operations group.
-- The webhook computes Kyiv time as `setHours(+3)` — wrong during winter time
-  (UTC+2). `utils/getKyivDate.ts` already does this correctly for dates.
+- The webhook computes Kyiv time as `setHours(+3)`, which is wrong during
+  winter time (UTC+2). `utils/getKyivDate.ts` already does this correctly for
+  dates.
 - Payment methods are compared as raw strings
   (`"Оплата картою онлайн Visa, Mastercard"`) alongside the `PaymentOption`
   enum.
 - The webhook builds `${SITE_URL}api/telegram` (no slash) while the invoice
-  route uses `${SITE_URL}/confirmation` — one of them is wrong depending on
+  route uses `${SITE_URL}/confirmation`, so one of them is wrong depending on
   whether `SITE_URL` ends with `/`.
 - The Sanity dataset is public, so promo codes are readable through Sanity's
   public API regardless of `/api/sanity`.

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { fetchSanityDataServer } from "@/utils/fetchSanityDataServer";
+import { fetchSanityDataServer } from "@/shared/api/sanity/fetch";
 import { searchProductsQuery } from "@/lib/queries";
 
 /* The header search's product list, loaded by the browser the first time

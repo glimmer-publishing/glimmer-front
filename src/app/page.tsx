@@ -1,6 +1,6 @@
 import MarqueeLine from "@/components/shared/marquee/MarqueeLine";
 import TelegramCTA from "@/components/shared/telegramCTA/TelegramCTA";
-import { fetchSanityDataServer } from "@/utils/fetchSanityDataServer";
+import { fetchSanityDataServer } from "@/shared/api/sanity/fetch";
 import { homepageCombinedQuery } from "@/lib/queries";
 import Instagram from "@/components/shared/instagram/Instagram";
 import { Suspense } from "react";

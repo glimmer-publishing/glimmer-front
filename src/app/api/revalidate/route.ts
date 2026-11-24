@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
 import { parseBody } from "next-sanity/webhook";
-import { SANITY_CACHE_TAG } from "@/utils/fetchSanityDataServer";
+import { SANITY_CACHE_TAG } from "@/shared/api/sanity/fetch";
 
 /* Invalidates every cached Sanity read (pages, search data, feed). Pages
    rebuild lazily on their next visit, so a full invalidation is cheap.

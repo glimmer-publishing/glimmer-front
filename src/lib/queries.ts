@@ -1,47 +1,13 @@
-import { StaticCategorySlug } from "@/types/catalog";
+import { activeDiscountProjection, genresProjection } from "@/shared/api/sanity/fragments";
 import { Product } from "@/types/product";
 
 // ---------------------------------------------------------------------------
 // Shared GROQ helpers
 // ---------------------------------------------------------------------------
 
-// Full genre projection for a product — reads `genres[]`, the only genre field
-// on the product schema. The first entry is treated as the primary genre.
-// Produces:
-//   genres     → array of { slug, title }  (may be empty)
-//   genreSlug  → primary genre slug        (null when no genre at all)
-//   genreTitle → primary genre name        (null when no genre at all)
-const genresProjection = `
-    "genres": select(
-      count(genres) > 0 => genres[]->{ "slug": slug.current, "title": name },
-      []
-    ),
-    "genreSlug": genres[0]->slug.current,
-    "genreTitle": genres[0]->name`;
-
 // Slimmer variant when only genreTitle is needed (e.g. feed).
 const genreTitleProjection = `
     "genreTitle": genres[0]->name`;
-
-// A discount is only live inside its scheduled window. Both bounds are
-// inclusive and either may be absent, in which case that side is unbounded -
-// so a product with a discount price and no dates is on sale permanently,
-// which is how every product behaved before scheduling existed.
-//
-// $today is the Kyiv calendar date, injected by sanityFetch in
-// src/lib/sanityClient.ts. Date-only strings sort chronologically, so plain
-// string comparison is correct here. The Studio list caption repeats this rule
-// (glimmer-adm/schemaTypes/product.ts, preview.prepare) - keep the two in sync.
-const activeDiscountFilter = `defined(discountPrice)
-    && (!defined(discountDateFrom) || discountDateFrom <= $today)
-    && (!defined(discountDateTo) || discountDateTo >= $today)`;
-
-// Projected instead of a bare `discountPrice`, so an out-of-window product
-// arrives with discountPrice null. Every consumer on the storefront already
-// treats "no discount price" as "no discount", so nothing downstream has to
-// know that scheduling exists.
-const activeDiscountProjection = `
-    "discountPrice": select(${activeDiscountFilter} => discountPrice)`;
 
 // Card projection reused wherever a product needs to render as a recommendation
 // card (genre-based matches, manual recommendations).
@@ -69,16 +35,6 @@ const recommendedProductCardProjection = `
 // ---------------------------------------------------------------------------
 // Queries
 // ---------------------------------------------------------------------------
-
-export const allInstagramPostsQuery = `
-  *[_type == "instagram"][0]{
-    "posts": posts[]{
-      "image": image.asset->url,
-      "alt": image.alt,
-      "url": url
-    }
-  }
-`;
 
 export const allCategoriesQuery = `
 *[_type == "category"]{
@@ -170,150 +126,6 @@ export const homepageCombinedQuery = `{
     }
   }
 }`;
-
-export const allDiscountedProductsQuery = `
-{
-  "allProducts": *[_type == "product" && ${activeDiscountFilter}]{
-    "id": _id,
-    "slug": slug.current,
-    title,
-    author,
-    price,
-    ${activeDiscountProjection},
-    "mainImage": gallery[0].asset->url,
-    status,
-    isBestseller,
-    isNew,
-    isNationalCashback,
-    sku,
-    preOrderShippingDate,
-    features[]{
-      "featureName": feature->name,
-      value
-    },
-    "categorySlug": category->slug.current,
-    "categoryTitle": category->title,
-    ${genresProjection}
-  },
-  "catalogBanner": *[
-    _type == "homepageBanner" && showOnCatalog == true
-  ][0]{
-    "imageCatalog": imageCatalog.asset->url,
-    link
-  }
-}
-`;
-
-// Whole catalog — books and stationery together, for /catalog/all.
-// Keeps the same card projection as the category query, `reviews` included, so
-// the default "за рейтингом" sort actually has data to work with.
-export const allProductsQuery = `
-{
-  "allProducts": *[_type == "product"]{
-    "id": _id,
-    "slug": slug.current,
-    title,
-    author,
-    price,
-    ${activeDiscountProjection},
-    "mainImage": gallery[0].asset->url,
-    status,
-    isBestseller,
-    isNew,
-    isNationalCashback,
-    sku,
-    preOrderShippingDate,
-    features[]{
-      "featureName": feature->name,
-      value
-    },
-    "reviews": reviews[]{
-      author,
-      rating,
-      text
-    },
-    "categorySlug": category->slug.current,
-    "categoryTitle": category->title,
-    ${genresProjection}
-  },
-  "catalogBanner": *[
-    _type == "homepageBanner" && showOnCatalog == true
-  ][0]{
-    "imageCatalog": imageCatalog.asset->url,
-    link
-  }
-}
-`;
-
-export const allProductsByCategoryQuery = `
-*[_type == "category" && slug.current == $categorySlug][0]{
-  "categoryTitle": title,
-  "categorySlug": slug.current,
-  "genres": genres[]->{
-    "genreTitle": name,
-    "genreSlug": slug.current,
-    "products": *[_type == "product" && references(^._id)]{
-      "id": _id,
-      title,
-      author,
-      "slug": slug.current,
-      price,
-      ${activeDiscountProjection},
-      "mainImage": gallery[0].asset->url,
-      "reviews": reviews[]{
-        author,
-        rating,
-        text
-      },
-      status,
-      preOrderShippingDate,
-      isBestseller,
-      isNew,
-      isNationalCashback,
-      sku,
-      features[]{
-        "featureName": feature->name,
-        value
-      },
-      "categorySlug": category->slug.current,
-      ${genresProjection}
-    }
-  },
-  "catalogBanner": *[
-    _type == "homepageBanner" && showOnCatalog == true
-  ][0]{
-    "imageCatalog": imageCatalog.asset->url,
-    link
-  },
-  "allProducts": *[_type == "product" && references(^._id)]{
-    "id": _id,
-    title,
-    author,
-    "slug": slug.current,
-    price,
-    ${activeDiscountProjection},
-    description,
-    "mainImage": gallery[0].asset->url,
-    "reviews": reviews[]{
-      author,
-      rating,
-      text
-    },
-    status,
-    isBestseller,
-    isNew,
-    isNationalCashback,
-    sku,
-    preOrderShippingDate,
-    features[]{
-      "featureName": feature->name,
-      value
-    },
-    "categorySlug": category->slug.current,
-    ${genresProjection}
-  }
-}
-`;
 
 export const productBySlugQuery = `
   *[_type == "product" && slug.current == $productSlug][0]{
@@ -430,51 +242,3 @@ export const productsByIds = `*[_type == "product" && _id in $ids]{
   preOrderShippingDate,
   isNationalCashback,
 }`;
-
-/* Card projection for the author and series listings. `features` is needed by
-   the series page to sort by position in series. */
-const listingCardProjection = `{
-  "id": _id,
-  "slug": slug.current,
-  title,
-  author,
-  price,
-  ${activeDiscountProjection},
-  "mainImage": gallery[0].asset->url,
-  status,
-  isBestseller,
-  isNew,
-  isNationalCashback,
-  sku,
-  preOrderShippingDate,
-  features[]{
-    "featureName": feature->name,
-    value
-  },
-  "reviews": reviews[]{
-    author,
-    rating,
-    text
-  },
-  "categorySlug": category->slug.current,
-  "categoryTitle": category->title,
-  ${genresProjection}
-}`;
-
-export const productsByAuthorQuery = `
-*[_type == "product" && author == $authorName] | order(title asc) ${listingCardProjection}
-`;
-
-/* Series is a "Серія" characteristic row, not a field - see
-   src/utils/getSeriesInfo.ts. Pass SERIES_FEATURE as $seriesFeature. */
-export const productsBySeriesQuery = `
-*[
-  _type == "product" &&
-  count(features[feature->name == $seriesFeature && value == $seriesName]) > 0
-] | order(title asc) ${listingCardProjection}
-`;
-
-export const STATIC_CATEGORY_QUERIES: Record<StaticCategorySlug, string> = {
-  promo: allDiscountedProductsQuery,
-  all: allProductsQuery,
-};

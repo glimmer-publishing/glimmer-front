@@ -51,7 +51,7 @@ export default function OrderProduct({ currentProduct }: OrderProductProps) {
         <Counter count={count} setCount={setCount} />
       </div>
       <div className="flex justify-between gap-4">
-        <FavoriteButton currentProduct={currentProduct} />
+        <FavoriteButton slug={currentProduct.slug} />
 
         <AddToCartButton
           product={currentProduct}
