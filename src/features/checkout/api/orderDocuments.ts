@@ -4,6 +4,7 @@ import {
   DeliveryType,
   isOnlinePayment,
 } from "@/constants/enums";
+import { toHryvnia } from "@/entities/cart/lib/money";
 import type { CartQuote, PricedLine } from "@/entities/cart/model/types";
 import type { MonopayBasketItem } from "@/shared/api/monopay/client";
 import { escapeHtml } from "@/shared/lib/html";
@@ -74,10 +75,7 @@ export const buildOrderSummary = (
   total: quote.total,
 });
 
-const hryvnia = (kopecks: number) => kopecks / 100;
-
 export const buildKeyCrmOrder = (
-  sourceUuid: string,
   orderedAt: string,
   values: CheckoutValues,
   quote: CartQuote,
@@ -93,7 +91,7 @@ export const buildKeyCrmOrder = (
 
   return {
     source_id: 1,
-    source_uuid: sourceUuid,
+    source_uuid: "",
     orderedAt,
     promocode: quote.promo?.code ?? null,
     buyer_comment: values.message,
@@ -113,7 +111,7 @@ export const buildKeyCrmOrder = (
         : { shipping_receive_point: values.branchNumber }),
     },
     products: quote.lines.map((line) => ({
-      price: hryvnia(line.unitPrice),
+      price: toHryvnia(line.unitPrice),
       quantity: line.quantity,
       name: `'${line.title}' - ${line.author ?? ""}`,
       sku: line.sku,
@@ -123,7 +121,7 @@ export const buildKeyCrmOrder = (
       payments: [
         {
           payment_method: values.payment,
-          amount: hryvnia(quote.total),
+          amount: toHryvnia(quote.total),
           status: "not_paid",
         },
       ],
@@ -141,11 +139,16 @@ export const buildMonopayBasket = (quote: CartQuote): MonopayBasketItem[] =>
     unit: "шт.",
   }));
 
+/**
+ * The operations-group message for a placed order. With invoiceFailed, it
+ * leads with the alert, so the one message is enough to call the customer.
+ */
 export const buildTelegramOrderMessage = (
   summary: OrderSummary,
   time: string,
   values: CheckoutValues,
-  quote: CartQuote
+  quote: CartQuote,
+  { invoiceFailed = false } = {}
 ) => {
   const e = escapeHtml;
   const products = quote.lines
@@ -154,8 +157,12 @@ export const buildTelegramOrderMessage = (
       return `- ${e(line.title)}${author}, код товару: ${e(line.sku)} - ${line.quantity} шт.`;
     })
     .join("\n");
+  const alert = invoiceFailed
+    ? `⚠️ <b>Не вдалося створити рахунок MonoPay - замовлення не оплачене, зв'яжіться з клієнтом</b>\n`
+    : "";
 
   return (
+    alert +
     `<b>Замовлення #${e(summary.orderNumber)}</b>\n` +
     `<b>Дата замовлення:</b> ${summary.orderDate} ${time}\n` +
     `<b>Ім'я:</b> ${e(values.name)}\n` +
@@ -164,7 +171,7 @@ export const buildTelegramOrderMessage = (
     `<b>Email:</b> ${e(values.email)}\n` +
     `<b>Сервіс доставки:</b> ${e(values.deliveryService)}\n` +
     `<b>Тип доставки:</b> ${e(values.deliveryType)}\n` +
-    `<b>Насeлений пункт:</b> ${e(values.city)}\n` +
+    `<b>Населений пункт:</b> ${e(values.city)}\n` +
     `<b>Номер відділення або поштомату:</b> ${e(values.branchNumber)}\n` +
     `<b>Адреса:</b> ${e(values.address)}\n` +
     `<b>Оплата:</b> ${e(values.payment)}\n` +
@@ -172,6 +179,20 @@ export const buildTelegramOrderMessage = (
     `<b>Промокод:</b> ${e(quote.promo?.code ?? "")}\n` +
     `<b>Розмір знижки за промокодом:</b> ${quote.promo ? `${quote.promo.discountPercent}%` : ""}\n` +
     `<b>Список товарів в замовленні:</b>\n${products}\n` +
-    `<b>Сума замовлення:</b> ${hryvnia(quote.total)} грн\n`
+    `<b>Сума замовлення:</b> ${toHryvnia(quote.total)} грн\n`
   );
+};
+
+/* Telegram texts for MonoPay payment callbacks; amounts in kopecks. */
+export const paymentMessages = {
+  succeeded: (reference: string, paid: number) =>
+    `✅ Оплата через MonoPay успішна!\nСума: ${toHryvnia(paid)} грн\nЗамовлення: #${escapeHtml(reference)}`,
+  mismatch: (reference: string, paid: number, expected: number) =>
+    `⚠️ <b>Сума оплати MonoPay не збігається із замовленням</b>\n` +
+    `Замовлення: #${escapeHtml(reference)}\nОплачено: ${toHryvnia(paid)} грн\n` +
+    `Сума замовлення: ${toHryvnia(expected)} грн\nЗамовлення НЕ позначене як оплачене.`,
+  unverified: (reference: string, paid: number) =>
+    `⚠️ <b>Не вдалося перевірити оплату MonoPay</b>\n` +
+    `Замовлення: #${escapeHtml(reference)}\nОплачено: ${toHryvnia(paid)} грн\n` +
+    `KeyCRM не повернув суму замовлення. Позначте оплату вручну.`,
 };

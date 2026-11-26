@@ -7,7 +7,7 @@ import type { NovaPoshtaWarehouse } from "@/shared/api/nova-poshta/types";
 import CustomizedInput from "@/shared/ui/form/CustomizedInput";
 import RadioButtonInput from "@/shared/ui/form/RadioButtonInput";
 import { getWarehouses, searchCities } from "../api/novaPoshta";
-import LocationInput from "./LocationInput";
+import LocationInput, { type LocationOption } from "./LocationInput";
 
 /**
  * Nova Poshta is searched once the customer has typed this many characters,
@@ -39,13 +39,13 @@ const deliveryTypes = Object.values(DeliveryType);
  */
 export default function DeliveryBlock() {
   const [isCitiesDropDownOpen, setIsCitiesDropDownOpen] = useState(false);
-  const [filteredCities, setFilteredCities] = useState<
-    { key: string; description: string }[]
-  >([]);
+  const [filteredCities, setFilteredCities] = useState<LocationOption[]>([]);
   const [isLoadingCities, setIsLoadingCities] = useState(false);
   const [hasCitySearchResult, setHasCitySearchResult] = useState(false);
-  // The city picked from the dropdown, with the Ref its branches are loaded
-  // by. Only a picked city counts: LocationInput clears unpicked text on blur.
+  /**
+   * The city picked from the dropdown, with the Ref its branches are loaded
+   * by. Only a picked city counts: LocationInput clears unpicked text on blur.
+   */
   const [selectedCity, setSelectedCity] = useState<{
     description: string;
     ref: string;
@@ -56,7 +56,7 @@ export default function DeliveryBlock() {
   const [warehouses, setWarehouses] = useState<NovaPoshtaWarehouse[]>([]);
   const [isLoadingWarehouses, setIsLoadingWarehouses] = useState(false);
   const [filteredWarehouses, setFilteredWarehouses] = useState<
-    { key: string; description: string }[]
+    LocationOption[]
   >([]);
   const [isWarehousesDropDownOpen, setIsWarehousesDropDownOpen] =
     useState(false);
@@ -261,7 +261,7 @@ export default function DeliveryBlock() {
         {/* Інпути */}
         <div className="flex flex-col gap-4">
           {/* Якщо Нова пошта → працюємо з LocationInput */}
-          {values.deliveryService === DeliveryService.NOVA_POSHTA ? (
+          {values.deliveryService === DeliveryService.NOVA_POSHTA && (
             <>
               <LocationInput
                 fieldName="city"
@@ -313,7 +313,7 @@ export default function DeliveryBlock() {
                 />
               )}
             </>
-          ) : null}
+          )}
 
           {/* Якщо Укрпошта → просто інпути */}
           {values.deliveryService === DeliveryService.UKRPOSHTA && (

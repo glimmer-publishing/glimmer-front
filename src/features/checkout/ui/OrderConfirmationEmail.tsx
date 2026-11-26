@@ -1,3 +1,4 @@
+import "server-only";
 import {
   Body,
   Column,
@@ -354,5 +355,4 @@ const buttonStyle = {
   width: "200px",
   height: "40px",
   lineHeight: "40px",
-  // textAlign: "center",
 };

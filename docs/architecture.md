@@ -2,10 +2,11 @@
 
 > **Status: in migration.** The layered structure below is real for the
 > catalog (`/catalog/[category]`, including `all` and `promo`), `/author`,
-> `/series`, `/favorites`, `/about`, `/checkout` and `/confirmation`. Every other page still lives in
-> `src/components/` and is moved over when it is next worked on. New code for
-> the migrated pages goes into the layers; code for the other pages follows
-> the existing structure until that page migrates.
+> `/series`, `/favorites`, `/about`, `/checkout` and `/confirmation`. Every
+> other page still lives in `src/components/` and is moved over when it is
+> next worked on. New code for the migrated pages goes into the layers; code
+> for the other pages follows the existing structure until that page
+> migrates.
 
 Rewritten 2026-11-24. It replaces the 2026-11-15 proposal (`server/`,
 `models/`, `elements/`, `components/`), which was never applied.
@@ -57,8 +58,11 @@ migrate.
   import the layers. They move into `shared/` or an entity as their last
   legacy user migrates.
 - The layers never import `@/components`. When a migrated page needs a legacy
-  component, it is **duplicated** into `shared/ui` or the owning slice, and
-  the duplicate is removed when the last legacy user migrates.
+  component, it is **moved** into `shared/ui` or the owning slice and every
+  legacy import is repointed (the checkout did this for the form inputs,
+  modal, pop-up, backdrop and icon button). Where moving is impractical, it
+  is duplicated instead, and the duplicate is removed when the last legacy
+  user migrates.
 - Legacy code may import the layers.
 - There is one Sanity client and one cache tag, in `shared/api/sanity`;
   legacy code imports them from there too.
@@ -171,9 +175,8 @@ No big-bang restructure.
    `/api/send-email`, `/api/monopay/invoice` and `/api/sanity` are gone;
    `/api/telegram` takes typed form fields only. Integrations live in
    `shared/api/{keycrm,monopay,telegram,email,nova-poshta}`.
-2. **Remaining pages** (home, product, contacts, checkout UI, delivery,
-   legal) move into `views/` as they are worked on. Each move deletes the
-   duplicates it frees.
+2. **Remaining pages** (home, product, contacts, delivery, legal) move into
+   `views/` as they are worked on. Each move deletes the duplicates it frees.
 3. **Stores:** `store/reviewedProductsStore.ts` → `entities/product` or its
    own entity (the cart is already `entities/cart`).
 4. **Before auth:** Sanity TypeGen, and the legacy root modules folded into
@@ -194,3 +197,11 @@ URL. Still open:
   public API. The storefront no longer trusts anything the browser says
   about them, but they cannot be kept secret.
 - Order submission has no rate limiting.
+- `shared/api/nova-poshta/client.ts` falls back to
+  `NEXT_PUBLIC_NOVA_POSHTA_API_KEY` (read on the server only). Remove the
+  fallback once `NOVA_POSHTA_API_KEY` is set in Vercel for both scopes.
+- Payment and delivery enums (`constants/enums.ts`) double as the label the
+  customer sees and the value KeyCRM stores, so changing the wording changes
+  CRM data. Split them into stable keys with label and KeyCRM maps.
+- Two MonoPay callbacks for one order racing on different server instances
+  can still both record the payment; on one instance they are serialized.

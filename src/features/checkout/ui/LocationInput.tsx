@@ -10,24 +10,37 @@ import React, {
 import CustomizedInput from "@/shared/ui/form/CustomizedInput";
 import { useFormikContext } from "formik";
 
-interface Option {
+/* One pickable entry of the dropdown. */
+export interface LocationOption {
   key: string;
   description: string;
 }
 
 interface LocationInputProps {
+  /* The Formik field the picked description is stored in. */
   fieldName: string;
+  /* Floating label of the input. */
   placeholder: string;
-  options: Option[];
+  /* Entries matching what was typed. */
+  options: LocationOption[];
+  /* Shows the spinner while options load. */
   isLoading?: boolean;
   /* Shown in the open dropdown when there is nothing to pick. */
   emptyMessage?: string;
+  /* Whether the dropdown is open. */
   isDropDownOpen: boolean;
+  /* Opens or closes the dropdown. */
   setIsDropDownOpen: Dispatch<SetStateAction<boolean>>;
-  onSelect: (option: Option) => void;
+  /* Called with the entry the customer picked. */
+  onSelect: (option: LocationOption) => void;
+  /* Called on every keystroke, after the field value is updated. */
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
+/**
+ * Text input with a dropdown of matches. Text that was not picked from the
+ * dropdown is cleared on blur, so only a known entry can be submitted.
+ */
 export default function LocationInput({
   fieldName,
   placeholder,
@@ -40,7 +53,9 @@ export default function LocationInput({
   onChange,
 }: LocationInputProps) {
   const dropdownRef = useRef<HTMLDivElement | null>(null);
-  const [selectedOption, setSelectedOption] = useState<Option | null>(null);
+  const [selectedOption, setSelectedOption] = useState<LocationOption | null>(
+    null
+  );
 
   const { setFieldError, setFieldTouched, setFieldValue, errors, touched } =
     useFormikContext<Record<string, string>>();
@@ -99,10 +114,10 @@ export default function LocationInput({
         scrollbar scrollbar-w-[2px] scrollbar-h-[2px] scrollbar-thumb-rounded-full scrollbar-track-rounded-full 
         scrollbar-thumb-main popup-scroll`}
       >
-        {!isLoading && options.length === 0 && emptyMessage ? (
+        {!isLoading && !options.length && !!emptyMessage && (
           <li className="p-2 text-black/50">{emptyMessage}</li>
-        ) : null}
-        {options.map((item: Option) => (
+        )}
+        {options.map((item: LocationOption) => (
           <li
             key={item.key}
             className="p-2 cursor-pointer xl:hover:bg-main/10 xl:hover:text-main transition duration-300 ease-in-out"

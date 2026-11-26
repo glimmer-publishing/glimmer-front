@@ -4,11 +4,7 @@ import { useFormikContext } from "formik";
 import type { CartQuote } from "@/entities/cart/model/types";
 import { useCartStore } from "@/entities/cart/model/store";
 import CustomizedInput from "@/shared/ui/form/CustomizedInput";
-
-const PROMO_ERRORS = {
-  notFound: "Промокод не знайдений",
-  expired: "Термін дії промокоду вичерпано",
-} as const;
+import { PROMO_ERRORS } from "../model/constants";
 
 interface PromocodeFieldProps {
   /* The server's quote, which says whether the stored code applies. */

@@ -1,4 +1,5 @@
 import { MAX_LINES, MAX_QUANTITY } from "../model/constants";
+import { toKopecks } from "./money";
 import type {
   CartItem,
   CartProduct,
@@ -13,8 +14,6 @@ import type {
  * every quote and every order with them; nothing in the browser computes an
  * amount it sends anywhere.
  */
-
-export const toKopecks = (hryvnia: number) => Math.round(hryvnia * 100);
 
 /* A product on sale never takes the promo on top of its own discount. */
 const isPromoEligible = (product: CartProduct, promo: CartPromo | null) => {

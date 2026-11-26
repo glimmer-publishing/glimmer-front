@@ -22,7 +22,7 @@ export interface KeyCrmOrder {
   id: number;
   /* Hryvnia: what the customer owes for the order. */
   grand_total: number;
-  payments?: { status: string; amount: number }[];
+  payments?: { status: string; amount: number; description?: string | null }[];
 }
 
 const request = async <T>(path: string, init: RequestInit = {}) => {

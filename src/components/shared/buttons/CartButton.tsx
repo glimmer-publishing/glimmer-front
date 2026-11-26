@@ -1,6 +1,7 @@
 "use client";
 import CartIcon from "../icons/CartIcon";
-import { useCartStore } from "@/entities/cart/model/store";
+import { useEffect } from "react";
+import { hydrateCart, useCartStore } from "@/entities/cart/model/store";
 
 interface CartButtonProps {
   onClick?: () => void;
@@ -9,6 +10,8 @@ interface CartButtonProps {
 
 export default function CartButton({ onClick, className }: CartButtonProps) {
   const count = useCartStore((state) => state.items.length);
+
+  useEffect(hydrateCart, []);
 
   return (
     <>

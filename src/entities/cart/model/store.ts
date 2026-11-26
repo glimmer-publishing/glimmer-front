@@ -41,14 +41,17 @@ export const useCartStore = create<CartState>()(
       promoCode: null,
       hydrated: false,
 
-      addItem: (id, quantity = 1) =>
+      addItem: (id, quantity = 1) => {
+        /* A click before any consumer mounted must not be overwritten later. */
+        hydrateCart();
         set(({ items }) => {
           if (items.some((item) => item.id === id)) {
             return { items: changeQuantity(items, id, quantity) };
           }
           if (items.length >= MAX_LINES) return {};
           return { items: [...items, { id, quantity: clamp(quantity) }] };
-        }),
+        });
+      },
 
       removeItem: (id) =>
         set(({ items }) => ({ items: items.filter((item) => item.id !== id) })),
@@ -72,6 +75,12 @@ export const useCartStore = create<CartState>()(
     {
       name: "glimmer-cart-storage",
       version: 1,
+      /**
+       * Read on mount (hydrateCart), not when the module loads: the first
+       * client render must match the server's, which has no cart, and the
+       * rehydration callback below needs useCartStore to exist already.
+       */
+      skipHydration: true,
       partialize: ({ items, promoCode }) => ({ items, promoCode }),
       onRehydrateStorage: () => () => useCartStore.setState({ hydrated: true }),
       /**
@@ -85,13 +94,20 @@ export const useCartStore = create<CartState>()(
         }
 
         const { cart, promoCode } = (persisted ?? {}) as PersistedV0;
-        const items = Array.isArray(cart)
-          ? cart.flatMap(({ product, quantity } = {}) =>
-              typeof product?.id === "string" && typeof quantity === "number"
-                ? [{ id: product.id, quantity: clamp(quantity) }]
-                : []
-            )
-          : [];
+        const merged = new Map<string, number>();
+        (Array.isArray(cart) ? cart : []).forEach(
+          ({ product, quantity } = {}) => {
+            if (typeof product?.id !== "string") return;
+            if (typeof quantity !== "number" || !Number.isFinite(quantity)) {
+              return;
+            }
+            merged.set(
+              product.id,
+              clamp((merged.get(product.id) ?? 0) + quantity)
+            );
+          }
+        );
+        const items = [...merged].map(([id, quantity]) => ({ id, quantity }));
 
         return {
           items: items.slice(0, MAX_LINES),
@@ -101,3 +117,10 @@ export const useCartStore = create<CartState>()(
     }
   )
 );
+
+/* Reads the cart from localStorage once; safe to call from every consumer. */
+export const hydrateCart = () => {
+  if (!useCartStore.persist.hasHydrated()) {
+    useCartStore.persist.rehydrate();
+  }
+};

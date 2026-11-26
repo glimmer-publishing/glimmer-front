@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { DeliveryService } from "@/constants/enums";
-import { formatHryvnia } from "@/entities/cart/lib/money";
+import { formatHryvnia, toHryvnia } from "@/entities/cart/lib/money";
 import { useOrderStore } from "@/features/checkout/model/orderStore";
 import type { OrderSummary } from "@/features/checkout/model/types";
 import Container from "@/shared/ui/container/Container";
@@ -25,14 +25,14 @@ pdfMake.vfs = pdfFonts.vfs;
 const trackOrder = (order: OrderSummary) =>
   trackPurchaseOnce({
     orderNumber: order.orderNumber,
-    value: order.total / 100,
+    value: toHryvnia(order.total),
     email: order.email,
     phone: order.phone,
     items: order.lines.map((line) => ({
       id: line.id,
       title: line.title,
       category: line.category,
-      price: line.unitPrice / 100,
+      price: toHryvnia(line.unitPrice),
       quantity: line.quantity,
     })),
   });

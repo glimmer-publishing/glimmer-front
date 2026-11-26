@@ -4,8 +4,7 @@ import { ReactNode, useState } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { CART_QUOTE_KEY, useCartQuote } from "@/entities/cart/api/useCartQuote";
-import { cartQuoteHref } from "@/entities/cart/model/cartHref";
+import { setCartQuote, useCartQuote } from "@/entities/cart/api/useCartQuote";
 import { useCartStore } from "@/entities/cart/model/store";
 import CartList from "@/entities/cart/ui/CartList";
 import CartTotal from "@/entities/cart/ui/CartTotal";
@@ -30,7 +29,8 @@ import PromocodeField from "./PromocodeField";
 /* Why an order was not placed, or not paid. */
 export type CheckoutNotice =
   | { kind: "error" }
-  | { kind: "priceChanged" }
+  /* removedTitles: books no longer sold, dropped from the cart. */
+  | { kind: "priceChanged"; removedTitles: string[] }
   | { kind: "paymentFailed"; orderNumber: string };
 
 interface CheckoutFormProps {
@@ -132,14 +132,13 @@ export default function CheckoutForm({ onNotice }: CheckoutFormProps) {
           return;
         }
         case "priceChanged": {
-          queryClient.setQueryData(
-            [CART_QUOTE_KEY, cartQuoteHref(items, promoCode)],
-            result.quote
-          );
-          if (result.quote.missingIds.length) {
-            removeItems(result.quote.missingIds);
-          }
-          onNotice({ kind: "priceChanged" });
+          const { missingIds } = result.quote;
+          const removedTitles = quote.lines
+            .filter((line) => missingIds.includes(line.id))
+            .map((line) => line.title);
+          setCartQuote(queryClient, items, promoCode, result.quote);
+          if (missingIds.length) removeItems(missingIds);
+          onNotice({ kind: "priceChanged", removedTitles });
           return;
         }
         case "paymentFailed": {

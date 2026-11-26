@@ -1,10 +1,25 @@
 "use client";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { keepPreviousData, QueryClient, useQuery } from "@tanstack/react-query";
 import { cartQuoteHref } from "../model/cartHref";
-import { useCartStore } from "../model/store";
-import type { CartQuote } from "../model/types";
+import { hydrateCart, useCartStore } from "../model/store";
+import type { CartItem, CartQuote } from "../model/types";
 
-export const CART_QUOTE_KEY = "cart-quote";
+const cartQuoteKey = (items: CartItem[], promoCode: string | null) => [
+  "cart-quote",
+  cartQuoteHref(items, promoCode),
+];
+
+/**
+ * Stores a quote the server returned elsewhere (createOrder's "prices
+ * changed") as the current quote for this cart, without a refetch.
+ */
+export const setCartQuote = (
+  queryClient: QueryClient,
+  items: CartItem[],
+  promoCode: string | null,
+  quote: CartQuote
+) => queryClient.setQueryData(cartQuoteKey(items, promoCode), quote);
 
 const fetchQuote = async (
   url: string,
@@ -27,8 +42,10 @@ export const useCartQuote = () => {
   const hydrated = useCartStore((state) => state.hydrated);
   const url = cartQuoteHref(items, promoCode);
 
+  useEffect(hydrateCart, []);
+
   const query = useQuery({
-    queryKey: [CART_QUOTE_KEY, url],
+    queryKey: cartQuoteKey(items, promoCode),
     queryFn: ({ signal }) => fetchQuote(url, signal),
     enabled: hydrated && items.length > 0,
     placeholderData: keepPreviousData,

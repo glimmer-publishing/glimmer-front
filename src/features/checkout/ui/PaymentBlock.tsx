@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { DeliveryService, PaymentOption } from "@/constants/enums";
 import type { CartQuote } from "@/entities/cart/model/types";
 import RadioButtonInput from "@/shared/ui/form/RadioButtonInput";
+import { availablePayments } from "../lib/paymentRules";
 
 interface PaymentBlockProps {
   /* The server's quote of the cart; the options depend on its products. */
@@ -11,63 +12,36 @@ interface PaymentBlockProps {
 }
 
 /**
- * Payment options offered for this cart and delivery. The server enforces
- * the same rules when the order is placed; hiding an option here is only
- * for the customer.
+ * The payment options this cart and delivery allow, from the same rules
+ * createOrder enforces. A choice that stops being allowed falls back to
+ * card payment.
  */
 export default function PaymentBlock({ quote }: PaymentBlockProps) {
-  const lines = quote?.lines ?? [];
-  const hasPreorder = lines.some((line) => line.status === "preOrder");
-  const isNationalCashbackAvailable =
-    lines.length > 0 && lines.every((line) => line.isNationalCashback === true);
-
   const { values, setFieldValue } = useFormikContext<{
     deliveryService: DeliveryService;
     payment: PaymentOption;
   }>();
 
-  const isUkrposhta = values.deliveryService === DeliveryService.UKRPOSHTA;
+  const available = availablePayments(
+    values.deliveryService,
+    quote?.lines ?? null
+  );
+  const isAllowed = available.includes(values.payment);
 
   useEffect(() => {
-    if (
-      (isUkrposhta || hasPreorder) &&
-      values.payment === PaymentOption.CASH_ON_DELIVERY
-    ) {
-      setFieldValue("payment", PaymentOption.CARD);
-    }
-  }, [isUkrposhta, hasPreorder, values.payment, setFieldValue]);
-
-  useEffect(() => {
-    if (
-      quote &&
-      values.payment === PaymentOption.NATIONAL_CASHBACK &&
-      !isNationalCashbackAvailable
-    ) {
-      setFieldValue("payment", PaymentOption.CARD);
-    }
-  }, [quote, isNationalCashbackAvailable, values.payment, setFieldValue]);
+    if (!isAllowed) setFieldValue("payment", PaymentOption.CARD);
+  }, [isAllowed, setFieldValue]);
 
   return (
     <div className="flex flex-col gap-4">
-      <RadioButtonInput
-        fieldName="payment"
-        label={PaymentOption.CARD}
-        value={PaymentOption.CARD}
-      />
-      {isNationalCashbackAvailable && (
+      {available.map((payment) => (
         <RadioButtonInput
+          key={payment}
           fieldName="payment"
-          label={PaymentOption.NATIONAL_CASHBACK}
-          value={PaymentOption.NATIONAL_CASHBACK}
+          label={payment}
+          value={payment}
         />
-      )}
-      {!isUkrposhta && !hasPreorder && (
-        <RadioButtonInput
-          fieldName="payment"
-          label={PaymentOption.CASH_ON_DELIVERY}
-          value={PaymentOption.CASH_ON_DELIVERY}
-        />
-      )}
+      ))}
     </div>
   );
 }

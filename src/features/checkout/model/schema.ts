@@ -6,6 +6,7 @@ import {
 } from "@/constants/enums";
 import { MAX_PROMO_LENGTH } from "@/entities/cart/model/constants";
 import { checkoutPhoneRegex, emailRegex, nameRegex } from "@/regex/regex";
+import { paymentError } from "../lib/paymentRules";
 
 const REQUIRED = "Дане поле є обов'язковим до заповнення";
 const NAME_LENGTH = "Повинно містити від 2 до 30 символів";
@@ -82,13 +83,11 @@ export const checkoutSchema = yup.object({
     .mixed<PaymentOption>()
     .oneOf(Object.values(PaymentOption), "Оберіть спосіб оплати")
     .required("Оберіть спосіб оплати")
-    .test(
-      "ukrposhta-card-only",
-      "Для Укрпошти доступна лише оплата онлайн",
-      (payment, { parent }) =>
-        parent.deliveryService !== DeliveryService.UKRPOSHTA ||
-        payment !== PaymentOption.CASH_ON_DELIVERY
-    ),
+    .test("payment-allowed", (payment, { parent, createError }) => {
+      const error =
+        payment && paymentError(payment, parent.deliveryService, null);
+      return error ? createError({ message: error }) : true;
+    }),
   message: yup.string().trim().max(1000, TOO_LONG).default(""),
   promocode: yup.string().trim().max(MAX_PROMO_LENGTH, TOO_LONG).default(""),
 });

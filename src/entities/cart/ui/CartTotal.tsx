@@ -5,7 +5,7 @@ import MainButton from "@/shared/ui/main-button/MainButton";
 import MarqueeLine from "@/shared/ui/marquee-line/MarqueeLine";
 import { trackBeginCheckout } from "@/utils/ecommerceTracking";
 import { useCartQuote } from "../api/useCartQuote";
-import { formatHryvnia } from "../lib/money";
+import { formatHryvnia, toHryvnia } from "../lib/money";
 import { toTrackedItems } from "../lib/tracking";
 
 interface CartTotalProps {
@@ -59,7 +59,10 @@ export default function CartTotal({
             <MainButton
               onClick={() =>
                 quote &&
-                trackBeginCheckout(toTrackedItems(quote.lines), total / 100)
+                trackBeginCheckout(
+                  toTrackedItems(quote.lines),
+                  toHryvnia(total)
+                )
               }
               disabled={!items.length}
               className="w-full h-[45px]"
