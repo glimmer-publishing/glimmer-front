@@ -1,4 +1,4 @@
-import CheckoutWithNotifications from "@/features/checkout/ui/CheckoutWithNotifications";
+import CheckoutWithNotifications from "./CheckoutWithNotifications";
 import Breadcrumbs from "@/shared/ui/breadcrumbs/Breadcrumbs";
 import Container from "@/shared/ui/container/Container";
 import MarqueeLine from "@/shared/ui/marquee-line/MarqueeLine";

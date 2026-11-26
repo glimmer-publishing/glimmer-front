@@ -1,13 +1,13 @@
-import type { CatalogBanner } from "@/types/promoBanner";
+import type { CatalogBanner } from "@/entities/banner/model/types";
 import type { CategoryGenre } from "@/entities/category/model/types";
 import type { ProductListing } from "@/entities/product/model/types";
 import Breadcrumbs from "@/shared/ui/breadcrumbs/Breadcrumbs";
 import Container from "@/shared/ui/container/Container";
 import MarqueeLine from "@/shared/ui/marquee-line/MarqueeLine";
-import ProductList from "@/widgets/product-grid/ui/ProductList";
-import ProductToolbar from "@/widgets/product-grid/ui/ProductToolbar";
+import ProductList from "@/widgets/products/ui/ProductList";
+import ProductToolbar from "@/widgets/products/ui/ProductToolbar";
 import TelegramCTA from "@/widgets/telegram-cta/ui/TelegramCTA";
-import { categoryHref } from "../model/categoryParams";
+import { categoryHref } from "@/entities/category/model/categoryParams";
 import CategoryBackground from "./CategoryBackground";
 import CategoryBanner from "./CategoryBanner";
 import CategoryTabs from "./CategoryTabs";

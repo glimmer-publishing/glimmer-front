@@ -1,12 +1,8 @@
 # Storefront architecture
 
-> **Status: in migration.** The layered structure below is real for the
-> catalog (`/catalog/[category]`, including `all` and `promo`), `/author`,
-> `/series`, `/favorites`, `/about`, `/checkout` and `/confirmation`. Every
-> other page still lives in `src/components/` and is moved over when it is
-> next worked on. New code for the migrated pages goes into the layers; code
-> for the other pages follows the existing structure until that page
-> migrates.
+> **Status: migrated (2026-11-26).** Every page is a thin route over a
+> `views/` slice. Nothing of the old structure is left: `src/` holds only
+> `app/` and the five layers.
 
 Rewritten 2026-11-24. It replaces the 2026-11-15 proposal (`server/`,
 `models/`, `elements/`, `components/`), which was never applied.
@@ -19,28 +15,30 @@ Rewritten 2026-11-24. It replaces the 2026-11-15 proposal (`server/`,
 src/
   app/        routes and route handlers: adapters only
   views/      one slice per page: the page component and its loader
-  widgets/    composed blocks reused across pages (product grid, Instagram)
-  features/   things a user does: toggle a favorite, add to cart
-  entities/   domain objects: their types, reads, client stores and plain UI
-  shared/     no domain: Sanity client, UI kit, URL helpers
+  widgets/    composed blocks reused across pages (products, cart, header)
+  features/   things a user does: toggle a favorite, add to cart, edit cart
+  entities/   domain objects: types, reads, client stores, pure logic; no UI
+  shared/     no domain: Sanity client, UI kit, URL helpers, config
 ```
 
 A **slice** is one folder in a layer (`entities/product`, `views/category`).
 Inside a slice, code is split by segment: `ui/`, `api/` (data access),
 `model/` (types, stores, params, `constants.ts`), `lib/` (pure logic).
+Entities have no `ui/` segment: lint rejects JSX there. How an entity looks
+is a widget or view; what a user does with it is a feature.
 
 A slice that reads Sanity keeps its GROQ in `api/queries.ts`, next to the
 reads that use it. Fragments every product query shares (`genresProjection`,
-the discount window) live in `shared/api/sanity/fragments.ts`. Queries that
-only legacy pages use stay in `src/lib/queries.ts` until those pages
-migrate.
+the discount window) live in `shared/api/sanity/fragments.ts`. The feed
+query is `entities/product`'s; the search query is
+`features/search-products`'.
 
 ### Import rules
 
 1. A slice imports only from **layers below** its own, never from another
    slice of the same layer.
 2. Import **straight from the file** that defines the name
-   (`@/entities/product/ui/ProductCard`). There are no `index.ts` barrels and
+   (`@/widgets/products/ui/ProductCard`). There are no `index.ts` barrels and
    nothing is re-exported: a barrel imported by a client component is bundled
    whole, so it drags in code the page never uses.
 3. Inside a slice, imports are **relative**.
@@ -51,31 +49,24 @@ migrate.
 `npm run lint` enforces 1 and 3 with `no-restricted-imports` (see
 `eslint.config.mjs`); `server-only` enforces 4 at build time.
 
-### Transitional rules
+### Where former root modules went
 
-- The legacy root modules `@/lib`, `@/utils`, `@/types`, `@/constants` and
-  `@/store` count as shared-level: the layers may import them, and they never
-  import the layers. They move into `shared/` or an entity as their last
-  legacy user migrates.
-- The layers never import `@/components`. When a migrated page needs a legacy
-  component, it is **moved** into `shared/ui` or the owning slice and every
-  legacy import is repointed (the checkout did this for the form inputs,
-  modal, pop-up, backdrop and icon button). Where moving is impractical, it
-  is duplicated instead, and the duplicate is removed when the last legacy
-  user migrates.
-- Legacy code may import the layers.
-- There is one Sanity client and one cache tag, in `shared/api/sanity`;
-  legacy code imports them from there too.
+- Helpers and regexes: `shared/lib`. Constants, enums and the environment
+  gate (`isProduction`, `shared/config/env.ts`): `shared/config`.
+- Domain types live in their entity: `Product` in `entities/product`,
+  `Review` in `entities/review`, banners in `entities/banner`, Instagram
+  posts in `entities/instagram-post`. Entities may import each other's
+  types with `import type`, never values (see below).
+- Domain helpers (series, average rating, the product-to-analytics mapping)
+  live in `entities/product/lib`; `shared/lib/ecommerceTracking` only knows
+  a generic `TrackedItem`.
+- The UTM store: `entities/utm`.
+- There is one Sanity client and one cache tag, in `shared/api/sanity`.
 
-Current duplicates, to remove as pages migrate:
-
-| Layered copy | Legacy original |
-| --- | --- |
-| `shared/ui/*` (container, loader, dropdown, titles, section, section-description, main-button, icons, breadcrumbs, marquee-line, telegram-button) | `components/shared/*` |
-| `entities/product/ui/ProductCard` | `components/shared/productCard/ProductCard` |
-| `features/toggle-favorite` | `components/shared/productCard/FavoriteButton`, `components/productPage/productInfo/FavoriteButton` |
-| `features/add-to-cart` (with `AddToCartAnimation`) | `components/shared/productCard/CartButton`, `components/shared/addToCartAnimation` |
-| `widgets/telegram-cta`, `widgets/instagram` | `components/shared/telegramCTA`, `components/shared/instagram` |
+The root layout composes `widgets/header` (which composes
+`features/search-products` and the cart entity's button and modal),
+`widgets/footer`, `features/track-utm`, and the analytics tags in
+`shared/ui/analytics`, which it renders only when `isProduction`.
 
 ## Data
 
@@ -84,7 +75,7 @@ Current duplicates, to remove as pages migrate:
 | `shared/api` | raw clients (`sanityFetch`, `fetchSanityDataServer`) |
 | `entities` | reads (`getCategory`, `getProductSelection`, `getProductsBySlugs`), client stores (favorites), client queries over our own routes (`useListingBySlugs`) |
 | `features` | user actions and writes |
-| `views` | the page loader only (`loadCategoryView`), composing entity reads |
+| `views` | the page loader only (`loadCategoryView`), composing entity reads; home is the exception, one combined query of its own in `views/home/api` |
 | `widgets` | usually no data access: data comes in as props |
 | `app` | adapters: route files and route handlers call one loader or read |
 
@@ -119,11 +110,11 @@ Current duplicates, to remove as pages migrate:
 
 ## Composition
 
-**Slots over imports.** An entity's UI leaves slots and a higher layer fills
-them, so entities never import features:
+**Slots over imports.** A block leaves slots and a higher layer fills them,
+so it never imports the features it shows:
 
 ```tsx
-// widgets/product-grid/ui/ProductList.tsx
+// widgets/products/ui/ProductList.tsx
 <ProductCard
   product={product}
   topAction={<ToggleFavorite slug={product.slug} />}
@@ -145,9 +136,16 @@ if (!view) notFound();
 return <CategoryView {...view} />;
 ```
 
-**Shared types across entities.** Entities cannot import each other. A type
-two entities both return (the catalog banner) lives in a shared-level module
-(`@/types/promoBanner`), and both import it from there.
+The same rule joins slices of one layer that may not import each other:
+the root layout passes `widgets/cart`'s `HeaderCart` into `widgets/header`
+as its `cart` slot, and the checkout view passes the cart widget's list and
+totals into `features/checkout`'s form (`cartList`, `renderTotal`).
+
+**Types across entities.** An entity owns its types, and another entity
+may `import type` them (a category's `Product[]`). Lint allows only
+type-only imports between entities (`allowTypeImports` on the TypeScript
+`no-restricted-imports`): types are erased at build time, so no runtime
+coupling appears.
 
 ## Conventions
 
@@ -175,12 +173,30 @@ No big-bang restructure.
    `/api/send-email`, `/api/monopay/invoice` and `/api/sanity` are gone;
    `/api/telegram` takes typed form fields only. Integrations live in
    `shared/api/{keycrm,monopay,telegram,email,nova-poshta}`.
-2. **Remaining pages** (home, product, contacts, delivery, legal) move into
-   `views/` as they are worked on. Each move deletes the duplicates it frees.
-3. **Stores:** `store/reviewedProductsStore.ts` → `entities/product` or its
-   own entity (the cart is already `entities/cart`).
-4. **Before auth:** Sanity TypeGen, and the legacy root modules folded into
-   `shared/` and entities.
+2. **Remaining pages: done (2026-11-26).** Home, product, contacts,
+   delivery, the legal pages and not-found are `views/` slices; the header
+   and footer are widgets; `src/components/` is deleted with every
+   duplicate it held. Slices it added:
+   - views: `home`, `product`, `contacts`, `delivery`, `privacy-policy`,
+     `public-contract`, `return-policy`, `not-found`
+   - widgets: `header`, `footer`, `products` (card, grid, slider and the
+     slider section, formerly `product-grid`), `cart` (list, line, totals,
+     modal, header cart)
+   - features: `callback`, `write-review`, `search-products`, `track-utm`,
+     `edit-cart` (quantity, remove, clear), `begin-checkout`;
+     `add-to-cart` gained the product-page button (every buy button shares
+     `useAddToCartFlight`), `toggle-favorite` a `size` prop
+   - entities: `review`, `banner`, `reviewed-product`, `utm`; `category`
+     gained the menu read and `categoryHref`, which every category link now
+     uses
+   - shared: `ui/swiper`, `ui/image-viewer`, `ui/rating-field`,
+     `ui/analytics`, `lib/useScreenWidth`, `lib/useImageTap`
+3. **Stores: done (2026-11-26).** The viewed-books history is
+   `entities/reviewed-product`, slugs only, with cards fetched through
+   `GET /api/products` like favorites. The UTM store is `entities/utm`,
+   read by both `features/track-utm` and `features/checkout`.
+4. **Before auth:** Sanity TypeGen, then the generated types replace the
+   hand-written entity types. The legacy root modules are all folded in (2026-11-26).
 
 Unit tests on pricing are the highest-value tests to add: pure logic, where
 the money is.
@@ -200,7 +216,7 @@ URL. Still open:
 - `shared/api/nova-poshta/client.ts` falls back to
   `NEXT_PUBLIC_NOVA_POSHTA_API_KEY` (read on the server only). Remove the
   fallback once `NOVA_POSHTA_API_KEY` is set in Vercel for both scopes.
-- Payment and delivery enums (`constants/enums.ts`) double as the label the
+- Payment and delivery enums (`shared/config/enums.ts`) double as the label the
   customer sees and the value KeyCRM stores, so changing the wording changes
   CRM data. Split them into stable keys with label and KeyCRM maps.
 - Two MonoPay callbacks for one order racing on different server instances

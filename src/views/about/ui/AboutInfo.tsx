@@ -1,7 +1,7 @@
 import Image from "next/image";
 import * as motion from "motion/react-client";
 import Container from "@/shared/ui/container/Container";
-import { fadeInAnimation } from "@/utils/animationVariants";
+import { fadeInAnimation } from "@/shared/lib/animationVariants";
 
 /**
  * The "about us" section of the about page: story, mission and photos in a

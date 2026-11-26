@@ -14,14 +14,12 @@ import {
   Button,
 } from "@react-email/components";
 import * as React from "react";
-import { DeliveryService, DeliveryType } from "@/constants/enums";
+import { DeliveryService, DeliveryType } from "@/shared/config/enums";
 import { formatHryvnia } from "@/entities/cart/lib/money";
-import { formatDate } from "@/utils/formatDate";
-import { sanityImageUrl } from "@/utils/sanityImage";
+import { FREE_DELIVERY_FROM } from "@/entities/cart/model/constants";
+import { formatDate } from "@/shared/lib/formatDate";
+import { sanityImageUrl } from "@/shared/lib/sanityImage";
 import type { OrderSummary } from "../model/types";
-
-/* Free delivery from this order total, in kopecks. */
-const FREE_DELIVERY_FROM = 1500_00;
 
 interface OrderConfirmationEmailProps {
   /* The placed order as the server priced it. */

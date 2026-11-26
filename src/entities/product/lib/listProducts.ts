@@ -1,7 +1,7 @@
-import { ITEMS_PER_PAGE } from "@/constants/pagination";
+import { ITEMS_PER_PAGE } from "@/shared/config/pagination";
 import { ListingParams } from "../model/listingParams";
 import { FILTER_OPTIONS, SORT_OPTION_SETS } from "../model/constants";
-import { Product } from "@/types/product";
+import { Product } from "../model/product";
 import {
   ListingOption,
   ListingPage,

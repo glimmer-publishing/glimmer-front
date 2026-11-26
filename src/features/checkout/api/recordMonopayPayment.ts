@@ -1,9 +1,9 @@
 import "server-only";
 import { toHryvnia, toKopecks } from "@/entities/cart/lib/money";
-import { isProduction } from "@/lib/env";
+import { isProduction } from "@/shared/config/env";
 import { addKeyCrmPayment, getKeyCrmOrder } from "@/shared/api/keycrm/client";
 import { notifyTelegram } from "@/shared/api/telegram/client";
-import { getKyivDateTime } from "@/utils/getKyivDate";
+import { getKyivDateTime } from "@/shared/lib/getKyivDate";
 import { paymentMessages } from "./orderDocuments";
 
 /* KeyCRM's id of the MonoPay payment method. */

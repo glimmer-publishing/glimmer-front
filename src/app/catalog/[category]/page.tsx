@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { parseListingParams } from "@/entities/product/model/listingParams";
 import { SearchParamsRecord } from "@/shared/lib/url";
 import CategoryView from "@/views/category/ui/CategoryView";
-import { parseCategoryParams } from "@/views/category/model/categoryParams";
+import { parseCategoryParams } from "@/entities/category/model/categoryParams";
 import { loadCategoryView } from "@/views/category/api/loadCategoryView";
 
 interface CategoryPageProps {

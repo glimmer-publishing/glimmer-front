@@ -1,5 +1,5 @@
 import type { NextConfig } from "next";
-import { isProduction } from "./src/lib/env";
+import { isProduction } from "./src/shared/config/env";
 
 const nextConfig: NextConfig = {
   // robots.txt is advisory and does not stop indexing of URLs found via

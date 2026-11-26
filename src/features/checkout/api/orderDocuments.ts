@@ -3,12 +3,12 @@ import {
   DeliveryService,
   DeliveryType,
   isOnlinePayment,
-} from "@/constants/enums";
+} from "@/shared/config/enums";
 import { toHryvnia } from "@/entities/cart/lib/money";
 import type { CartQuote, PricedLine } from "@/entities/cart/model/types";
 import type { MonopayBasketItem } from "@/shared/api/monopay/client";
 import { escapeHtml } from "@/shared/lib/html";
-import type { UtmData } from "@/store/utmStore";
+import type { UtmData } from "@/entities/utm/model/types";
 import type { CheckoutValues } from "../model/schema";
 import type { OrderLine, OrderSummary } from "../model/types";
 

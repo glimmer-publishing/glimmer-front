@@ -1,7 +1,7 @@
 import "server-only";
 import { allInstagramPostsQuery } from "./queries";
 import { fetchSanityDataServer } from "@/shared/api/sanity/fetch";
-import { InstagramPost } from "@/types/instagram";
+import { InstagramPost } from "../model/types";
 
 /**
  * Optional section: a failed read is logged and hides the posts, not the

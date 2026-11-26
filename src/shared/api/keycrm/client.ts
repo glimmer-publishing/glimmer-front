@@ -1,6 +1,6 @@
 import "server-only";
-import { CRM_API_URL } from "@/constants/constants";
-import { isProduction } from "@/lib/env";
+import { CRM_API_URL } from "@/shared/config/constants";
+import { isProduction } from "@/shared/config/env";
 
 /**
  * KeyCRM has no sandbox. Outside production nothing is sent: writes are

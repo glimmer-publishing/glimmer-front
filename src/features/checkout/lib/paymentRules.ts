@@ -1,4 +1,4 @@
-import { DeliveryService, PaymentOption } from "@/constants/enums";
+import { DeliveryService, PaymentOption } from "@/shared/config/enums";
 
 /**
  * Which payment methods an order may use. The one source of these rules:

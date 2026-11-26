@@ -3,8 +3,8 @@ import type { ProductListing } from "@/entities/product/model/types";
 import Breadcrumbs from "@/shared/ui/breadcrumbs/Breadcrumbs";
 import Container from "@/shared/ui/container/Container";
 import MarqueeLine from "@/shared/ui/marquee-line/MarqueeLine";
-import { fadeInAnimation } from "@/utils/animationVariants";
-import ProductGrid from "@/widgets/product-grid/ui/ProductGrid";
+import { fadeInAnimation } from "@/shared/lib/animationVariants";
+import ProductGrid from "@/widgets/products/ui/ProductGrid";
 import TelegramCTA from "@/widgets/telegram-cta/ui/TelegramCTA";
 
 export interface CollectionViewProps {

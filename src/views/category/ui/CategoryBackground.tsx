@@ -1,6 +1,6 @@
 import Image from "next/image";
 import * as motion from "motion/react-client";
-import { fadeInAnimation } from "@/utils/animationVariants";
+import { fadeInAnimation } from "@/shared/lib/animationVariants";
 
 /**
  * Faint decorative art behind long category lists (xl only).

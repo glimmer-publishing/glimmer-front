@@ -1,4 +1,4 @@
-import type { InstagramPost } from "@/types/instagram";
+import type { InstagramPost } from "@/entities/instagram-post/model/types";
 import Breadcrumbs from "@/shared/ui/breadcrumbs/Breadcrumbs";
 import MarqueeLine from "@/shared/ui/marquee-line/MarqueeLine";
 import Instagram from "@/widgets/instagram/ui/Instagram";

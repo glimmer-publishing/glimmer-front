@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import * as motion from "motion/react-client";
-import type { CatalogBanner } from "@/types/promoBanner";
-import { fadeInAnimation } from "@/utils/animationVariants";
-import { BANNER_IMAGE_QUALITY, sanityImageUrl } from "@/utils/sanityImage";
+import type { CatalogBanner } from "@/entities/banner/model/types";
+import { fadeInAnimation } from "@/shared/lib/animationVariants";
+import { BANNER_IMAGE_QUALITY, sanityImageUrl } from "@/shared/lib/sanityImage";
 
 interface CategoryBannerProps {
   /* The homepage banner marked "show on catalog" in Studio. */

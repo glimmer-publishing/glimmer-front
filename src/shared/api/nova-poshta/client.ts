@@ -1,5 +1,5 @@
 import "server-only";
-import { NOVA_POSHTA_API_URL } from "@/constants/constants";
+import { NOVA_POSHTA_API_URL } from "@/shared/config/constants";
 import type { NovaPoshtaCity, NovaPoshtaWarehouse } from "./types";
 
 /**

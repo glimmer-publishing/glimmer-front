@@ -3,9 +3,9 @@ import {
   DeliveryService,
   DeliveryType,
   PaymentOption,
-} from "@/constants/enums";
+} from "@/shared/config/enums";
 import { MAX_PROMO_LENGTH } from "@/entities/cart/model/constants";
-import { checkoutPhoneRegex, emailRegex, nameRegex } from "@/regex/regex";
+import { checkoutPhoneRegex, emailRegex, nameRegex } from "@/shared/lib/regex";
 import { paymentError } from "../lib/paymentRules";
 
 const REQUIRED = "Дане поле є обов'язковим до заповнення";

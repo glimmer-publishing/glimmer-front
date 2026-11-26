@@ -2,8 +2,8 @@ import "server-only";
 import { listProducts } from "@/entities/product/lib/listProducts";
 import { ListingParams } from "@/entities/product/model/listingParams";
 import { getProductsBySeries } from "@/entities/product/api/getProducts";
-import { decodePathParam } from "@/utils/decodePathParam";
-import { getSeriesHref } from "@/utils/getSeriesInfo";
+import { decodePathParam } from "@/shared/lib/decodePathParam";
+import { getSeriesHref } from "@/entities/product/lib/getSeriesInfo";
 import { CollectionViewProps } from "../ui/CollectionView";
 
 /* Props of a series page, or null when the series has no products. */

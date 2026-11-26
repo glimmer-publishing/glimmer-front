@@ -5,7 +5,7 @@ import { ListingParams } from "@/entities/product/model/listingParams";
 import { listProducts } from "@/entities/product/lib/listProducts";
 import { ProductSelection } from "@/entities/product/model/types";
 import { getProductSelection } from "@/entities/product/api/getProducts";
-import { CategoryParams } from "../model/categoryParams";
+import { CategoryParams } from "@/entities/category/model/categoryParams";
 import { CategoryViewProps } from "../ui/CategoryView";
 
 interface StaticCategory {

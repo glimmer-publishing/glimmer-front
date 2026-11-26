@@ -1,10 +1,8 @@
 "use client";
-import { useRef, useState } from "react";
-import type { Product } from "@/types/product";
+import type { Product } from "@/entities/product/model/product";
 import CartIcon from "@/shared/ui/icons/CartIcon";
 import AddToCartAnimation from "./AddToCartAnimation";
-import { useCartStore } from "@/entities/cart/model/store";
-import { trackAddToCart } from "@/utils/ecommerceTracking";
+import { useAddToCartFlight } from "../model/useAddToCartFlight";
 
 interface AddToCartProps {
   /* The product added, one at a time. */
@@ -19,43 +17,14 @@ interface AddToCartProps {
  */
 export default function AddToCart({ product, className }: AddToCartProps) {
   const { status } = product;
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const addItem = useCartStore((state) => state.addItem);
-
-  const [animationKey, setAnimationKey] = useState<number | null>(null);
-  const [startPos, setStartPos] = useState<{
-    top: number;
-    left: number;
-  } | null>(null);
-  const [animatingImage, setAnimatingImage] = useState<string | null>(null);
-
-  const handleAddToCart = () => {
-    const button = buttonRef.current;
-    if (!button) return;
-
-    const rect = button.getBoundingClientRect();
-    setStartPos({
-      top: rect.top - window.scrollY,
-      left: rect.left - window.scrollX,
-    });
-    setAnimatingImage(product.mainImage);
-    const key = Date.now();
-    setAnimationKey(key);
-
-    setTimeout(() => {
-      setAnimationKey(null);
-      addItem(product.id, 1);
-    }, 800);
-
-    trackAddToCart(product, 1);
-  };
+  const { buttonRef, addToCart, flight } = useAddToCartFlight(product);
 
   return (
     <>
       <div className="group relative w-full lg:w-fit">
         <button
           ref={buttonRef}
-          onClick={handleAddToCart}
+          onClick={addToCart}
           className={`group relative z-10 w-full lg:w-auto enabled:cursor-pointer flex items-center justify-center h-9 rounded-[6.4px]
           ${
             status === "inStock"
@@ -81,13 +50,7 @@ export default function AddToCart({ product, className }: AddToCartProps) {
           ${status === "inStock" ? "bg-main/60" : "bg-black/40"}`}
         ></div>
       </div>
-      {animationKey && startPos && animatingImage && (
-        <AddToCartAnimation
-          startPos={startPos}
-          animationKey={animationKey}
-          image={animatingImage}
-        />
-      )}
+      {!!flight && <AddToCartAnimation {...flight} />}
     </>
   );
 }

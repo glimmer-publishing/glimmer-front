@@ -1,7 +1,7 @@
 import CustomizedInput from "@/shared/ui/form/CustomizedInput";
 import { useFormikContext } from "formik";
 import MaskedInput from "react-text-mask";
-import { phoneMask } from "@/regex/regex";
+import { phoneMask } from "@/shared/lib/regex";
 
 interface Values {
   [fieldName: string]: string;

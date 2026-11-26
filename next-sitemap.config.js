@@ -4,7 +4,7 @@ import { createClient } from "next-sanity";
 
 export const client = createClient({
   projectId: "us9jz0mn",
-  // Mirrors src/lib/sanityClient.ts — see the note below on why this file
+  // Mirrors src/shared/api/sanity/client.ts — see the note below on why this file
   // cannot import from it.
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
   apiVersion: "2025-08-07",
@@ -13,14 +13,14 @@ export const client = createClient({
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL;
 
-// Duplicated from src/lib/env.ts on purpose: this file is plain ESM run by
+// Duplicated from src/shared/config/env.ts on purpose: this file is plain ESM run by
 // Node in the postbuild step, so it cannot import a .ts module without relying
 // on Node's type stripping (Node 23+ only). Keep the two in sync.
 const isProduction = process.env.VERCEL_ENV === "production";
 
-// Unlike sanityFetch in src/lib/sanityClient.ts, this does not inject $today,
+// Unlike sanityFetch in src/shared/api/sanity/client.ts, this does not inject $today,
 // so product queries using the discount-window fragments from
-// src/lib/queries.ts cannot run here. It only needs slugs.
+// the GROQ in src/entities/*/api/queries.ts cannot run here. It only needs slugs.
 export const fetchSanityDataServer = async (query, params = {}) => {
   try {
     return await client.fetch(query, params);
@@ -37,7 +37,7 @@ export const GET_DYNAMIC_PAGES_SLUGS = `{
     "slug": slug.current,
     "categorySlug": category->slug.current,
      },
-  // Feature name mirrors SERIES_FEATURE in src/utils/getSeriesInfo.ts.
+  // Feature name mirrors SERIES_FEATURE in src/entities/product/lib/getSeriesInfo.ts.
   "series": *[_type == "product"] {
     "names": features[feature->name == "Серія"].value,
      }
@@ -59,7 +59,7 @@ async function getDynamicPages() {
     (product) => `/catalog/${product.categorySlug}/${product.slug}`
   );
 
-  // Same URL shape as getSeriesHref in src/utils/getSeriesInfo.ts. Names are
+  // Same URL shape as getSeriesHref in src/entities/product/lib/getSeriesInfo.ts. Names are
   // not trimmed, because the series page matches the stored value exactly.
   const seriesNames = new Set(
     (res?.series || [])

@@ -1,4 +1,4 @@
-import type { InstagramPost } from "@/types/instagram";
+import type { InstagramPost } from "@/entities/instagram-post/model/types";
 import Container from "@/shared/ui/container/Container";
 import Section from "@/shared/ui/section/Section";
 import SectionDescription from "@/shared/ui/section-description/SectionDescription";

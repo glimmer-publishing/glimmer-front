@@ -1,6 +1,6 @@
 import "server-only";
 import { createClient } from "next-sanity";
-import { getKyivDate } from "@/utils/getKyivDate";
+import { getKyivDate } from "@/shared/lib/getKyivDate";
 
 const client = createClient({
   projectId: "us9jz0mn",

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { DEFAULT_METADATA } from "@/constants/constants";
-import { decodePathParam } from "@/utils/decodePathParam";
-import { getSeriesHref } from "@/utils/getSeriesInfo";
+import { DEFAULT_METADATA } from "@/shared/config/constants";
+import { decodePathParam } from "@/shared/lib/decodePathParam";
+import { getSeriesHref } from "@/entities/product/lib/getSeriesInfo";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "");
 

@@ -1,5 +1,5 @@
-import type { CatalogBanner } from "@/types/promoBanner";
-import { Product } from "@/types/product";
+import type { CatalogBanner } from "@/entities/banner/model/types";
+import type { Product } from "@/entities/product/model/product";
 
 /* A genre of a category with its products, shown as a tab. */
 export interface CategoryGenre {
@@ -14,4 +14,13 @@ export interface Category {
   genres?: CategoryGenre[];
   products: Product[];
   banner?: CatalogBanner;
+}
+
+/* A category as the header catalog menu lists it. */
+export interface MenuCategory {
+  id: string;
+  title: string;
+  slug: string;
+  order: number;
+  genres?: { title: string; slug: string }[];
 }

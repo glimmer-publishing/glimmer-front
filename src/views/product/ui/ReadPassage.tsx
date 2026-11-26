@@ -1,0 +1,169 @@
+"use client";
+
+import { useState, useRef, useEffect, Dispatch, SetStateAction } from "react";
+import ImageGallery from "react-image-gallery";
+import MainButton from "@/shared/ui/main-button/MainButton";
+import Modal from "@/shared/ui/modal/Modal";
+import Backdrop from "@/shared/ui/backdrop/Backdrop";
+import ArrowIcon from "@/shared/ui/icons/ArrowIcon";
+import { useScreenWidth } from "@/shared/lib/useScreenWidth";
+import MarqueeLine from "@/shared/ui/marquee-line/MarqueeLine";
+import AddToCartButton from "@/features/add-to-cart/ui/AddToCartButton";
+import ToggleFavorite from "@/features/toggle-favorite/ui/ToggleFavorite";
+import { Product } from "@/entities/product/model/product";
+import * as motion from "motion/react-client";
+import { fadeInAnimation } from "@/shared/lib/animationVariants";
+import {
+  PRODUCT_IMAGE_QUALITY,
+  sanityImageSrcSet,
+  sanityImageUrl,
+} from "@/shared/lib/sanityImage";
+
+interface ReadPassageProps {
+  /* Passage page images. */
+  bookScreens: string[];
+  /* The book on the page. */
+  currentProduct: Product;
+  /* Quantity the mobile buy button adds, from the page's counter. */
+  count: number;
+  /* Whether the passage modal is open. */
+  isModalShown: boolean;
+  /* Opens or closes the passage modal. */
+  setIsModalShown: Dispatch<SetStateAction<boolean>>;
+}
+
+export default function ReadPassage({
+  bookScreens,
+  currentProduct,
+  count,
+  isModalShown,
+  setIsModalShown,
+}: ReadPassageProps) {
+  const screenWidth = useScreenWidth();
+  const isDesktop = screenWidth >= 768;
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const galleryRef = useRef<ImageGallery | null>(null);
+
+  const altPrefix = `Уривок книги: ${currentProduct.title}`;
+
+  /* Modal keeps its children mounted while closed, so the gallery is only
+     rendered once the modal has been opened - no passage page is fetched
+     before that. Latched: once opened it stays mounted and keeps its
+     position. */
+  const [hasBeenOpened, setHasBeenOpened] = useState(false);
+  useEffect(() => {
+    if (isModalShown) setHasBeenOpened(true);
+  }, [isModalShown]);
+
+  const galleryItems = bookScreens.map((photo, index) => ({
+    original: sanityImageUrl(photo, {
+      width: 842,
+      quality: PRODUCT_IMAGE_QUALITY,
+    }),
+    srcSet: sanityImageSrcSet(photo, [480, 640, 842, 1080]),
+    sizes: "(min-width: 768px) 421px, 320px",
+    thumbnail: sanityImageUrl(photo, {
+      width: 96,
+      quality: PRODUCT_IMAGE_QUALITY,
+    }),
+    originalAlt: `${altPrefix}, сторінка ${index + 1}`,
+    thumbnailAlt: `${altPrefix}, мініатюра ${index + 1}`,
+    thumbnailHeight: 48,
+    thumbnailWidth: 48,
+    originalClass:
+      "rounded-[8px] tabxl:rounded-[12px] overflow-hidden px-[1px]",
+    thumbnailClass: "custom-thumbnail",
+  }));
+
+  const handleSlide = (index: number) => {
+    setCurrentIndex(index);
+  };
+
+  return (
+    <div>
+      <motion.div
+        initial="hidden"
+        whileInView="visible"
+        exit="exit"
+        viewport={{ once: true, amount: 0.3 }}
+        variants={fadeInAnimation({ scale: 0.95, delay: 0.4 })}
+      >
+        <MainButton
+          onClick={() => setIsModalShown(true)}
+          variant="bordered"
+          className="h-[45px]"
+        >
+          Читати уривок
+        </MainButton>
+      </motion.div>
+      <Modal
+        headerTitle="Читати уривок"
+        isPopUpShown={isModalShown}
+        setIsPopUpShown={setIsModalShown}
+      >
+        <div className="book-screens w-full max-w-[320px] md:max-w-[580px] mx-auto lg:mx-0 overflow-visible">
+          {hasBeenOpened ? (
+            <ImageGallery
+              ref={(ref) => {
+                galleryRef.current = ref;
+              }}
+              items={galleryItems}
+              lazyLoad
+              showPlayButton={false}
+              showFullscreenButton={false}
+              showThumbnails={isDesktop}
+              useBrowserFullscreen={false}
+              showBullets={false}
+              slideOnThumbnailOver={true}
+              disableThumbnailScroll={false}
+              thumbnailPosition="left"
+              startIndex={currentIndex}
+              onSlide={handleSlide}
+              disableKeyDown={!isModalShown}
+              renderLeftNav={(onClick, disabled) => (
+                <button
+                  type="button"
+                  className="cursor-pointer rotate-90 absolute -left-4 lg:-left-6 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full will-change-transform 
+              active:scale-95 active:text-main xl:hover:text-main transition duration-300 ease-in-out"
+                  onClick={onClick}
+                  disabled={disabled}
+                >
+                  <ArrowIcon className="size-6 lg:size-10" />
+                </button>
+              )}
+              renderRightNav={(onClick, disabled) => (
+                <button
+                  type="button"
+                  className="cursor-pointer -rotate-90 absolute -right-4 lg:-right-6 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full will-change-transform 
+              active:scale-95 active:text-main xl:hover:text-main transition duration-300 ease-in-out"
+                  onClick={onClick}
+                  disabled={disabled}
+                >
+                  <ArrowIcon className="size-6 lg:size-10" />
+                </button>
+              )}
+            />
+          ) : null}
+          <div className="fixed bottom-0 left-0 md:hidden w-full">
+            {isModalShown && <MarqueeLine className="md:hidden mt-2.5 mb-4" />}
+            <div className="flex justify-between gap-4 px-5 w-full my-4">
+              <ToggleFavorite slug={currentProduct.slug} size="large" />
+              <AddToCartButton
+                product={currentProduct}
+                count={count}
+                className="h-[45px] lg:max-w-[180px]"
+              />
+            </div>
+          </div>
+        </div>
+      </Modal>
+      <Backdrop
+        isVisible={isModalShown}
+        onClick={() => {
+          setIsModalShown(false);
+        }}
+      />
+    </div>
+  );
+}

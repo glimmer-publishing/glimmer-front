@@ -1,7 +1,7 @@
 "use client";
 import { useFormikContext } from "formik";
 import { useEffect } from "react";
-import { DeliveryService, PaymentOption } from "@/constants/enums";
+import { DeliveryService, PaymentOption } from "@/shared/config/enums";
 import type { CartQuote } from "@/entities/cart/model/types";
 import RadioButtonInput from "@/shared/ui/form/RadioButtonInput";
 import { availablePayments } from "../lib/paymentRules";

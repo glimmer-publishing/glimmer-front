@@ -1,7 +1,7 @@
 "use client";
 import Marquee from "react-fast-marquee";
 import * as motion from "motion/react-client";
-import { headerVariants } from "@/utils/animationVariants";
+import { headerVariants } from "@/shared/lib/animationVariants";
 
 interface MarqueeLineProps {
   className?: string;

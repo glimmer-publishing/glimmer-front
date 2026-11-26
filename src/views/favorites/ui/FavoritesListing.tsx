@@ -4,8 +4,8 @@ import { parseListingParams } from "@/entities/product/model/listingParams";
 import { ProductListing } from "@/entities/product/model/types";
 import Container from "@/shared/ui/container/Container";
 import Loader from "@/shared/ui/loader/Loader";
-import ProductGrid from "@/widgets/product-grid/ui/ProductGrid";
-import ProductsEmpty from "@/widgets/product-grid/ui/ProductsEmpty";
+import ProductGrid from "@/widgets/products/ui/ProductGrid";
+import ProductsEmpty from "@/widgets/products/ui/ProductsEmpty";
 import { useFavoriteProducts } from "../api/useFavoriteProducts";
 import FavoritesEmpty from "./FavoritesEmpty";
 

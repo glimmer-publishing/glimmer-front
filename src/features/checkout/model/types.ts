@@ -1,6 +1,6 @@
-import type { PaymentOption } from "@/constants/enums";
+import type { PaymentOption } from "@/shared/config/enums";
 import type { CartItem, CartQuote } from "@/entities/cart/model/types";
-import type { UtmData } from "@/store/utmStore";
+import type { UtmData } from "@/entities/utm/model/types";
 import type { CheckoutValues } from "./schema";
 
 /**

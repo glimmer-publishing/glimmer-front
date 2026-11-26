@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ValidationError } from "yup";
 import { getProductReference } from "@/entities/product/api/getProductReference";
-import { callBackValidation } from "@/schemas/callBackValidation";
-import { writeReviewValidation } from "@/schemas/writeReviewValidation";
+import { callBackValidation } from "@/features/callback/model/schema";
+import { writeReviewValidation } from "@/features/write-review/model/schema";
 import { sendTelegramMessage } from "@/shared/api/telegram/client";
 import { escapeHtml as e } from "@/shared/lib/html";
 

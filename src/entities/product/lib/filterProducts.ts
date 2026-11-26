@@ -1,4 +1,4 @@
-import { Product } from "@/types/product";
+import { Product } from "../model/product";
 
 export function filterProducts(products: Product[], filter: string): Product[] {
   switch (filter) {

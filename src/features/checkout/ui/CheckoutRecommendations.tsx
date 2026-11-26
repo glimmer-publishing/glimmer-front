@@ -6,8 +6,9 @@ import Link from "next/link";
 import { useCartStore } from "@/entities/cart/model/store";
 import type { PricedLine } from "@/entities/cart/model/types";
 import { useCartRecommendations } from "@/entities/product/api/useCartRecommendations";
-import { trackAddToCart } from "@/utils/ecommerceTracking";
-import { Product } from "@/types/product";
+import { toTrackedItem } from "@/entities/product/lib/toTrackedItem";
+import { trackAddToCart } from "@/shared/lib/ecommerceTracking";
+import { Product } from "@/entities/product/model/product";
 import MainButton from "@/shared/ui/main-button/MainButton";
 import CartIcon from "@/shared/ui/icons/CartIcon";
 import CheckoutSubTitle from "./CheckoutSubtitle";
@@ -68,7 +69,7 @@ export default function CheckoutRecommendations({
             product={product}
             onAddToCart={() => {
               addItem(product.id, 1);
-              trackAddToCart(product, 1);
+              trackAddToCart(toTrackedItem(product, 1));
             }}
           />
         ))}

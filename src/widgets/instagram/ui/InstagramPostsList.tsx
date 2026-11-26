@@ -1,7 +1,7 @@
-import type { InstagramPost } from "@/types/instagram";
+import type { InstagramPost } from "@/entities/instagram-post/model/types";
 import Image from "next/image";
 import * as motion from "motion/react-client";
-import { listVariants, listItemVariants } from "@/utils/animationVariants";
+import { listVariants, listItemVariants } from "@/shared/lib/animationVariants";
 
 interface InstagramPostsListProps {
   /* Posts to show, each linking to Instagram. */

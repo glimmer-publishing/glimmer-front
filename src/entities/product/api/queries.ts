@@ -126,3 +126,122 @@ export const productsBySeriesQuery = `
   count(features[feature->name == $seriesFeature && value == $seriesName]) > 0
 ] | order(title asc) ${listingCardProjection}
 `;
+
+/**
+ * Card projection for recommendation cards (genre-based matches and
+ * manual recommendations).
+ */
+const recommendedProductCardProjection = `
+    "id": _id,
+    "slug": slug.current,
+    title,
+    author,
+    price,
+    ${activeDiscountProjection},
+    "mainImage": gallery[0].asset->url,
+    status,
+    isBestseller,
+    isNew,
+    isNationalCashback,
+    sku,
+    features[]{
+      "featureName": feature->name,
+      value
+    },
+    "categorySlug": category->slug.current,
+    "categoryTitle": category->title,
+    ${genresProjection}`;
+
+/* One book with everything its product page shows. */
+export const productBySlugQuery = `
+  *[_type == "product" && slug.current == $productSlug][0]{
+    "id": _id,
+    "slug": slug.current,
+    title,
+    author,
+    price,
+    ${activeDiscountProjection},
+    "mainImage": gallery[0].asset->url,
+    status,
+    isBestseller,
+    isNew,
+    isNationalCashback,
+    "categorySlug": category->slug.current,
+    "categoryTitle": category->title,
+    description,
+    "gallery": gallery[].asset->url,
+    "bookScreens": bookScreens[].asset->url,
+    sku,
+    preOrderShippingDate,
+    features[]{
+      "featureName": feature->name,
+      value
+    },
+    "reviews": reviews[] | order(date desc){
+      "author": name,
+      rating,
+      text,
+      date
+    },
+    ${genresProjection}
+  }
+`;
+
+/**
+ * Accepts $genreSlugs (string[]) and $currentSlug (string). A product
+ * matches if it shares at least one genre slug with the given list.
+ */
+export const allRecommendedProductsQuery = `
+  *[_type == "product"
+    && slug.current != $currentSlug
+    && count(
+         (genres[]->slug.current)[@ in $genreSlugs]
+       ) > 0
+  ]{
+    ${recommendedProductCardProjection}
+  }
+`;
+
+/**
+ * Accepts $slugs (string[]) and returns one entry per matching product, so a
+ * caller holding several products (the checkout cart) collects all their
+ * curated picks in a single round trip. Kept separate from
+ * `productBySlugQuery` so the product object stays small.
+ *
+ * GROQ does not preserve the order of `$slugs`, so callers that care about
+ * ordering must reorder by slug themselves - see `orderManualRecommendations`.
+ */
+export const manualRecommendationsBySlugsQuery = `
+  *[_type == "product" && slug.current in $slugs]{
+    "slug": slug.current,
+    "manualRecommendations": manualRecommendations[]->{
+      ${recommendedProductCardProjection}
+    }
+  }
+`;
+
+/* Only the primary genre's name, for the Google Merchant feed. */
+const genreTitleProjection = `
+    "genreTitle": genres[0]->name`;
+
+/* Books with a cover, for the Google Merchant feed at /api/feed. */
+export const allProductsForFeedQuery = `
+*[_type == "product" && defined(gallery[0]) && category->slug.current == "khudozhnya-literatura"]{
+  "id": sku,
+  "slug": slug.current,
+  title,
+  "description": coalesce(description, title),
+  price,
+  ${activeDiscountProjection},
+  status,
+  preOrderShippingDate,
+  "mainImage": gallery[0].asset->url,
+  "categorySlug": category->slug.current,
+  "categoryTitle": category->title,
+  ${genreTitleProjection},
+  features[]{
+    "featureName": feature->name,
+    value
+  }
+}
+`;

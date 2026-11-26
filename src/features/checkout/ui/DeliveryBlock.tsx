@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useFormikContext, ErrorMessage } from "formik";
-import { DeliveryService, DeliveryType } from "@/constants/enums";
+import { DeliveryService, DeliveryType } from "@/shared/config/enums";
 import type { NovaPoshtaWarehouse } from "@/shared/api/nova-poshta/types";
 import CustomizedInput from "@/shared/ui/form/CustomizedInput";
 import RadioButtonInput from "@/shared/ui/form/RadioButtonInput";

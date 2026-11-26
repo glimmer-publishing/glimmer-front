@@ -1,6 +1,6 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { Product } from "@/types/product";
+import { Product } from "../model/product";
 
 /**
  * Suggestions for the cart from GET /api/recommendations, keyed on the cart's

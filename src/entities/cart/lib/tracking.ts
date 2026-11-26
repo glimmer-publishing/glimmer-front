@@ -1,4 +1,4 @@
-import type { TrackedItem } from "@/utils/ecommerceTracking";
+import type { TrackedItem } from "@/shared/lib/ecommerceTracking";
 import type { PricedLine } from "../model/types";
 import { toHryvnia } from "./money";
 

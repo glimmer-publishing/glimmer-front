@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { DeliveryService } from "@/constants/enums";
+import { DeliveryService } from "@/shared/config/enums";
 import { formatHryvnia, toHryvnia } from "@/entities/cart/lib/money";
 import { useOrderStore } from "@/features/checkout/model/orderStore";
 import type { OrderSummary } from "@/features/checkout/model/types";
@@ -13,12 +13,12 @@ import MarqueeLine from "@/shared/ui/marquee-line/MarqueeLine";
 import TelegramCTA from "@/widgets/telegram-cta/ui/TelegramCTA";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
-import { EMAIL_CLIENTS, PHONE } from "@/constants/constants";
-import { contactsPhoneRegex } from "@/regex/regex";
+import { EMAIL_CLIENTS, PHONE } from "@/shared/config/constants";
+import { contactsPhoneRegex } from "@/shared/lib/regex";
 import * as motion from "motion/react-client";
-import { fadeInAnimation } from "@/utils/animationVariants";
-import { formatDate } from "@/utils/formatDate";
-import { trackPurchaseOnce } from "@/utils/ecommerceTracking";
+import { fadeInAnimation } from "@/shared/lib/animationVariants";
+import { formatDate } from "@/shared/lib/formatDate";
+import { trackPurchaseOnce } from "@/shared/lib/ecommerceTracking";
 
 pdfMake.vfs = pdfFonts.vfs;
 

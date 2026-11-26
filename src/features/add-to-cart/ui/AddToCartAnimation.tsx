@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { createPortal } from "react-dom";
+import { CART_BUTTON_ID } from "@/entities/cart/model/constants";
 
 interface AddToCartAnimationProps {
   /* Viewport position of the product image the flight starts from. */
@@ -65,7 +66,7 @@ function FlyingImage({
  */
 export default function AddToCartAnimation(props: AddToCartAnimationProps) {
   const cartRect = document
-    .getElementById("cart-button")
+    .getElementById(CART_BUTTON_ID)
     ?.getBoundingClientRect();
 
   if (!cartRect) return null;

@@ -3,12 +3,13 @@ import {
   allDiscountedProductsQuery,
   allProductsQuery,
   productsByAuthorQuery,
+  productBySlugQuery,
   productsBySeriesQuery,
 } from "./queries";
 import { fetchSanityDataServer } from "@/shared/api/sanity/fetch";
-import type { CatalogBanner } from "@/types/promoBanner";
-import { SERIES_FEATURE } from "@/utils/getSeriesInfo";
-import { Product } from "@/types/product";
+import type { CatalogBanner } from "@/entities/banner/model/types";
+import { SERIES_FEATURE } from "../lib/getSeriesInfo";
+import { Product } from "../model/product";
 import { ProductSelection, ProductSelectionData } from "../model/types";
 
 /**
@@ -74,3 +75,13 @@ export const getProductsBySlugs = async (
 
   return products.filter((product) => wanted.has(product.slug));
 };
+
+/**
+ * One book by slug, or null when there is none. Cached and throwing, so a
+ * failed rebuild keeps the cached page rather than caching a false 404.
+ * generateMetadata and the page both call it; Next dedupes the identical
+ * cached fetch within one render.
+ */
+export const getProductBySlug = async (slug: string): Promise<Product | null> =>
+  (await fetchSanityDataServer(productBySlugQuery, { productSlug: slug })) ??
+  null;

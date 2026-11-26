@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import clsx from "clsx";
 import { twMerge } from "tailwind-merge";
 import * as motion from "motion/react-client";
-import { fadeInAnimation } from "@/utils/animationVariants";
+import { fadeInAnimation } from "@/shared/lib/animationVariants";
 
 interface SectionDescriptionProps {
   children?: ReactNode;

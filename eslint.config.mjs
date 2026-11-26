@@ -20,30 +20,39 @@ const SLICED_LAYERS = ["views", "widgets", "features", "entities"];
 /**
  * The rules for files in one layer: no upward imports, no other slice of the
  * same layer (inside a slice imports are relative), no legacy components.
+ * Entities may import each other's types, never their values: a type that
+ * two entities share (Product in a category) belongs to the entity that owns
+ * it, and `import type` is erased at build time, so no runtime coupling
+ * appears. The TypeScript variant of the rule is what allows that.
  */
 const layerRules = (layer) => {
   const index = LAYERS.indexOf(layer);
-  const forbidden = LAYERS.slice(0, index);
-  if (SLICED_LAYERS.includes(layer)) forbidden.push(layer);
+  const upward = LAYERS.slice(0, index);
+  const sameLayer = SLICED_LAYERS.includes(layer) ? [layer] : [];
 
   return {
     files: [`src/${layer}/**/*.{ts,tsx}`],
     rules: {
-      "no-restricted-imports": [
+      "no-restricted-imports": "off",
+      "@typescript-eslint/no-restricted-imports": [
         "error",
         {
           patterns: [
-            ...forbidden.map((other) => ({
+            ...upward.map((other) => ({
               group: [`@/${other}`, `@/${other}/*`],
-              message:
-                other === layer
-                  ? `A ${layer} slice cannot import another ${layer} slice; use relative imports inside a slice.`
-                  : `${layer} cannot import from ${other}, a higher layer.`,
+              message: `${layer} cannot import from ${other}, a higher layer.`,
+            })),
+            ...sameLayer.map((other) => ({
+              group: [`@/${other}`, `@/${other}/*`],
+              message: `A ${layer} slice cannot import another ${layer} slice${
+                layer === "entities" ? " (type-only imports are allowed)" : ""
+              }; use relative imports inside a slice.`,
+              allowTypeImports: layer === "entities",
             })),
             {
               group: ["@/components", "@/components/*"],
               message:
-                "The layered code never imports legacy src/components; duplicate it into shared/ui instead.",
+                "src/components no longer exists; put shared UI in shared/ui or the owning slice.",
             },
           ],
         },
@@ -52,9 +61,28 @@ const layerRules = (layer) => {
   };
 };
 
+/**
+ * Entities are domain data only: types, reads, stores, pure logic. Their
+ * display lives in widgets and views, their user actions in features.
+ */
+const entitiesHaveNoUi = {
+  files: ["src/entities/**/*.{ts,tsx}"],
+  rules: {
+    "no-restricted-syntax": [
+      "error",
+      {
+        selector: "JSXElement, JSXFragment",
+        message:
+          "Entities hold no UI: render in a widget or view, act in a feature.",
+      },
+    ],
+  },
+};
+
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   ...SLICED_LAYERS.concat("shared").map(layerRules),
+  entitiesHaveNoUi,
 ];
 
 export default eslintConfig;

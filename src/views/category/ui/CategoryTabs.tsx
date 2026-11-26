@@ -1,12 +1,12 @@
 import Link from "next/link";
 import * as motion from "motion/react-client";
-import { fadeInAnimation } from "@/utils/animationVariants";
+import { fadeInAnimation } from "@/shared/lib/animationVariants";
 import type { CategoryGenre } from "@/entities/category/model/types";
 import {
   ListingParams,
   listingHref,
 } from "@/entities/product/model/listingParams";
-import { categoryHref } from "../model/categoryParams";
+import { categoryHref } from "@/entities/category/model/categoryParams";
 
 interface CategoryTabsProps {
   /* Path of the category page the tabs point to. */

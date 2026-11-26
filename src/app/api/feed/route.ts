@@ -1,6 +1,6 @@
 import { fetchSanityDataServer } from "@/shared/api/sanity/fetch";
-import { allProductsForFeedQuery } from "@/lib/queries";
-import { sanityImageUrl } from "@/utils/sanityImage";
+import { allProductsForFeedQuery } from "@/entities/product/api/queries";
+import { sanityImageUrl } from "@/shared/lib/sanityImage";
 
 export const revalidate = 3600;
 

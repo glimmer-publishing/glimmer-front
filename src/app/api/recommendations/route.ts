@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCartRecommendations } from "@/entities/product/api/getCartRecommendations";
+import { getRecommendations } from "@/entities/product/api/getRecommendations";
 
 const MAX_PARAMS = 50;
 
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
 
   return NextResponse.json(
-    await getCartRecommendations(
+    await getRecommendations(
       readList(searchParams, "slug"),
       readList(searchParams, "genre")
     )

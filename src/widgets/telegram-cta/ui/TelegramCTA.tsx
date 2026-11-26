@@ -2,9 +2,9 @@ import Image from "next/image";
 import Container from "@/shared/ui/container/Container";
 import TelegramButton from "@/shared/ui/telegram-button/TelegramButton";
 import SectionTitle from "@/shared/ui/titles/SectionTitle";
-import { TELEGRAM_URL_CHANNEL } from "@/constants/constants";
+import { TELEGRAM_URL_CHANNEL } from "@/shared/config/constants";
 import * as motion from "motion/react-client";
-import { fadeInAnimation } from "@/utils/animationVariants";
+import { fadeInAnimation } from "@/shared/lib/animationVariants";
 
 /**
  * Call to subscribe to the Telegram channel, above the footer.

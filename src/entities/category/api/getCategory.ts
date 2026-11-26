@@ -1,8 +1,8 @@
 import "server-only";
 import { allProductsByCategoryQuery } from "./queries";
 import { fetchSanityDataServer } from "@/shared/api/sanity/fetch";
-import { Product } from "@/types/product";
-import { CatalogBanner } from "@/types/promoBanner";
+import type { Product } from "@/entities/product/model/product";
+import type { CatalogBanner } from "@/entities/banner/model/types";
 import { Category, CategoryGenre } from "../model/types";
 
 interface CategoryData {

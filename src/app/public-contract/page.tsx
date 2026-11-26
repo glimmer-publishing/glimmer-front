@@ -1,19 +1,5 @@
-import PublicContract from "@/components/publicContractPage/PublicContract";
-import Breadcrumbs from "@/components/shared/breadcrumbs/Breadcrumbs";
+import PublicContractView from "@/views/public-contract/ui/PublicContractView";
 
 export default function PublicContractPage() {
-  const crumbs = [
-    { label: "Головна", href: "/" },
-    {
-      label: "Публічний договір",
-      href: "/public-contract",
-    },
-  ];
-
-  return (
-    <div className="pt-[85px]">
-      <Breadcrumbs crumbs={crumbs} />
-      <PublicContract />
-    </div>
-  );
+  return <PublicContractView />;
 }

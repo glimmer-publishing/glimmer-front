@@ -1,6 +1,6 @@
-import { Product } from "@/types/product";
-import { getAverageRating } from "@/utils/getAverageRating";
-import { getSeriesInfo } from "@/utils/getSeriesInfo";
+import { Product } from "../model/product";
+import { getAverageRating } from "./getAverageRating";
+import { getSeriesInfo } from "./getSeriesInfo";
 
 function compareBySeriesPosition(a: Product, b: Product): number {
   const positionA = getSeriesInfo(a.features)?.position;

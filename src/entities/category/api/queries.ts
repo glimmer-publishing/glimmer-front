@@ -72,3 +72,18 @@ export const allProductsByCategoryQuery = `
   }
 }
 `;
+
+/* Every category with its genres, for the header catalog menu. */
+export const menuCategoriesQuery = `
+*[_type == "category"]{
+  "id": _id,
+  title,
+  "slug": slug.current,
+  order,
+  genres[]-> | order(order asc){
+    "title": name,
+    "slug": slug.current,
+    order
+  }
+}
+`;

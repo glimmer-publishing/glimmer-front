@@ -6,12 +6,10 @@ import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { setCartQuote, useCartQuote } from "@/entities/cart/api/useCartQuote";
 import { useCartStore } from "@/entities/cart/model/store";
-import CartList from "@/entities/cart/ui/CartList";
-import CartTotal from "@/entities/cart/ui/CartTotal";
 import CustomizedInput from "@/shared/ui/form/CustomizedInput";
 import MainButton from "@/shared/ui/main-button/MainButton";
-import { useUtmStore } from "@/store/utmStore";
-import { listItemVariants, listVariants } from "@/utils/animationVariants";
+import { useUtmStore } from "@/entities/utm/model/store";
+import { listItemVariants, listVariants } from "@/shared/lib/animationVariants";
 import { createOrder } from "../api/createOrder";
 import { useOrderStore } from "../model/orderStore";
 import {
@@ -36,6 +34,10 @@ export type CheckoutNotice =
 interface CheckoutFormProps {
   /* Shows the customer why the order did not go through. */
   onNotice: (notice: CheckoutNotice) => void;
+  /* The cart's lines, shown under "Інформація про замовлення". */
+  cartList: ReactNode;
+  /* The cart's totals, with the form's submit button as their action. */
+  renderTotal: (submit: ReactNode) => ReactNode;
 }
 
 /* MonoPay's payment page is opened with a POST, as MonoPay expects. */
@@ -81,7 +83,11 @@ function CheckoutSection({ title, children, className }: CheckoutSectionProps) {
  * the server's quote; submitting calls createOrder, which re-validates and
  * re-prices everything before anything is created or charged.
  */
-export default function CheckoutForm({ onNotice }: CheckoutFormProps) {
+export default function CheckoutForm({
+  onNotice,
+  cartList,
+  renderTotal,
+}: CheckoutFormProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { quote, items, promoCode, hydrated, isFetching, isPlaceholderData } =
@@ -211,10 +217,7 @@ export default function CheckoutForm({ onNotice }: CheckoutFormProps) {
               title="Інформація про замовлення"
               className="py-4 md:p-0"
             >
-              <CartList
-                variant="checkout"
-                className="max-h-[201px] lg:max-h-[234px]"
-              />
+              {cartList}
               <CheckoutRecommendations lines={quote?.lines ?? []} />
             </CheckoutSection>
             <CheckoutSection
@@ -229,23 +232,20 @@ export default function CheckoutForm({ onNotice }: CheckoutFormProps) {
               variants={listItemVariants}
               className="py-6 md:p-0 border-t md:border-none border-black/10"
             >
-              <CartTotal
-                variant="checkout"
-                action={
-                  <MainButton
-                    type="submit"
-                    disabled={
-                      !(dirty && isValid && isQuoteCurrent && !!quote?.total) ||
-                      isSubmitting
-                    }
-                    isLoading={isSubmitting}
-                    loadingText="Надсилання..."
-                    className="h-[45px]"
-                  >
-                    Оформити замовлення
-                  </MainButton>
-                }
-              />
+              {renderTotal(
+                <MainButton
+                  type="submit"
+                  disabled={
+                    !(dirty && isValid && isQuoteCurrent && !!quote?.total) ||
+                    isSubmitting
+                  }
+                  isLoading={isSubmitting}
+                  loadingText="Надсилання..."
+                  className="h-[45px]"
+                >
+                  Оформити замовлення
+                </MainButton>
+              )}
             </motion.div>
           </motion.div>
         </Form>

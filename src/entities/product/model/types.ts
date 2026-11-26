@@ -1,5 +1,5 @@
-import type { CatalogBanner } from "@/types/promoBanner";
-import { Product } from "@/types/product";
+import type { CatalogBanner } from "@/entities/banner/model/types";
+import { Product } from "./product";
 import { ListingParams } from "./listingParams";
 
 /* One choice of the filter or sort list. */
@@ -53,3 +53,13 @@ export interface ProductListing {
 export interface ProductListingResponse {
   listing: ProductListing | null;
 }
+
+/**
+ * One manualRecommendationsBySlugsQuery entry. Inner entries are null for
+ * picks that no longer resolve (the reference is weak, so the target can be
+ * removed).
+ */
+export type ManualRecommendationsBySlug = {
+  slug: string;
+  manualRecommendations: Array<Product | null> | null;
+};

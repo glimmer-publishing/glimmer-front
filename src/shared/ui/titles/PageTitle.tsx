@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import * as motion from "motion/react-client";
-import { fadeInAnimation } from "@/utils/animationVariants";
+import { fadeInAnimation } from "@/shared/lib/animationVariants";
 
 interface PageTitleProps {
   children?: ReactNode;

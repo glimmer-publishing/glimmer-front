@@ -1,0 +1,42 @@
+import { CatalogItem } from "../model/catalogItem";
+import { categoryPageHref } from "@/entities/category/model/categoryParams";
+import type { MenuCategory } from "@/entities/category/model/types";
+
+const promoItem: CatalogItem = {
+  slug: "promo",
+  title: "Акції",
+  href: "/catalog/promo",
+};
+
+// Весь каталог — книги і канцелярія в одному списку, без жанрових чіпів.
+const allProductsItem: CatalogItem = {
+  slug: "all",
+  title: "Весь каталог",
+  href: "/catalog/all",
+};
+
+// Категорія з жанрами не показується в меню окремим пунктом — замість неї
+// виводяться її жанри, щоб каталог залишався одного рівня.
+export function buildCatalogList(
+  categories: MenuCategory[] = []
+): CatalogItem[] {
+  const items = [...categories]
+    .sort((a, b) => a.order - b.order)
+    .flatMap((category) =>
+      category.genres && category.genres.length > 0
+        ? category.genres.map((genre) => ({
+            slug: genre.slug,
+            title: genre.title,
+            href: categoryPageHref(category.slug, genre.slug),
+          }))
+        : [
+            {
+              slug: category.slug,
+              title: category.title,
+              href: categoryPageHref(category.slug),
+            },
+          ]
+    );
+
+  return [promoItem, allProductsItem, ...items];
+}
