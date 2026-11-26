@@ -1,10 +1,10 @@
 import * as motion from "motion/react-client";
-import { fadeInAnimation } from "@/shared/lib/animationVariants";
+import { fadeInAnimation } from "@/shared/lib/animation/animationVariants";
 
-interface ProductsEmptyProps {
+type ProductsEmptyProps = {
   /* Text to show; defaults to the generic "no products yet" line. */
   message?: string;
-}
+};
 
 /**
  * Empty state of a product grid, shown when no product matches.

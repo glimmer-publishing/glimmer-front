@@ -8,6 +8,7 @@ import PageTitle from "@/shared/ui/titles/PageTitle";
 import TelegramCTA from "@/widgets/telegram-cta/ui/TelegramCTA";
 import FavoritesListing from "./FavoritesListing";
 
+/* The page's breadcrumb trail. */
 const CRUMBS = [
   { label: "Головна", href: "/" },
   { label: "Обрані товари", href: "/favorites" },

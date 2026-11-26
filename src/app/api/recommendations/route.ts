@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getRecommendations } from "@/entities/product/api/getRecommendations";
 
+/* At most this many slugs or genres are read from the query. */
 const MAX_PARAMS = 50;
 
+/* The non-empty values of a repeated query param, capped at MAX_PARAMS. */
 const readList = (params: URLSearchParams, name: string) =>
   params
     .getAll(name)

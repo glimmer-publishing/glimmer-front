@@ -1,11 +1,17 @@
 import { ReactNode } from "react";
 
-interface IconButtonProps {
+type IconButtonProps = {
+  /* Called on click. */
   handleClick?: () => void;
+  /* The icon. */
   children: ReactNode;
+  /* Extra classes for the root element. */
   className?: string;
-}
+};
 
+/**
+ * A round button that holds an icon, with a glow on hover and focus.
+ */
 export default function IconButton({
   handleClick,
   children,

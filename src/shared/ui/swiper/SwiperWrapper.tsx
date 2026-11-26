@@ -6,19 +6,30 @@ import { ReactNode } from "react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import { Swiper } from "swiper/react";
 import { Swiper as SwiperClass, SwiperOptions } from "swiper/types";
-import { createPagination } from "./CustomPagination";
-import { useScreenWidth } from "@/shared/lib/useScreenWidth";
+import { createPagination } from "./SwiperPagination";
+import { useScreenWidth } from "@/shared/hooks/useScreenWidth";
 
-interface SwiperWrapperProps {
+type SwiperWrapperProps = {
+  /* The slides, each a SwiperSlide. */
   children: ReactNode;
+  /* Slides per view and spacing per screen width. */
   breakpoints: SwiperOptions["breakpoints"];
+  /* Classes of the Swiper element. */
   swiperClassName: string;
+  /* Wraps around after the last slide. */
   loop?: boolean;
+  /* Shows the pagination dots. */
   isPagination?: boolean;
+  /* Swiper autoplay options. */
   autoplay?: SwiperOptions["autoplay"];
+  /* Called when the active slide changes. */
   onSlideChange?: (swiper: SwiperClass) => void;
-}
+};
 
+/**
+ * A Swiper carousel with the site's navigation and pagination; children are
+ * the slides.
+ */
 export default function SwiperWrapper({
   children,
   breakpoints,

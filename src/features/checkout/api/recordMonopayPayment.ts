@@ -3,20 +3,21 @@ import { toHryvnia, toKopecks } from "@/entities/cart/lib/money";
 import { isProduction } from "@/shared/config/env";
 import { addKeyCrmPayment, getKeyCrmOrder } from "@/shared/api/keycrm/client";
 import { notifyTelegram } from "@/shared/api/telegram/client";
-import { getKyivDateTime } from "@/shared/lib/getKyivDate";
+import { getKyivDateTime } from "@/shared/lib/date/getKyivDate";
 import { paymentMessages } from "./orderDocuments";
 
 /* KeyCRM's id of the MonoPay payment method. */
 const KEYCRM_MONOPAY_METHOD_ID = 6;
 
-interface MonopayPayment {
+/* A paid invoice as the webhook reports it. */
+type MonopayPayment = {
   /* The KeyCRM order id createOrder passed as the invoice reference. */
   reference: string;
   /* MonoPay's invoice id; marks the KeyCRM payment it produced. */
   invoiceId: string;
   /* Kopecks actually paid. */
   finalAmount: number;
-}
+};
 
 /**
  * Callbacks for the same order are handled one after another on this
@@ -26,6 +27,7 @@ interface MonopayPayment {
  */
 const inFlight = new Map<string, Promise<void>>();
 
+/* Whether KeyCRM already holds a payment for this invoice. */
 const isRecorded = async (reference: string, invoiceId: string) => {
   const order = await getKeyCrmOrder(reference);
   if (!order) throw new Error(`KeyCRM order ${reference} not found`);
@@ -39,6 +41,7 @@ const isRecorded = async (reference: string, invoiceId: string) => {
   return { order, recorded };
 };
 
+/* Adds the payment to the KeyCRM order and notifies operations. */
 const record = async ({
   reference,
   invoiceId,

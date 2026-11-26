@@ -1,14 +1,19 @@
 import { fetchSanityDataServer } from "@/shared/api/sanity/fetch";
 import { allProductsForFeedQuery } from "@/entities/product/api/queries";
-import { sanityImageUrl } from "@/shared/lib/sanityImage";
+import { sanityImageUrl } from "@/shared/lib/images/sanityImage";
+import { publicEnv } from "@/shared/config/env";
+import type { ProductStatus } from "@/entities/product/model/product";
 
 export const revalidate = 3600;
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL!.replace(/\/+$/, "");
+/* Absolute product links need the site's origin. */
+const SITE_URL = publicEnv.siteUrl;
+/* The brand every item is listed under. */
 const BRAND = "Glimmer";
 
 const GOOGLE_PRODUCT_CATEGORY = "784"; // Media > Books
 
+/* A book as allProductsForFeedQuery projects it. */
 type FeedProduct = {
   id: string;
   slug: string;
@@ -16,7 +21,7 @@ type FeedProduct = {
   description?: string;
   price: number;
   discountPrice?: number | null;
-  status: "inStock" | "preOrder";
+  status: ProductStatus;
   preOrderShippingDate?: string;
   mainImage?: string;
   categorySlug?: string;
@@ -25,10 +30,12 @@ type FeedProduct = {
   features?: { featureName: string; value: string }[];
 };
 
+/* Wraps free text so XML special characters need no escaping. */
 function cdata(value: string): string {
   return `<![CDATA[${value.trim()}]]>`;
 }
 
+/* Escapes the five XML special characters. */
 function escapeXml(value: string): string {
   return value
     .replace(/&/g, "&amp;")
@@ -38,6 +45,7 @@ function escapeXml(value: string): string {
     .replace(/'/g, "&apos;");
 }
 
+/* Whether a value is a valid EAN-13 / ISBN-13, check digit included. */
 function isValidGtin13(value: string): boolean {
   const digits = value.replace(/[-\s]/g, "");
   if (!/^\d{13}$/.test(digits)) return false;
@@ -49,6 +57,7 @@ function isValidGtin13(value: string): boolean {
   return checkDigit === parseInt(digits[12]);
 }
 
+/* A YYYY-MM-DD date as Google's ISO 8601 date-time. */
 function formatAvailabilityDate(date: string): string {
   // Sanity stores dates as YYYY-MM-DD; Google requires ISO 8601 with time
   if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
@@ -57,6 +66,10 @@ function formatAvailabilityDate(date: string): string {
   return date;
 }
 
+/**
+ * One book as a Merchant Center <item>: link, image, availability, prices,
+ * type and GTIN when known.
+ */
 function buildItem(product: FeedProduct): string {
   const {
     id,
@@ -102,7 +115,9 @@ function buildItem(product: FeedProduct): string {
     `      <g:google_product_category>${googleCategory}</g:google_product_category>`,
   ];
 
-  lines.push(`      <g:description>${cdata(description ?? "")}</g:description>`);
+  lines.push(
+    `      <g:description>${cdata(description ?? "")}</g:description>`
+  );
   lines.push(`      <g:link>${escapeXml(link)}</g:link>`);
 
   if (mainImage) {
@@ -149,11 +164,18 @@ function buildItem(product: FeedProduct): string {
   return lines.join("\n");
 }
 
+/**
+ * GET /api/feed: the Google Merchant Center RSS feed of books with a cover,
+ * cached like every Sanity read.
+ */
 export async function GET() {
-  // Failures throw rather than return a 500: Next caches whatever Response the
-  // handler returns, while a thrown error keeps serving the previous feed.
-  const products: FeedProduct[] | undefined =
-    await fetchSanityDataServer(allProductsForFeedQuery);
+  /**
+   * Failures throw rather than return a 500: Next caches whatever Response the
+   * handler returns, while a thrown error keeps serving the previous feed.
+   */
+  const products: FeedProduct[] | undefined = await fetchSanityDataServer(
+    allProductsForFeedQuery
+  );
 
   if (!Array.isArray(products)) {
     throw new Error("Feed products query did not return a list");

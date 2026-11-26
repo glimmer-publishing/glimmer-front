@@ -5,7 +5,7 @@ import SectionTitle from "@/shared/ui/titles/SectionTitle";
 import type { Product } from "@/entities/product/model/product";
 import ProductSlider from "./ProductSlider";
 
-interface ProductSliderSectionProps {
+type ProductSliderSectionProps = {
   /* Section heading. */
   title: string;
   /* Text beside the heading on desktop, below it on mobile; home only. */
@@ -14,7 +14,7 @@ interface ProductSliderSectionProps {
   products: Product[];
   /* Swiper class; globals.css styles each slider by it. */
   swiperClassName: string;
-}
+};
 
 /**
  * A section of product cards: heading (with a description on home), then

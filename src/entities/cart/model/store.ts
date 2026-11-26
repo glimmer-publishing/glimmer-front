@@ -4,7 +4,8 @@ import { persist } from "zustand/middleware";
 import { MAX_LINES, MAX_QUANTITY } from "./constants";
 import type { CartItem } from "./types";
 
-interface CartState {
+/* The cart store's state and actions. */
+type CartState = {
   items: CartItem[];
   /* The code as the customer typed it; the server decides whether it applies. */
   promoCode: string | null;
@@ -19,21 +20,28 @@ interface CartState {
   removeItems: (ids: string[]) => void;
   setPromoCode: (code: string | null) => void;
   clearCart: () => void;
-}
+};
 
+/* A quantity forced into 1..MAX_QUANTITY. */
 const clamp = (quantity: number) =>
   Math.min(MAX_QUANTITY, Math.max(1, Math.floor(quantity)));
 
+/* The items with one item's quantity changed by delta, kept in range. */
 const changeQuantity = (items: CartItem[], id: string, delta: number) =>
   items.map((item) =>
     item.id === id ? { ...item, quantity: clamp(item.quantity + delta) } : item
   );
 
-interface PersistedV0 {
+/* The cart as version 0 stored it: whole products. Migrated to ids. */
+type PersistedV0 = {
   cart?: { product?: { id?: unknown }; quantity?: unknown }[];
   promoCode?: unknown;
-}
+};
 
+/**
+ * The cart in localStorage: ids, quantities and the promo code. Prices come
+ * from the server quote.
+ */
 export const useCartStore = create<CartState>()(
   persist(
     (set) => ({

@@ -1,13 +1,18 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-interface FavoritesState {
+/* The favorites store's state and actions. */
+type FavoritesState = {
   slugs: string[];
   /* True once the slugs are read from localStorage. */
   hydrated: boolean;
   toggleFavorite: (slug: string) => void;
-}
+};
 
+/**
+ * Favorite book slugs in localStorage; read after hydration to avoid a
+ * mismatch with the server HTML.
+ */
 export const useFavoritesStore = create<FavoritesState>()(
   persist(
     (set) => ({
@@ -50,6 +55,7 @@ export const useFavoritesStore = create<FavoritesState>()(
   )
 );
 
+/* Reads the stored favorites once, on the client. */
 export const hydrateFavorites = () => {
   if (!useFavoritesStore.persist.hasHydrated()) {
     useFavoritesStore.persist.rehydrate();

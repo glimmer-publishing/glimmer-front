@@ -1,5 +1,6 @@
 import Script from "next/script";
 
+/* The Meta Pixel. */
 const META_PIXEL_ID = "24760289606953294";
 
 /**

@@ -1,7 +1,11 @@
-interface HeartIconProps {
+type HeartIconProps = {
+  /* Extra classes for the root element. */
   className?: string;
-}
+};
 
+/**
+ * Filled heart icon: a favorite.
+ */
 export default function HeartIcon({ className }: HeartIconProps) {
   return (
     <svg

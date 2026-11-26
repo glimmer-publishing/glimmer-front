@@ -1,0 +1,31 @@
+"use client";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import {
+  listingHref,
+  ListingParams,
+} from "@/shared/lib/searchParams/listingParams";
+import { fetchJson } from "@/shared/api/http/fetchJson";
+import type { ProductListingResponse } from "../model/types";
+
+/**
+ * The listing of the products with these slugs, loaded in the browser from
+ * GET /api/products. Nothing is requested while enabled is false or there
+ * are no slugs. A change of slugs or params keeps the previous listing on
+ * screen until the new one arrives.
+ */
+export const useFetchListingBySlugs = (
+  slugs: string[],
+  params: ListingParams,
+  enabled = true
+) => {
+  const slugParams = new URLSearchParams();
+  slugs.forEach((slug) => slugParams.append("slug", slug));
+  const url = listingHref(`/api/products?${slugParams}`, params);
+
+  return useQuery({
+    queryKey: ["product-listing", url],
+    queryFn: ({ signal }) => fetchJson<ProductListingResponse>(url, signal),
+    enabled: enabled && slugs.length > 0,
+    placeholderData: keepPreviousData,
+  });
+};

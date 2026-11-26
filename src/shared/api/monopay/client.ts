@@ -1,7 +1,9 @@
 import "server-only";
 import { createVerify } from "crypto";
-import { siteUrl } from "@/shared/lib/siteUrl";
+import { publicEnv } from "@/shared/config/env";
+import { serverEnv } from "@/shared/config/serverEnv";
 
+/* MonoPay's merchant API. */
 const MONOBANK_API_URL = "https://api.monobank.ua/api/merchant";
 
 /**
@@ -11,17 +13,14 @@ const MONOBANK_API_URL = "https://api.monobank.ua/api/merchant";
  */
 export type MonopayAccount = "main" | "nationalCashback";
 
+/* Variable names per account, for the "not configured" errors. */
 const TOKEN_ENV: Record<MonopayAccount, string> = {
   main: "MONOPAY_TOKEN",
   nationalCashback: "MONOPAY_NATIONAL_CASHBACK_TOKEN",
 };
 
-const PUBKEY_ENV: Record<MonopayAccount, string> = {
-  main: "MONOPAY_PUBKEY",
-  nationalCashback: "MONOPAY_NATIONAL_CASHBACK_PUBKEY",
-};
-
-export interface MonopayBasketItem {
+/* One basket entry of a MonoPay invoice. */
+export type MonopayBasketItem = {
   name: string;
   qty: number;
   /* Kopecks per unit. */
@@ -30,16 +29,17 @@ export interface MonopayBasketItem {
   total: number;
   code: string;
   unit: string;
-}
+};
 
-interface InvoiceRequest {
+/* What an invoice needs. */
+type InvoiceRequest = {
   account: MonopayAccount;
   /* Kopecks; must equal the sum of basket totals. */
   amount: number;
   /* The KeyCRM order id; the webhook gets it back as `reference`. */
   reference: string;
   basket: MonopayBasketItem[];
-}
+};
 
 /* Creates an invoice and returns the payment page URL. Throws on failure. */
 export const createMonopayInvoice = async ({
@@ -48,7 +48,7 @@ export const createMonopayInvoice = async ({
   reference,
   basket,
 }: InvoiceRequest): Promise<string> => {
-  const token = process.env[TOKEN_ENV[account]];
+  const { token } = serverEnv.monopay[account];
   if (!token) throw new Error(`${TOKEN_ENV[account]} is not configured`);
 
   const response = await fetch(`${MONOBANK_API_URL}/invoice/create`, {
@@ -63,8 +63,8 @@ export const createMonopayInvoice = async ({
         destination: "Покупка товару",
         comment: "Покупка товару",
       },
-      redirectUrl: `${siteUrl()}/confirmation`,
-      webHookUrl: `${siteUrl()}/api/monopay/webhook`,
+      redirectUrl: `${publicEnv.siteUrl}/confirmation`,
+      webHookUrl: `${publicEnv.siteUrl}/api/monopay/webhook`,
       validity: 3600,
       paymentType: "debit",
     }),
@@ -84,11 +84,14 @@ export const createMonopayInvoice = async ({
 /* Public keys per account, fetched at most once per server instance. */
 const pubkeyCache = new Map<MonopayAccount, Promise<string | null>>();
 
+/**
+ * The account's public key: from serverEnv, or fetched with its token; null
+ * without either.
+ */
 const loadPubkey = async (account: MonopayAccount) => {
-  const fromEnv = process.env[PUBKEY_ENV[account]];
-  if (fromEnv) return fromEnv;
+  const { pubkey, token } = serverEnv.monopay[account];
+  if (pubkey) return pubkey;
 
-  const token = process.env[TOKEN_ENV[account]];
   if (!token) return null;
 
   const response = await fetch(`${MONOBANK_API_URL}/pubkey`, {
@@ -103,6 +106,10 @@ const loadPubkey = async (account: MonopayAccount) => {
   return typeof key === "string" ? key : null;
 };
 
+/**
+ * The cached public key; a failed fetch is forgotten, so the next webhook
+ * retries.
+ */
 const getPubkey = (account: MonopayAccount) => {
   let key = pubkeyCache.get(account);
   if (!key) {
@@ -116,6 +123,7 @@ const getPubkey = (account: MonopayAccount) => {
   return key;
 };
 
+/* Whether signature is this key's ECDSA signature of body. */
 const verifyWith = (pubkey: string, body: string, signature: string) => {
   try {
     const verify = createVerify("SHA256");

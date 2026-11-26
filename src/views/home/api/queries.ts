@@ -2,6 +2,7 @@ import {
   activeDiscountProjection,
   genresProjection,
 } from "@/shared/api/sanity/fragments";
+import { instagramPostsProjection } from "@/entities/instagram-post/api/queries";
 
 /**
  * Everything the home page shows, in one read: hero and promo banners, all
@@ -63,11 +64,5 @@ export const homepageCombinedQuery = `{
     order,
     "image": image.asset->url
   },
-  "instagram": *[_type == "instagram"][0]{
-    "posts": posts[]{
-      "image": image.asset->url,
-      "alt": image.alt,
-      "url": url
-    }
-  }
+  "instagramPosts": ${instagramPostsProjection}
 }`;

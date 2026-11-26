@@ -5,12 +5,16 @@ import MainButton from "@/shared/ui/main-button/MainButton";
 import WriteReviewWithNotifications from "./WriteReviewWithNotifications";
 import { Product } from "@/entities/product/model/product";
 import * as motion from "motion/react-client";
-import { fadeInAnimation } from "@/shared/lib/animationVariants";
+import { fadeInAnimation } from "@/shared/lib/animation/animationVariants";
 
-interface WriteReviewProps {
+type WriteReviewProps = {
+  /* The book on this page. */
   currentProduct: Product;
-}
+};
 
+/**
+ * The "write a review" button and the review form modal it opens.
+ */
 export default function WriteReview({ currentProduct }: WriteReviewProps) {
   const [isWriteReviewModalShown, setIsWriteReviewModalShown] = useState(false);
 

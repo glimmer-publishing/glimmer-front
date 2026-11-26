@@ -7,7 +7,7 @@ import {
 import { toHryvnia } from "@/entities/cart/lib/money";
 import type { CartQuote, PricedLine } from "@/entities/cart/model/types";
 import type { MonopayBasketItem } from "@/shared/api/monopay/client";
-import { escapeHtml } from "@/shared/lib/html";
+import { escapeHtml } from "@/shared/lib/text/html";
 import type { UtmData } from "@/entities/utm/model/types";
 import type { CheckoutValues } from "../model/schema";
 import type { OrderLine, OrderSummary } from "../model/types";
@@ -39,6 +39,7 @@ export const sanitizeUtm = (utm: unknown): UtmData | undefined => {
     : undefined;
 };
 
+/* A priced cart line as an order line. */
 const toOrderLine = (line: PricedLine): OrderLine => ({
   id: line.id,
   title: line.title,
@@ -53,6 +54,10 @@ const toOrderLine = (line: PricedLine): OrderLine => ({
     line.status === "preOrder" ? line.preOrderShippingDate : null,
 });
 
+/**
+ * The order as the confirmation page, receipt and analytics see it, from the
+ * server's quote.
+ */
 export const buildOrderSummary = (
   orderNumber: string,
   orderDate: string,
@@ -75,6 +80,10 @@ export const buildOrderSummary = (
   total: quote.total,
 });
 
+/**
+ * The KeyCRM order body: buyer, delivery, products at the quoted prices,
+ * promo, UTM and payment method.
+ */
 export const buildKeyCrmOrder = (
   orderedAt: string,
   values: CheckoutValues,
@@ -129,6 +138,9 @@ export const buildKeyCrmOrder = (
   };
 };
 
+/**
+ * MonoPay's basket for the invoice: one entry per line, amounts in kopecks.
+ */
 export const buildMonopayBasket = (quote: CartQuote): MonopayBasketItem[] =>
   quote.lines.map((line) => ({
     name: line.title,

@@ -3,14 +3,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { Product } from "@/entities/product/model/product";
 
-interface ProductCardProps {
+type ProductCardProps = {
   /* The product shown on the card. */
   product: Product;
   /* Control in the top-right corner, e.g. the favorite heart. */
   topAction?: ReactNode;
   /* Control right of the price, e.g. the buy button. */
   action?: ReactNode;
-}
+};
 
 /**
  * A product's card in a grid: badges, image, author, title and price. It

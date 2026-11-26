@@ -5,13 +5,19 @@ import {
   PaymentOption,
 } from "@/shared/config/enums";
 import { MAX_PROMO_LENGTH } from "@/entities/cart/model/constants";
-import { checkoutPhoneRegex, emailRegex, nameRegex } from "@/shared/lib/regex";
+import {
+  checkoutPhoneRegex,
+  emailRegex,
+  nameRegex,
+} from "@/shared/lib/text/regex";
 import { paymentError } from "../lib/paymentRules";
 
+/* Field error messages shared by several fields. */
 const REQUIRED = "Дане поле є обов'язковим до заповнення";
 const NAME_LENGTH = "Повинно містити від 2 до 30 символів";
 const TOO_LONG = "Занадто довге значення";
 
+/* Whether a delivery type needs a branch or parcel locker number. */
 const needsBranch = (type: string) =>
   type === DeliveryType.BRANCH || type === DeliveryType.PARCEL_LOCKER;
 
@@ -92,6 +98,7 @@ export const checkoutSchema = yup.object({
   promocode: yup.string().trim().max(MAX_PROMO_LENGTH, TOO_LONG).default(""),
 });
 
+/* The checkout form's values, as the schema cleans them. */
 export type CheckoutValues = yup.InferType<typeof checkoutSchema>;
 
 /* The form's starting values. */

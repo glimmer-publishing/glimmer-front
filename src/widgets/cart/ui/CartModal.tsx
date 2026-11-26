@@ -6,16 +6,22 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   fadeInAnimation,
   cartModalVariants,
-} from "@/shared/lib/animationVariants";
+} from "@/shared/lib/animation/animationVariants";
 import IconButton from "@/shared/ui/icon-button/IconButton";
 import CrossIcon from "@/shared/ui/icons/CrossIcon";
 import CartIcon from "@/shared/ui/icons/CartIcon";
 
-interface CartModalProps {
+type CartModalProps = {
+  /* Whether the cart is open. */
   isPopUpShown: boolean;
+  /* Opens or closes the cart. */
   setIsPopUpShown: Dispatch<SetStateAction<boolean>>;
-}
+};
 
+/**
+ * The cart sliding in from the right: lines, totals and the checkout button,
+ * or an empty state.
+ */
 export default function CartModal({
   isPopUpShown,
   setIsPopUpShown,

@@ -3,17 +3,29 @@ import LoaderIcon from "@/shared/ui/icons/LoaderIcon";
 import clsx from "clsx";
 import { twMerge } from "tailwind-merge";
 
-interface MainButtonProps {
+type MainButtonProps = {
+  /* Button text or content. */
   children: string | ReactNode;
+  /* Filled, light or outlined look. */
   variant?: "primary" | "secondary" | "bordered";
+  /* Extra classes for the root element. */
   className?: string;
+  /* The button's type attribute. */
   type?: "submit" | "button";
+  /* Disables it. */
   disabled?: boolean;
+  /* Shows the spinner and loadingText instead of children. */
   isLoading?: boolean;
+  /* Called on click. */
   onClick?: () => void;
+  /* Text beside the spinner. */
   loadingText?: string;
-}
+};
 
+/**
+ * The site's main button: filled, light or outlined, with a loading state.
+ * Forwards its ref to the <button>.
+ */
 const MainButton = forwardRef<HTMLButtonElement, MainButtonProps>(
   (
     {

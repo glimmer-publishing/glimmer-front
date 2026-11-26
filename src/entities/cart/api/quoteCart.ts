@@ -10,21 +10,27 @@ import type {
 } from "../model/types";
 import { cartProductsQuery, promocodeQuery } from "./queries";
 
-interface PromocodeDocument {
+/* A promocode document as promocodeQuery projects it. */
+type PromocodeDocument = {
   code: string;
   discountPercent: number;
   expirationDate?: string | null;
   publishers: (string | null)[];
-}
+};
 
-interface QuoteOptions {
+/* How quoteCart reads Sanity. */
+type QuoteOptions = {
   /**
    * Past the Sanity API CDN. Placing an order sets it, so the amount charged
    * is never a CDN copy of an old price; the cart display does not need to.
    */
   fresh?: boolean;
-}
+};
 
+/**
+ * The promo a code stands for and its status: none, not found, expired or
+ * applied.
+ */
 const resolvePromo = (
   document: PromocodeDocument | null,
   hasCode: boolean

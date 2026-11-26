@@ -6,18 +6,21 @@ import * as motion from "motion/react-client";
 import Container from "@/shared/ui/container/Container";
 import LogoIcon from "@/shared/ui/icons/LogoIcon";
 import HeartIcon from "@/shared/ui/icons/HeartIcon";
-import Search from "@/features/search-products/ui/Search";
-import NavMenu from "./NavMenu";
+import SearchProducts from "@/features/search-products/ui/SearchProducts";
+import HeaderNavMenu from "./HeaderNavMenu";
 import type { MenuCategory } from "@/entities/category/model/types";
-import BurgerMenu from "./BurgerMenu";
-import { headerVariants, fadeInAnimation } from "@/shared/lib/animationVariants";
+import HeaderBurgerMenu from "./HeaderBurgerMenu";
+import {
+  headerVariants,
+  fadeInAnimation,
+} from "@/shared/lib/animation/animationVariants";
 
-interface HeaderProps {
+type HeaderProps = {
   /* Categories for the catalog and burger menus. */
   categories: MenuCategory[];
-  /* The cart button with its modal (widgets/cart HeaderCart). */
+  /* The cart button with its modal (widgets/cart CartHeaderSlot). */
   cart: ReactNode;
-}
+};
 
 /**
  * The site header: logo, navigation with the catalog menu, search,
@@ -76,16 +79,13 @@ export default function Header({ categories, cart }: HeaderProps) {
           </Link>
         </motion.div>
         <div className="flex items-center gap-[72px]">
-          <NavMenu
+          <HeaderNavMenu
             categories={categories}
             isOpenCatalogMenu={isOpenCatalogMenu}
             setIsOpenCatalogMenu={setIsOpenCatalogMenu}
           />
           <div className="flex items-center gap-[22px]">
-            <Search
-              isOpen={isOpenSearch}
-              setIsOpen={setIsOpenSearch}
-            />
+            <SearchProducts isOpen={isOpenSearch} setIsOpen={setIsOpenSearch} />
             <Link href="/favorites" className="group">
               <HeartIcon className="text-white xl:group-hover:text-main group-focus-visible:text-main group-active:text-main transition duration-300 ease-in-out" />
             </Link>
@@ -99,7 +99,7 @@ export default function Header({ categories, cart }: HeaderProps) {
             >
               {cart}
             </div>
-            <BurgerMenu
+            <HeaderBurgerMenu
               categories={categories}
               isOpenBurgerMenu={isOpenBurgerMenu}
               setIsOpenBurgerMenu={setIsOpenBurgerMenu}

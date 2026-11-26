@@ -1,6 +1,8 @@
 import Script from "next/script";
 
+/* The GA4 property. */
 const GA4_ID = "G-LSKYNWW75N";
+/* The Google Ads account. */
 const GOOGLE_ADS_ID = "AW-18111056280";
 
 /**

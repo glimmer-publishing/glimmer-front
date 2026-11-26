@@ -1,7 +1,11 @@
-interface BurgerMenuIconProps {
+type BurgerMenuIconProps = {
+  /* Extra classes for the root element. */
   className?: string;
-}
+};
 
+/**
+ * Burger menu icon.
+ */
 export default function BurgerMenuIcon({ className }: BurgerMenuIconProps) {
   return (
     <svg

@@ -1,7 +1,11 @@
-interface InstagramIconProps {
+type InstagramIconProps = {
+  /* Extra classes for the root element. */
   className?: string;
-}
+};
 
+/**
+ * Instagram logo.
+ */
 export default function InstagramIcon({ className }: InstagramIconProps) {
   return (
     <svg

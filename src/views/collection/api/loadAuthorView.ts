@@ -1,8 +1,8 @@
 import "server-only";
-import { ListingParams } from "@/entities/product/model/listingParams";
+import { ListingParams } from "@/shared/lib/searchParams/listingParams";
 import { listProducts } from "@/entities/product/lib/listProducts";
 import { getProductsByAuthor } from "@/entities/product/api/getProducts";
-import { decodePathParam } from "@/shared/lib/decodePathParam";
+import { decodePathParam } from "@/shared/lib/routing/decodePathParam";
 import { CollectionViewProps } from "../ui/CollectionView";
 
 /* Props of an author page, or null when the author has no products. */

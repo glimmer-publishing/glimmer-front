@@ -1,5 +1,9 @@
 import { Product } from "../model/product";
 
+/**
+ * The products matching one FILTER_OPTIONS value; an unknown value keeps them
+ * all.
+ */
 export function filterProducts(products: Product[], filter: string): Product[] {
   switch (filter) {
     case "bestseller":

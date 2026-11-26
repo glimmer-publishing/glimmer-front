@@ -1,16 +1,16 @@
 "use client";
 import { ReactNode } from "react";
 import MarqueeLine from "@/shared/ui/marquee-line/MarqueeLine";
-import { useCartQuote } from "@/entities/cart/api/useCartQuote";
+import { useFetchCartQuote } from "@/entities/cart/hooks/useFetchCartQuote";
 import { formatHryvnia } from "@/entities/cart/lib/money";
 import { FREE_DELIVERY_FROM } from "@/entities/cart/model/constants";
 
-interface CartTotalProps {
+type CartTotalProps = {
   /* "cart" pads the block for the modal; "checkout" sits in the form. */
   variant?: "cart" | "checkout";
   /* The next step: the checkout link, or the form's submit button. */
   action?: ReactNode;
-}
+};
 
 /**
  * The server's total and promo saving for the current cart, with the next
@@ -20,7 +20,7 @@ export default function CartTotal({
   variant = "cart",
   action,
 }: CartTotalProps) {
-  const { quote } = useCartQuote();
+  const { quote } = useFetchCartQuote();
   const total = quote?.total ?? 0;
 
   return (

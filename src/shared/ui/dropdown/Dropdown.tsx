@@ -3,14 +3,15 @@
 import { useEffect, useRef, useState } from "react";
 import ArrowIcon from "@/shared/ui/icons/ArrowIcon";
 
-export interface DropdownOption {
+/* One choice of a Dropdown. */
+export type DropdownOption = {
   /* Text shown for the option. */
   title: string;
   /* Value reported to onChange. */
   value: string;
-}
+};
 
-interface DropdownProps {
+type DropdownProps = {
   /* Text left of the select. */
   label: string;
   /* Choices in the list. */
@@ -23,7 +24,7 @@ interface DropdownProps {
   widthClassName?: string;
   /* Extra classes for the outer row. */
   className?: string;
-}
+};
 
 /**
  * Labelled pill select, shared by the catalog filter and sort. It only keeps

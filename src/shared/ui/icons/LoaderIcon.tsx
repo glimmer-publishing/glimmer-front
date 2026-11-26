@@ -1,3 +1,6 @@
+/**
+ * Spinning loader icon.
+ */
 export default function LoaderIcon() {
   return (
     <svg

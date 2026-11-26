@@ -1,7 +1,11 @@
-interface TelegramIconProps {
+type TelegramIconProps = {
+  /* Extra classes for the root element. */
   className?: string;
-}
+};
 
+/**
+ * Telegram logo.
+ */
 export default function TelegramIcon({ className }: TelegramIconProps) {
   return (
     <svg

@@ -1,7 +1,11 @@
-interface GoogleTagManagerNoScriptProps {
+type GoogleTagManagerNoScriptProps = {
+  /* The Google Tag Manager container id. */
   gtmId: string;
-}
+};
 
+/**
+ * GTM's <noscript> iframe, first in <body>. Rendered only in production.
+ */
 export default function GoogleTagManagerNoScript({
   gtmId,
 }: GoogleTagManagerNoScriptProps) {

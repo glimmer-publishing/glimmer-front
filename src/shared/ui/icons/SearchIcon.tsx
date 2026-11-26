@@ -1,7 +1,11 @@
-interface SearchIconProps {
+type SearchIconProps = {
+  /* Extra classes for the root element. */
   className?: string;
-}
+};
 
+/**
+ * Search (magnifier) icon.
+ */
 export default function SearchIcon({ className }: SearchIconProps) {
   return (
     <svg

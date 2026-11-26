@@ -1,8 +1,13 @@
-interface CartIconProps {
+type CartIconProps = {
+  /* Extra classes for the root element. */
   className?: string;
+  /* Fill color of the icon. */
   fillColor?: string;
-}
+};
 
+/**
+ * Cart icon.
+ */
 export default function CartIcon({
   className,
   fillColor = "transparent",

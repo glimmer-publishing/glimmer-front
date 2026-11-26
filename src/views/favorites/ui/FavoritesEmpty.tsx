@@ -1,7 +1,7 @@
 import Link from "next/link";
 import * as motion from "motion/react-client";
 import MainButton from "@/shared/ui/main-button/MainButton";
-import { fadeInAnimation } from "@/shared/lib/animationVariants";
+import { fadeInAnimation } from "@/shared/lib/animation/animationVariants";
 
 /**
  * Shown when nothing is saved, or none of the saved products exists any more.

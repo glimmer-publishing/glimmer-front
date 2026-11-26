@@ -1,7 +1,11 @@
-interface ArrowIconProps {
+type ArrowIconProps = {
+  /* Extra classes for the root element. */
   className?: string;
-}
+};
 
+/**
+ * Arrow icon.
+ */
 export default function ArrowIcon({ className }: ArrowIconProps) {
   return (
     <svg

@@ -1,21 +1,19 @@
 import "server-only";
 import { createClient } from "next-sanity";
-import { getKyivDate } from "@/shared/lib/getKyivDate";
+import { publicEnv } from "@/shared/config/env";
+import { getKyivDate } from "@/shared/lib/date/getKyivDate";
 
+/* The storefront's Sanity client; not exported, see sanityFetch. */
 const client = createClient({
   projectId: "us9jz0mn",
-  /**
-   * Defaults to the production dataset, so a missing variable can never take
-   * production offline. Preview sets it explicitly to "preview".
-   */
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
+  /* "production" unless the deployment names another; see publicEnv. */
+  dataset: publicEnv.sanityDataset,
   apiVersion: "2025-08-07",
   useCdn: true,
 });
 
 /**
- * The only Sanity client in the storefront (src/lib/sanityClient.ts only
- * re-exports it). Every query receives $today (the Kyiv calendar date),
+ * The only Sanity client in the storefront. Every query receives $today (the Kyiv calendar date),
  * which the discount-window fragments in ./fragments.ts depend on - a query
  * that uses them without $today fails.
  * The client itself is deliberately not exported so no call can bypass this.
@@ -36,13 +34,17 @@ const client = createClient({
  * pass `fresh`, which placing an order does: the amount charged must come
  * from the live API, not from a CDN copy a few seconds old.
  */
-export interface SanityFetchOptions {
+export type SanityFetchOptions = {
   revalidate?: number;
   tags?: string[];
   /* Uncached and past the API CDN. Ignored when revalidate or tags are set. */
   fresh?: boolean;
-}
+};
 
+/**
+ * A Sanity query with $today added; cached only when revalidate or tags are
+ * passed.
+ */
 export const sanityFetch = (
   query: string,
   params: Record<string, unknown> = {},

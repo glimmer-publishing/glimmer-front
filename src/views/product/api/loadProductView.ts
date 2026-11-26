@@ -1,6 +1,6 @@
 import "server-only";
 import { getRecommendations } from "@/entities/product/api/getRecommendations";
-import { categoryPageHref } from "@/entities/category/model/categoryParams";
+import { categoryPageHref } from "@/shared/lib/searchParams/categoryParams";
 import { getProductBySlug } from "@/entities/product/api/getProducts";
 
 /**
@@ -31,6 +31,7 @@ export const loadProductView = async (slug: string) => {
   return { product, crumbs, recommended };
 };
 
+/* Everything a product page renders. */
 export type ProductViewData = NonNullable<
   Awaited<ReturnType<typeof loadProductView>>
 >;

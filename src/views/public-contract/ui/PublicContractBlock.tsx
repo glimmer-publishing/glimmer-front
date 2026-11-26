@@ -1,11 +1,16 @@
 import * as motion from "motion/react-client";
-import { fadeInAnimation } from "@/shared/lib/animationVariants";
+import { fadeInAnimation } from "@/shared/lib/animation/animationVariants";
 
-interface PublicContractBlockProps {
+type PublicContractBlockProps = {
+  /* The section heading. */
   title: string;
+  /* The section's clauses, in order. */
   list: string[];
-}
+};
 
+/**
+ * One numbered section of the public contract.
+ */
 export default function PublicContractBlock({
   title,
   list,

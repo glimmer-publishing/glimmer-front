@@ -1,15 +1,17 @@
+import type { ProductStatus } from "@/entities/product/model/product";
+
 /**
  * What the browser keeps: which products, how many. Everything else (title,
  * price, discount) comes from the server, so nothing a customer edits in
  * localStorage can change what they are charged.
  */
-export interface CartItem {
+export type CartItem = {
   id: string;
   quantity: number;
-}
+};
 
 /* A cart product as Sanity returns it for pricing and display. */
-export interface CartProduct {
+export type CartProduct = {
   id: string;
   slug: string;
   title: string;
@@ -19,7 +21,7 @@ export interface CartProduct {
   price: number;
   /* Hryvnia; null outside the scheduled discount window. */
   discountPrice?: number | null;
-  status: "inStock" | "preOrder";
+  status: ProductStatus;
   preOrderShippingDate?: string | null;
   isNationalCashback?: boolean | null;
   mainImage: string;
@@ -28,24 +30,27 @@ export interface CartProduct {
   /* The "видавництво" feature value, matched against promo publishers. */
   publisher?: string | null;
   genreSlugs: string[];
-}
+};
 
 /* A promo code that exists and has not expired. */
-export interface CartPromo {
+export type CartPromo = {
   code: string;
   discountPercent: number;
   /* Publisher names the promo applies to. */
   publishers: string[];
-}
+};
 
+/* What the server made of the cart's promo code. */
 export type PromoStatus = "none" | "applied" | "notFound" | "expired";
 
 /**
  * One cart line priced on the server. Every amount is in kopecks, so sums
  * are exact integers.
  */
-export interface PricedLine
-  extends Omit<CartProduct, "price" | "discountPrice" | "publisher"> {
+export type PricedLine = Omit<
+  CartProduct,
+  "price" | "discountPrice" | "publisher"
+> & {
   quantity: number;
   /* Per unit, before the product discount and the promo. */
   basePrice: number;
@@ -54,13 +59,13 @@ export interface PricedLine
   /* unitPrice × quantity. */
   lineTotal: number;
   promoApplied: boolean;
-}
+};
 
 /**
  * The cart as the server prices it. missingIds are cart products that no
  * longer exist, so they cannot be ordered.
  */
-export interface CartQuote {
+export type CartQuote = {
   lines: PricedLine[];
   missingIds: string[];
   /* Kopecks: the amount an order for this cart is charged. */
@@ -69,4 +74,4 @@ export interface CartQuote {
   promoDiscountTotal: number;
   promo: { code: string; discountPercent: number } | null;
   promoStatus: PromoStatus;
-}
+};

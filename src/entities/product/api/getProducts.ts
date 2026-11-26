@@ -48,11 +48,16 @@ export const getProductSelection = async (
 export const getAllProducts = async (): Promise<Product[]> =>
   (await getProductSelection("all")).products;
 
+/* Every book by one author, by title. Throws on a Sanity error. */
 export const getProductsByAuthor = async (
   authorName: string
 ): Promise<Product[]> =>
   (await fetchSanityDataServer(productsByAuthorQuery, { authorName })) ?? [];
 
+/**
+ * Every book whose "Серія" characteristic is this series, by title. Throws on
+ * a Sanity error.
+ */
 export const getProductsBySeries = async (
   seriesName: string
 ): Promise<Product[]> =>

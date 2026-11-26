@@ -4,11 +4,16 @@ import { useEffect } from "react";
 import { CART_BUTTON_ID } from "@/entities/cart/model/constants";
 import { hydrateCart, useCartStore } from "@/entities/cart/model/store";
 
-interface CartButtonProps {
+type CartButtonProps = {
+  /* Called on click. */
   onClick?: () => void;
+  /* Extra classes for the root element. */
   className?: string;
-}
+};
 
+/**
+ * The header's cart icon with the number of products in the cart.
+ */
 export default function CartButton({ onClick, className }: CartButtonProps) {
   const count = useCartStore((state) => state.items.length);
 

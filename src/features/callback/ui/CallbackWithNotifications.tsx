@@ -1,16 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import CallBackForm from "./CallBackForm";
+import CallbackForm from "./CallbackForm";
 import NotificationPopUp from "@/shared/ui/notification-pop-up/NotificationPopUp";
 import Backdrop from "@/shared/ui/backdrop/Backdrop";
 import * as motion from "motion/react-client";
-import { fadeInAnimation } from "@/shared/lib/animationVariants";
+import { fadeInAnimation } from "@/shared/lib/animation/animationVariants";
 
-interface CallbackWithNotificationsProps {
+type CallbackWithNotificationsProps = {
+  /* Extra classes for the root element. */
   className?: string;
-}
+};
 
+/**
+ * The callback form with the pop-up that says whether the question was sent.
+ */
 export default function CallbackWithNotifications({
   className,
 }: CallbackWithNotificationsProps) {
@@ -26,7 +30,7 @@ export default function CallbackWithNotifications({
         viewport={{ once: true, amount: 0.1 }}
         variants={fadeInAnimation({ y: 20, delay: 0.4 })}
       >
-        <CallBackForm
+        <CallbackForm
           setIsError={setIsError}
           setIsNotificationShown={setIsNotificationShown}
           className={className}

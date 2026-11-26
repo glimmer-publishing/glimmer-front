@@ -1,4 +1,5 @@
 import "server-only";
+import { serverEnv } from "@/shared/config/serverEnv";
 
 /**
  * Posts to the operations group in Telegram's HTML parse mode. Every value
@@ -7,8 +8,7 @@ import "server-only";
  * Throws when Telegram refuses or is unreachable.
  */
 export const sendTelegramMessage = async (html: string) => {
-  const botId = process.env.TELEGRAM_BOT_ID;
-  const chatId = process.env.TELEGRAM_CHAT_ID;
+  const { botId, chatId } = serverEnv.telegram;
 
   if (!botId || !chatId) {
     console.warn("Telegram is not configured; message not sent:", html);

@@ -1,18 +1,19 @@
 import "server-only";
 import type { CategoryGenre } from "@/entities/category/model/types";
 import { getCategory } from "@/entities/category/api/getCategory";
-import { ListingParams } from "@/entities/product/model/listingParams";
+import { ListingParams } from "@/shared/lib/searchParams/listingParams";
 import { listProducts } from "@/entities/product/lib/listProducts";
 import { ProductSelection } from "@/entities/product/model/types";
 import { getProductSelection } from "@/entities/product/api/getProducts";
-import { CategoryParams } from "@/entities/category/model/categoryParams";
+import { CategoryParams } from "@/shared/lib/searchParams/categoryParams";
 import { CategoryViewProps } from "../ui/CategoryView";
 
-interface StaticCategory {
+/* A product selection shown like a category: its title and which products. */
+type StaticCategory = {
   title: string;
   emptyMessage?: string;
   selection: ProductSelection;
-}
+};
 
 /**
  * Slugs that are not Sanity categories: their own products and title, and no

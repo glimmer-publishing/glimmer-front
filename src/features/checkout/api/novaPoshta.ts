@@ -3,29 +3,37 @@ import type {
   NovaPoshtaCity,
   NovaPoshtaWarehouse,
 } from "@/shared/api/nova-poshta/types";
+import { fetchJson } from "@/shared/api/http/fetchJson";
 
 /**
  * Nova Poshta lookups through our own routes, so the API key stays on the
- * server. Failures resolve to an empty list, as before.
+ * server. A failed lookup resolves to an empty list: the customer sees
+ * "nothing found" rather than an error. A cancelled one still rejects, so
+ * TanStack Query can drop it.
  */
-
-const getList = async <T>(url: string): Promise<T[]> => {
+const fetchList = async <T>(url: string, signal?: AbortSignal) => {
   try {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`Status ${response.status}`);
-    return await response.json();
+    return await fetchJson<T[]>(url, signal);
   } catch (error) {
+    if (signal?.aborted) throw error;
     console.error("Nova Poshta lookup failed:", error);
     return [];
   }
 };
 
-export const searchCities = (query: string) =>
-  getList<NovaPoshtaCity>(
-    `/api/nova-poshta/cities?${new URLSearchParams({ q: query })}`
+/* Cities whose name starts with query (GET /api/nova-poshta/cities). */
+export const fetchNovaPoshtaCities = (query: string, signal?: AbortSignal) =>
+  fetchList<NovaPoshtaCity>(
+    `/api/nova-poshta/cities?${new URLSearchParams({ q: query })}`,
+    signal
   );
 
-export const getWarehouses = (cityRef: string) =>
-  getList<NovaPoshtaWarehouse>(
-    `/api/nova-poshta/warehouses?${new URLSearchParams({ cityRef })}`
+/* Every branch and parcel locker of one city, by its Nova Poshta Ref. */
+export const fetchNovaPoshtaWarehouses = (
+  cityRef: string,
+  signal?: AbortSignal
+) =>
+  fetchList<NovaPoshtaWarehouse>(
+    `/api/nova-poshta/warehouses?${new URLSearchParams({ cityRef })}`,
+    signal
   );

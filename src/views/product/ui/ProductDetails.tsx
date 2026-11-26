@@ -4,14 +4,21 @@ import { getAverageRating } from "@/entities/product/lib/getAverageRating";
 import StarEmptyIcon from "@/shared/ui/icons/StarEmptyIcon";
 import StarFilledIcon from "@/shared/ui/icons/StarFilledIcon";
 import * as motion from "motion/react-client";
-import { fadeInAnimation } from "@/shared/lib/animationVariants";
+import { fadeInAnimation } from "@/shared/lib/animation/animationVariants";
 import Link from "next/link";
-import { getSeriesHref, getSeriesInfo } from "@/entities/product/lib/getSeriesInfo";
+import {
+  getSeriesHref,
+  getSeriesInfo,
+} from "@/entities/product/lib/getSeriesInfo";
 
-interface ProductDetailsProps {
+type ProductDetailsProps = {
+  /* The book on this page. */
   currentProduct: Product;
-}
+};
 
+/**
+ * Title, author, rating with the review count, series, availability and code.
+ */
 export default function ProductDetails({
   currentProduct,
 }: ProductDetailsProps) {
@@ -53,8 +60,10 @@ export default function ProductDetails({
           {title}
         </h1>
         {author || series ? (
-          /* Author on the left, series on the right of the same line. Each
-             wraps within its own side rather than pushing the other off. */
+          /**
+           * Author on the left, series on the right of the same line. Each
+           * wraps within its own side rather than pushing the other off.
+           */
           <div className="flex items-baseline justify-between gap-4">
             {author ? (
               <Link

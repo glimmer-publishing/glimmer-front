@@ -17,6 +17,7 @@ const SORT_OPTIONS: ListingOption[] = [
   { title: "За зменшенням ціни", value: "price-descending" },
 ];
 
+/* The sort options of each kind of listing. */
 export const SORT_OPTION_SETS: Record<SortSet, ListingOption[]> = {
   default: SORT_OPTIONS,
   series: [{ title: "За порядком у серії", value: "series" }, ...SORT_OPTIONS],

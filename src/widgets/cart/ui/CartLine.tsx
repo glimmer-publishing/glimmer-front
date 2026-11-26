@@ -1,18 +1,18 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { formatDate } from "@/shared/lib/formatDate";
+import { formatDate } from "@/shared/lib/date/formatDate";
 import { formatHryvnia } from "@/entities/cart/lib/money";
 import type { PricedLine } from "@/entities/cart/model/types";
-import QuantityCounter from "@/features/edit-cart/ui/QuantityCounter";
-import RemoveFromCart from "@/features/edit-cart/ui/RemoveFromCart";
+import EditCartQuantityCounter from "@/features/edit-cart/ui/EditCartQuantityCounter";
+import EditCartRemove from "@/features/edit-cart/ui/EditCartRemove";
 
-interface CartLineProps {
+type CartLineProps = {
   /* The line as the server priced it. */
   line: PricedLine;
   /* Called when a link inside the line is followed, to close the cart modal. */
   onNavigate?: () => void;
-}
+};
 
 /**
  * One cart product: cover, title, server price (struck-through base price
@@ -74,7 +74,7 @@ export default function CartLine({ line, onNavigate }: CartLineProps) {
                 </p>
               )}
             </Link>
-            <RemoveFromCart id={id} className="size-6 ml-auto shrink-0" />
+            <EditCartRemove id={id} className="size-6 ml-auto shrink-0" />
           </div>
           <div className="flex gap-2 justify-between">
             <div className="text-[13px] xl:text-[16px] font-semibold leading-[120%]">
@@ -99,7 +99,7 @@ export default function CartLine({ line, onNavigate }: CartLineProps) {
                 </p>
               )}
             </div>
-            <QuantityCounter id={id} />
+            <EditCartQuantityCounter id={id} />
           </div>
         </div>
       </div>

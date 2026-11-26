@@ -1,18 +1,24 @@
 import Container from "@/shared/ui/container/Container";
 import Link from "next/link";
 import * as motion from "motion/react-client";
-import { fadeInAnimation } from "@/shared/lib/animationVariants";
+import { fadeInAnimation } from "@/shared/lib/animation/animationVariants";
 
-interface Breadcrumb {
+/* One link of the trail. */
+type Breadcrumb = {
   label: string;
   href: string;
-}
+};
 
-interface BreadcrumbsProps {
+type BreadcrumbsProps = {
+  /* Trail from the home page to the current page. */
   crumbs: Breadcrumb[];
+  /* Extra classes for the root element. */
   className?: string;
-}
+};
 
+/**
+ * The page's trail of links, the last one being the current page.
+ */
 export default function Breadcrumbs({
   crumbs,
   className = "",

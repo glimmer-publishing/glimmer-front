@@ -1,12 +1,19 @@
 import { useEffect } from "react";
 
-interface BackdropProps {
+type BackdropProps = {
+  /* Whether the backdrop is shown. */
   isVisible: boolean;
+  /* Called on a click outside the modal; usually closes it. */
   onClick: () => void;
+  /* Extra classes for the root element. */
   className?: string;
+  /* No dimming: the layer only catches outside clicks. */
   transparent?: boolean;
-}
+};
 
+/**
+ * Dimmed full-screen layer behind modals and menus; clicking it closes them.
+ */
 export default function Backdrop({
   isVisible = false,
   onClick,

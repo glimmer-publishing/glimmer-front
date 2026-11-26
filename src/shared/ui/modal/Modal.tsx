@@ -1,16 +1,24 @@
 import { Dispatch, ReactNode, SetStateAction } from "react";
 
-import IconButton from "../icon-button/IconButton";
-import CrossIcon from "../icons/CrossIcon";
+import IconButton from "@/shared/ui/icon-button/IconButton";
+import CrossIcon from "@/shared/ui/icons/CrossIcon";
 
-interface ModalProps {
+type ModalProps = {
+  /* Whether it is shown. */
   isPopUpShown: boolean;
+  /* Text in the modal's header bar. */
   headerTitle: string;
+  /* Shows or hides it. */
   setIsPopUpShown: Dispatch<SetStateAction<boolean>>;
+  /* The modal's body. */
   children: ReactNode;
+  /* Extra classes for the root element. */
   className?: string;
-}
+};
 
+/**
+ * A centered modal with a close button, shown and hidden by its parent.
+ */
 export default function Modal({
   isPopUpShown,
   headerTitle,

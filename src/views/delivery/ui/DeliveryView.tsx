@@ -3,8 +3,9 @@ import MarqueeLine from "@/shared/ui/marquee-line/MarqueeLine";
 import TelegramCTA from "@/widgets/telegram-cta/ui/TelegramCTA";
 import DeliveryConditions from "./DeliveryConditions";
 import DeliveryInfo from "./DeliveryInfo";
-import PaymentMethods from "./PaymentMethods";
+import DeliveryPaymentMethods from "./DeliveryPaymentMethods";
 
+/* The page's breadcrumb trail. */
 const CRUMBS = [
   { label: "Головна", href: "/" },
   { label: "Доставка та оплата", href: "/delivery" },
@@ -19,7 +20,7 @@ export default function DeliveryView() {
       <Breadcrumbs crumbs={CRUMBS} />
       <DeliveryInfo />
       <DeliveryConditions />
-      <PaymentMethods />
+      <DeliveryPaymentMethods />
       <MarqueeLine />
       <TelegramCTA />
     </div>

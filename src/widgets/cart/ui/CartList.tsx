@@ -5,21 +5,22 @@ import Loader from "@/shared/ui/loader/Loader";
 import {
   cartItemVariants,
   fadeInAnimation,
-} from "@/shared/lib/animationVariants";
-import { useCartQuote } from "@/entities/cart/api/useCartQuote";
+} from "@/shared/lib/animation/animationVariants";
+import { useFetchCartQuote } from "@/entities/cart/hooks/useFetchCartQuote";
 import { useCartStore } from "@/entities/cart/model/store";
-import ClearCart from "@/features/edit-cart/ui/ClearCart";
+import EditCartClear from "@/features/edit-cart/ui/EditCartClear";
 import CartLine from "./CartLine";
 
-interface CartListProps {
+type CartListProps = {
   /* Called when a product link is followed, to close the cart modal. */
   onNavigate?: () => void;
   /* Extra classes for the scrolling list. */
   className?: string;
   /* Where the list is shown; only spacing differs. */
   variant?: "cart" | "checkout";
-}
+};
 
+/* "товар" in the form that agrees with count. */
 const getProductWord = (count: number) => {
   const mod10 = count % 10;
   const mod100 = count % 100;
@@ -39,7 +40,7 @@ export default function CartList({
   className = "",
   variant = "cart",
 }: CartListProps) {
-  const { quote, items, hydrated, isError } = useCartQuote();
+  const { quote, items, hydrated, isError } = useFetchCartQuote();
   const removeItems = useCartStore((state) => state.removeItems);
 
   const missingKey = quote?.missingIds.join("\n") ?? "";
@@ -66,7 +67,7 @@ export default function CartList({
           <p className="text-[12px] font-light leading-[120%] text-black/60">
             {count} {getProductWord(count)}
           </p>
-          <ClearCart />
+          <EditCartClear />
         </motion.div>
       )}
       {!!count && !quote && !isError && (

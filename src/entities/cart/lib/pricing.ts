@@ -27,6 +27,10 @@ const isPromoEligible = (product: CartProduct, promo: CartPromo | null) => {
   );
 };
 
+/**
+ * One cart line priced: the product discount or the promo, whichever applies,
+ * in kopecks.
+ */
 export const priceLine = (
   product: CartProduct,
   quantity: number,
@@ -96,6 +100,7 @@ export const priceCart = (
   };
 };
 
+/* A whole quantity from 1 to MAX_QUANTITY. */
 const isValidQuantity = (quantity: unknown): quantity is number =>
   Number.isInteger(quantity) &&
   (quantity as number) >= 1 &&

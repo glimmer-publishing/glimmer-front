@@ -1,7 +1,11 @@
-interface TiktokIconProps {
+type TiktokIconProps = {
+  /* Extra classes for the root element. */
   className?: string;
-}
+};
 
+/**
+ * TikTok logo.
+ */
 export default function TiktokIcon({ className }: TiktokIconProps) {
   return (
     <svg

@@ -1,10 +1,13 @@
 import Container from "@/shared/ui/container/Container";
 import PageTitle from "@/shared/ui/titles/PageTitle";
 import SectionDescription from "@/shared/ui/section-description/SectionDescription";
-import InfoList from "./InfoList";
+import DeliveryInfoList from "./DeliveryInfoList";
 import * as motion from "motion/react-client";
-import { fadeInAnimation } from "@/shared/lib/animationVariants";
+import { fadeInAnimation } from "@/shared/lib/animation/animationVariants";
 
+/**
+ * The delivery page heading, intro and general terms.
+ */
 export default function DeliveryInfo() {
   return (
     <section>
@@ -27,7 +30,7 @@ export default function DeliveryInfo() {
           >
             Загальна інформація
           </motion.h2>
-          <InfoList />
+          <DeliveryInfoList />
         </div>
       </Container>
     </section>

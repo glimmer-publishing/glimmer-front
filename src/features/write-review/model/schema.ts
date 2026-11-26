@@ -1,6 +1,7 @@
 import * as yup from "yup";
-import { nameRegex, emailRegex } from "@/shared/lib/regex";
+import { nameRegex, emailRegex } from "@/shared/lib/text/regex";
 
+/* The review form's schema, shared by the form and POST /api/telegram. */
 export const writeReviewValidation = () => {
   const writeReviewFormValidationSchema = yup.object().shape({
     name: yup

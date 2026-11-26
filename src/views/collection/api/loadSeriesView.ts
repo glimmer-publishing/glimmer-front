@@ -1,8 +1,8 @@
 import "server-only";
 import { listProducts } from "@/entities/product/lib/listProducts";
-import { ListingParams } from "@/entities/product/model/listingParams";
+import { ListingParams } from "@/shared/lib/searchParams/listingParams";
 import { getProductsBySeries } from "@/entities/product/api/getProducts";
-import { decodePathParam } from "@/shared/lib/decodePathParam";
+import { decodePathParam } from "@/shared/lib/routing/decodePathParam";
 import { getSeriesHref } from "@/entities/product/lib/getSeriesInfo";
 import { CollectionViewProps } from "../ui/CollectionView";
 

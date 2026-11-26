@@ -1,12 +1,17 @@
 import { ReactNode } from "react";
 import * as motion from "motion/react-client";
-import { fadeInAnimation } from "@/shared/lib/animationVariants";
+import { fadeInAnimation } from "@/shared/lib/animation/animationVariants";
 
-interface SectionTitleProps {
+type SectionTitleProps = {
+  /* The content. */
   children?: ReactNode;
+  /* Extra classes for the root element. */
   className?: string;
-}
+};
 
+/**
+ * A section's <h2>.
+ */
 export default function SectionTitle({
   children,
   className,

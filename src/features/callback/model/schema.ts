@@ -1,6 +1,7 @@
 import * as yup from "yup";
-import { nameRegex, emailRegex } from "@/shared/lib/regex";
+import { nameRegex, emailRegex } from "@/shared/lib/text/regex";
 
+/* The callback form's schema, shared by the form and POST /api/telegram. */
 export const callBackValidation = () => {
   const callBackFormValidationSchema = yup.object().shape({
     name: yup

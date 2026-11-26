@@ -4,13 +4,18 @@ import { persist } from "zustand/middleware";
 
 import type { UtmData } from "./types";
 
-interface UtmStore {
+/* The UTM store's state and actions. */
+type UtmStore = {
   utmData: UtmData | null;
   setUtmData: (utmData: UtmData) => void;
   clearUtmData: () => void;
   hasUtmData: () => boolean;
-}
+};
 
+/**
+ * The first-touch UTM params in localStorage, until an order carries them to
+ * KeyCRM.
+ */
 export const useUtmStore = create<UtmStore>()(
   persist(
     (set, get) => ({

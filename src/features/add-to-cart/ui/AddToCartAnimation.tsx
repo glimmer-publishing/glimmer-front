@@ -4,20 +4,21 @@ import Image from "next/image";
 import { createPortal } from "react-dom";
 import { CART_BUTTON_ID } from "@/entities/cart/model/constants";
 
-interface AddToCartAnimationProps {
+type AddToCartAnimationProps = {
   /* Viewport position of the product image the flight starts from. */
   startPos: { top: number; left: number };
   /* Changes with every click, so a repeated add starts a new flight. */
   animationKey: number;
   /* URL of the product image that flies to the cart. */
   image: string;
-}
+};
 
-interface FlyingImageProps extends AddToCartAnimationProps {
+type FlyingImageProps = AddToCartAnimationProps & {
   /* Viewport position of the cart icon the flight ends at. */
   endPos: { top: number; left: number };
-}
+};
 
+/* Where the flying cover starts relative to the button, in px. */
 const OFFSET_X = -10;
 const OFFSET_Y = -15;
 

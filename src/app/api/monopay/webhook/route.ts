@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { recordMonopayPayment } from "@/features/checkout/api/recordMonopayPayment";
 import { verifyMonopayWebhook } from "@/shared/api/monopay/client";
 
-interface MonopayWebhook {
+/* The fields of MonoPay's invoice status webhook the handler reads. */
+type MonopayWebhook = {
   status?: string;
   invoiceId?: string;
   reference?: string;
   finalAmount?: number;
-}
+};
 
 /**
  * MonoPay's payment status callback. The body is accepted only when X-Sign

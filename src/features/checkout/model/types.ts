@@ -7,16 +7,16 @@ import type { CheckoutValues } from "./schema";
  * All createOrder accepts from the browser. No price, name, recipient or
  * message text: the server derives all of it.
  */
-export interface CreateOrderInput {
+export type CreateOrderInput = {
   items: CartItem[];
   values: CheckoutValues;
   /* Kopecks: the total the customer was shown. */
   expectedTotal: number;
   utm?: UtmData | null;
-}
+};
 
 /* One line of a placed order; amounts in kopecks. */
-export interface OrderLine {
+export type OrderLine = {
   id: string;
   title: string;
   author?: string | null;
@@ -27,13 +27,13 @@ export interface OrderLine {
   unitPrice: number;
   lineTotal: number;
   preOrderShippingDate?: string | null;
-}
+};
 
 /**
  * A placed order as the server priced it. The confirmation page, receipt
  * and analytics read only this.
  */
-export interface OrderSummary {
+export type OrderSummary = {
   orderNumber: string;
   orderDate: string;
   name: string;
@@ -49,8 +49,9 @@ export interface OrderSummary {
   lines: OrderLine[];
   /* Kopecks. */
   total: number;
-}
+};
 
+/* What createOrder answers; the form handles each status (useSubmitOrder). */
 export type CreateOrderResult =
   /* Placed. paymentUrl is the MonoPay page for online payment. */
   | { status: "ok"; order: OrderSummary; paymentUrl?: string }
@@ -67,3 +68,10 @@ export type CreateOrderResult =
   /* The order exists in KeyCRM but MonoPay refused the invoice. */
   | { status: "paymentFailed"; orderNumber: string }
   | { status: "error" };
+
+/* Why an order was not placed, or not paid, as the checkout page tells it. */
+export type CheckoutNotice =
+  | { kind: "error" }
+  /* removedTitles: books no longer sold, dropped from the cart. */
+  | { kind: "priceChanged"; removedTitles: string[] }
+  | { kind: "paymentFailed"; orderNumber: string };

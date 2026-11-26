@@ -1,7 +1,11 @@
-interface MonopayIconProps {
+type MonopayIconProps = {
+  /* Extra classes for the root element. */
   className?: string;
-}
+};
 
+/**
+ * MonoPay logo.
+ */
 export default function MonopayIcon({ className }: MonopayIconProps) {
   return (
     <svg

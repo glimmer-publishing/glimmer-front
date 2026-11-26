@@ -1,7 +1,7 @@
-interface LoaderProps {
+type LoaderProps = {
   /* Height of the reserved space, so the content below does not jump. */
   className?: string;
-}
+};
 
 /**
  * Spinner centred in the space the loading content will take.

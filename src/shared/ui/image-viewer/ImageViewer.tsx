@@ -9,18 +9,28 @@ import type { Swiper as SwiperClass } from "swiper/types";
 import ArrowIcon from "@/shared/ui/icons/ArrowIcon";
 import CrossIcon from "@/shared/ui/icons/CrossIcon";
 import IconButton from "@/shared/ui/icon-button/IconButton";
-import { TAP_TOLERANCE_PX } from "@/shared/lib/useImageTap";
-import { PRODUCT_IMAGE_QUALITY, sanityImageUrl } from "@/shared/lib/sanityImage";
+import { TAP_TOLERANCE_PX } from "@/shared/hooks/useImageTap";
+import {
+  PRODUCT_IMAGE_QUALITY,
+  sanityImageUrl,
+} from "@/shared/lib/images/sanityImage";
 
-interface ImageViewerProps {
+type ImageViewerProps = {
+  /* Image URLs, in order. */
   photos: string[];
+  /* Whether the viewer is open. */
   isShown: boolean;
+  /* Index of the photo to open at. */
   startIndex: number;
+  /* Closes it. */
   onClose: () => void;
   /* Used to build the alt text: "<altPrefix>, фото 2" */
   altPrefix: string;
-}
+};
 
+/**
+ * Full-screen gallery of photos, opened at one of them.
+ */
 export default function ImageViewer({
   photos,
   isShown,
@@ -62,8 +72,10 @@ export default function ImageViewer({
     pointerDownRef.current = { x: event.clientX, y: event.clientY };
   };
 
-  /* Closes only on a genuine tap on the backdrop around the panel - never at
-     the end of a swipe, and never on the panel itself. */
+  /**
+   * Closes only on a genuine tap on the backdrop around the panel - never at
+   * the end of a swipe, and never on the panel itself.
+   */
   const handlePointerUp = (event: React.PointerEvent) => {
     const pointerDown = pointerDownRef.current;
     pointerDownRef.current = null;
@@ -72,7 +84,7 @@ export default function ImageViewer({
 
     const travelled = Math.hypot(
       event.clientX - pointerDown.x,
-      event.clientY - pointerDown.y,
+      event.clientY - pointerDown.y
     );
 
     if (travelled > TAP_TOLERANCE_PX) return;
@@ -195,6 +207,6 @@ export default function ImageViewer({
         ) : null}
       </div>
     </div>,
-    document.body,
+    document.body
   );
 }

@@ -4,9 +4,10 @@ import { loadProductView } from "@/views/product/api/loadProductView";
 import { buildProductMetadata } from "@/views/product/api/metadata";
 import ProductView from "@/views/product/ui/ProductView";
 
-interface ProductPageProps {
+type ProductPageProps = {
+  /* The route's dynamic segments. */
   params: Promise<{ category: string; product: string }>;
-}
+};
 
 /**
  * No paths at build time, but declaring the function makes the route ISR:
@@ -20,12 +21,17 @@ export function generateStaticParams(): {
   return [];
 }
 
+/* Title, description and Open Graph image of one book. */
 export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {
   return buildProductMetadata((await params).product);
 }
 
+/**
+ * /catalog/<category>/<product>: one book's page; 404 when the slug is not a
+ * product.
+ */
 export default async function ProductPage({ params }: ProductPageProps) {
   const view = await loadProductView((await params).product);
   if (!view) notFound();

@@ -1,17 +1,26 @@
 import { Dispatch, SetStateAction } from "react";
 import Image from "next/image";
-import Modal from "../modal/Modal";
-import MainButton from "../main-button/MainButton";
+import Modal from "@/shared/ui/modal/Modal";
+import MainButton from "@/shared/ui/main-button/MainButton";
 
-interface NotificationPopUpProps {
+type NotificationPopUpProps = {
+  /* Text in the pop-up's header bar. */
   headerTitle: string;
+  /* The message's title. */
   title: string;
+  /* The message. */
   description: string;
+  /* Whether it is shown. */
   isPopUpShown: boolean;
 
+  /* Shows or hides it. */
   setIsPopUpShown: Dispatch<SetStateAction<boolean>>;
-}
+};
 
+/**
+ * A small modal with a heading, a title and a message, e.g. a form's success
+ * or error.
+ */
 export default function NotificationPopUp({
   headerTitle,
   title,

@@ -1,7 +1,11 @@
-interface CrossIconProps {
+type CrossIconProps = {
+  /* Extra classes for the root element. */
   className?: string;
-}
+};
 
+/**
+ * Close (cross) icon.
+ */
 export default function CrossIcon({ className }: CrossIconProps) {
   return (
     <svg

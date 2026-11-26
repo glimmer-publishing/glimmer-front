@@ -1,4 +1,4 @@
-import type { TrackedItem } from "@/shared/lib/ecommerceTracking";
+import type { TrackedItem } from "@/shared/lib/analytics/ecommerceTracking";
 import type { Product } from "../model/product";
 
 /* A product as analytics sees it: its catalog price, in hryvnia. */

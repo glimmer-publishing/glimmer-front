@@ -2,14 +2,14 @@
 import type { Product } from "@/entities/product/model/product";
 import CartIcon from "@/shared/ui/icons/CartIcon";
 import AddToCartAnimation from "./AddToCartAnimation";
-import { useAddToCartFlight } from "../model/useAddToCartFlight";
+import { useAddToCartFlight } from "../hooks/useAddToCartFlight";
 
-interface AddToCartProps {
+type AddToCartProps = {
   /* The product added, one at a time. */
   product: Product;
   /* Extra classes for the button. */
   className?: string;
-}
+};
 
 /**
  * Card-sized buy button: "Купити" for products in stock, "Передзамовлення"

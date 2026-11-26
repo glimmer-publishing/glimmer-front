@@ -1,5 +1,6 @@
 import type { Review } from "@/entities/review/model/types";
 
+/* The mean review rating, or 0 without reviews. */
 export function getAverageRating(reviews: Review[]): number {
   if (!reviews?.length) return 0;
 

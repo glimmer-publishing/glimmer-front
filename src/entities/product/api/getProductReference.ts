@@ -1,17 +1,13 @@
 import "server-only";
 import { sanityFetch } from "@/shared/api/sanity/client";
+import { productReferenceQuery } from "./queries";
 
-export interface ProductReference {
+/* How a product is named in notifications. */
+export type ProductReference = {
   title: string;
   author?: string | null;
   sku: string;
-}
-
-const productReferenceQuery = `*[_type == "product" && _id == $id][0]{
-  title,
-  author,
-  sku
-}`;
+};
 
 /* How a product is named in notifications, or null when it does not exist. */
 export const getProductReference = async (

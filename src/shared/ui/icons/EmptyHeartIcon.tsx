@@ -1,7 +1,11 @@
-interface EmptyHeartIconProps {
+type EmptyHeartIconProps = {
+  /* Extra classes for the root element. */
   className?: string;
-}
+};
 
+/**
+ * Outlined heart icon: not a favorite.
+ */
 export default function EmptyHeartIcon({ className }: EmptyHeartIconProps) {
   return (
     <svg

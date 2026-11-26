@@ -3,10 +3,14 @@ import { Rating } from "react-simple-star-rating";
 import StarEmptyIcon from "@/shared/ui/icons/StarEmptyIcon";
 import StarFilledIcon from "@/shared/ui/icons/StarFilledIcon";
 
-interface Values {
+/* Formik values holding the rating. */
+type Values = {
   [fieldName: string]: number;
-}
+};
 
+/**
+ * A five-star Formik field for the "rating" value, with its error.
+ */
 export default function RatingField() {
   const { setFieldValue, values, touched, errors } = useFormikContext<Values>();
 

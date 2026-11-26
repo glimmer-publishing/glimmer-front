@@ -1,7 +1,11 @@
-interface LogoIconProps {
+type LogoIconProps = {
+  /* Extra classes for the root element. */
   className?: string;
-}
+};
 
+/**
+ * The Glimmer logo.
+ */
 export default function LogoIcon({ className }: LogoIconProps) {
   return (
     <svg

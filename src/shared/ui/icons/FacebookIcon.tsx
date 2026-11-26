@@ -1,7 +1,11 @@
-interface FacebookIconProps {
+type FacebookIconProps = {
+  /* Extra classes for the root element. */
   className?: string;
-}
+};
 
+/**
+ * Facebook logo.
+ */
 export default function FacebookIcon({ className }: FacebookIconProps) {
   return (
     <svg

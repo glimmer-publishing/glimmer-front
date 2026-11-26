@@ -1,7 +1,11 @@
-interface TrashIconProps {
+type TrashIconProps = {
+  /* Extra classes for the root element. */
   className?: string;
-}
+};
 
+/**
+ * Trash icon, for removing from the cart.
+ */
 export default function TrashIcon({ className }: TrashIconProps) {
   return (
     <svg

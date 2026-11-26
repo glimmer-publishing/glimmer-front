@@ -2,6 +2,7 @@ import { Product } from "../model/product";
 import { getAverageRating } from "./getAverageRating";
 import { getSeriesInfo } from "./getSeriesInfo";
 
+/* Series order: books with a known position first, by position. */
 function compareBySeriesPosition(a: Product, b: Product): number {
   const positionA = getSeriesInfo(a.features)?.position;
   const positionB = getSeriesInfo(b.features)?.position;
@@ -15,6 +16,10 @@ function compareBySeriesPosition(a: Product, b: Product): number {
   return a.title.localeCompare(b.title, "uk");
 }
 
+/**
+ * A sorted copy of the products for one sort option value; an unknown value
+ * keeps catalog order.
+ */
 export function sortProducts(products: Product[], sort: string): Product[] {
   const items = [...products];
 

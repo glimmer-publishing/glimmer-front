@@ -3,6 +3,9 @@ import SectionDescription from "@/shared/ui/section-description/SectionDescripti
 import Container from "@/shared/ui/container/Container";
 import ContactsList from "./ContactsList";
 
+/**
+ * The contacts page heading, intro and contact list.
+ */
 export default function ContactsInfo() {
   return (
     <section className="pb-8 lg:pb-10">

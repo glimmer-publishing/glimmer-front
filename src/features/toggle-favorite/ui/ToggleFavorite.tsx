@@ -1,22 +1,24 @@
 "use client";
-import { useFavorite } from "@/entities/favorite/model/useFavorite";
+import { useFavorite } from "@/entities/favorite/hooks/useFavorite";
 import EmptyHeartIcon from "@/shared/ui/icons/EmptyHeartIcon";
 
-interface ToggleFavoriteProps {
+type ToggleFavoriteProps = {
   /* Slug of the product the heart saves. */
   slug: string;
   /* "card": a bare heart on a product card; "large": a 45 px bordered box. */
   size?: "card" | "large";
   /* Extra classes for the button. */
   className?: string;
-}
+};
 
+/* Button classes per size: on a product card or on the product page. */
 const BUTTON_CLASSES = {
   card: "group cursor-pointer flex items-center justify-center shrink-0 active:scale-95 will-change-transform transition duration-300 ease-in-out",
   large:
     "cursor-pointer group size-[45px] rounded-[12px] border shrink-0 flex items-center justify-center active:scale-95 transition duration-300 ease-in-out will-change-transform",
 };
 
+/* Icon classes per size. */
 const ICON_CLASSES = {
   card: "w-auto h-5 lg:h-[25px]",
   large: "w-[25px] h-auto",

@@ -1,12 +1,16 @@
 "use client";
 import Marquee from "react-fast-marquee";
 import * as motion from "motion/react-client";
-import { headerVariants } from "@/shared/lib/animationVariants";
+import { headerVariants } from "@/shared/lib/animation/animationVariants";
 
-interface MarqueeLineProps {
+type MarqueeLineProps = {
+  /* Extra classes for the root element. */
   className?: string;
-}
+};
 
+/**
+ * A strip of "Glimmer" scrolling endlessly across the page.
+ */
 export default function MarqueeLine({ className = "" }: MarqueeLineProps) {
   return (
     <motion.div

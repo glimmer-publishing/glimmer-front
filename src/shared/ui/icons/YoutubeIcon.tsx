@@ -1,7 +1,11 @@
-interface YoutubeIconProps {
+type YoutubeIconProps = {
+  /* Extra classes for the root element. */
   className?: string;
-}
+};
 
+/**
+ * YouTube logo.
+ */
 export default function YoutubeIcon({ className }: YoutubeIconProps) {
   return (
     <svg

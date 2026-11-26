@@ -7,7 +7,7 @@ import {
   fadeInAnimation,
   listVariants,
   listItemVariants,
-} from "@/shared/lib/animationVariants";
+} from "@/shared/lib/animation/animationVariants";
 
 /**
  * Delivery services, costs and the exchange terms for damaged parcels.
@@ -82,7 +82,11 @@ export default function DeliveryConditions() {
                   className="text-[14px] lg:text-[15px] leading-[150%]"
                 >
                   Доставка здійснюється по всій території України, де працюють
-                  відділення поштових перевізників. Фіксована вартість доставки — 100 грн для всіх замовлень по Україні та оплачується отримувачем при врученні. При замовленні від {formatHryvnia(FREE_DELIVERY_FROM)} грн доставка — безкоштовна!
+                  відділення поштових перевізників. Фіксована вартість доставки
+                  — 100 грн для всіх замовлень по Україні та оплачується
+                  отримувачем при врученні. При замовленні від{" "}
+                  {formatHryvnia(FREE_DELIVERY_FROM)} грн доставка —
+                  безкоштовна!
                 </motion.p>
 
                 {domesticMethods.map((item, idx) => (

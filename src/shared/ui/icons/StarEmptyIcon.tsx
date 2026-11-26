@@ -1,7 +1,11 @@
-interface StarEmptyIconProps {
+type StarEmptyIconProps = {
+  /* Extra classes for the root element. */
   className?: string;
-}
+};
 
+/**
+ * Empty rating star.
+ */
 export default function StarEmptyIcon({ className }: StarEmptyIconProps) {
   return (
     <svg

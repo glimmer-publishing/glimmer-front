@@ -6,15 +6,16 @@ import ToggleFavorite from "@/features/toggle-favorite/ui/ToggleFavorite";
 import ProductCard from "./ProductCard";
 import SwiperWrapper from "@/shared/ui/swiper/SwiperWrapper";
 import { Product } from "@/entities/product/model/product";
-import { fadeInAnimation } from "@/shared/lib/animationVariants";
+import { fadeInAnimation } from "@/shared/lib/animation/animationVariants";
 
-interface ProductSliderProps {
+type ProductSliderProps = {
   /* The cards, in order. */
   products: Product[];
   /* Swiper class; globals.css styles each slider by it. */
   swiperClassName: string;
-}
+};
 
+/* Slides per view and spacing per screen width. */
 const BREAKPOINTS = {
   0: { spaceBetween: 16, slidesPerView: 2 },
   500: { spaceBetween: 16, slidesPerView: 3 },

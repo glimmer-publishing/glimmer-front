@@ -29,7 +29,8 @@ const withCacheDefaults = (
   tags: [SANITY_CACHE_TAG, ...(options.tags ?? [])],
 });
 
-export interface FetchSanityDataServerOptions extends SanityFetchOptions {
+/* Cache and error options of fetchSanityDataServer. */
+export type FetchSanityDataServerOptions = SanityFetchOptions & {
   /**
    * Default true. A failed query throws, so on a cached (ISR) route a failed
    * rebuild keeps serving the previous page instead of caching a broken one,
@@ -40,7 +41,7 @@ export interface FetchSanityDataServerOptions extends SanityFetchOptions {
    * that version is stored until the next revalidation.
    */
   throwError?: boolean;
-}
+};
 
 /* Cached server-side Sanity read, tagged for on-demand revalidation. */
 export const fetchSanityDataServer = async (

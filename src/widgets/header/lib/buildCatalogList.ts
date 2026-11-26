@@ -1,7 +1,8 @@
 import { CatalogItem } from "../model/catalogItem";
-import { categoryPageHref } from "@/entities/category/model/categoryParams";
+import { categoryPageHref } from "@/shared/lib/searchParams/categoryParams";
 import type { MenuCategory } from "@/entities/category/model/types";
 
+/* The "Акції" entry, first in the catalog menu. */
 const promoItem: CatalogItem = {
   slug: "promo",
   title: "Акції",
@@ -15,8 +16,10 @@ const allProductsItem: CatalogItem = {
   href: "/catalog/all",
 };
 
-// Категорія з жанрами не показується в меню окремим пунктом — замість неї
-// виводяться її жанри, щоб каталог залишався одного рівня.
+/**
+ * Категорія з жанрами не показується в меню окремим пунктом — замість неї
+ * виводяться її жанри, щоб каталог залишався одного рівня.
+ */
 export function buildCatalogList(
   categories: MenuCategory[] = []
 ): CatalogItem[] {

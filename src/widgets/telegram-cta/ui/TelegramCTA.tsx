@@ -4,7 +4,7 @@ import TelegramButton from "@/shared/ui/telegram-button/TelegramButton";
 import SectionTitle from "@/shared/ui/titles/SectionTitle";
 import { TELEGRAM_URL_CHANNEL } from "@/shared/config/constants";
 import * as motion from "motion/react-client";
-import { fadeInAnimation } from "@/shared/lib/animationVariants";
+import { fadeInAnimation } from "@/shared/lib/animation/animationVariants";
 
 /**
  * Call to subscribe to the Telegram channel, above the footer.

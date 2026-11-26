@@ -3,11 +3,11 @@ import AddToCart from "@/features/add-to-cart/ui/AddToCart";
 import ToggleFavorite from "@/features/toggle-favorite/ui/ToggleFavorite";
 import ProductCard from "./ProductCard";
 import { ProductListing } from "@/entities/product/model/types";
-import { fadeInAnimation } from "@/shared/lib/animationVariants";
+import { fadeInAnimation } from "@/shared/lib/animation/animationVariants";
 import ProductPagination from "./ProductPagination";
 import ProductsEmpty from "./ProductsEmpty";
 
-interface ProductListProps {
+type ProductListProps = {
   /* URL the page links build on: the path plus the page's own params. */
   baseHref: string;
   /* The filtered, sorted current page of products. */
@@ -16,7 +16,7 @@ interface ProductListProps {
   emptyMessage?: string;
   /* Changes with tab, filter, sort or page, so the cards fade in again. */
   listKey: string;
-}
+};
 
 /**
  * The current page of cards with the page links below, or the empty state

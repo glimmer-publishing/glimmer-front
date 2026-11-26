@@ -7,12 +7,13 @@ import MarqueeLine from "@/shared/ui/marquee-line/MarqueeLine";
 import ProductList from "@/widgets/products/ui/ProductList";
 import ProductToolbar from "@/widgets/products/ui/ProductToolbar";
 import TelegramCTA from "@/widgets/telegram-cta/ui/TelegramCTA";
-import { categoryHref } from "@/entities/category/model/categoryParams";
+import { categoryHref } from "@/shared/lib/searchParams/categoryParams";
 import CategoryBackground from "./CategoryBackground";
 import CategoryBanner from "./CategoryBanner";
 import CategoryTabs from "./CategoryTabs";
 
-export interface CategoryViewProps {
+/* Everything a category page renders, from loadCategoryView. */
+export type CategoryViewProps = {
   /* Path of the category page; every tab, dropdown and page link points to it. */
   pathname: string;
   /**
@@ -32,7 +33,7 @@ export interface CategoryViewProps {
   banner?: CatalogBanner;
   /* Text shown when no product matches. */
   emptyMessage?: string;
-}
+};
 
 /**
  * A category page (/catalog/<slug>, including "all" and "promo"): genre tabs

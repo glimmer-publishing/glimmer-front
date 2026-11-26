@@ -3,6 +3,9 @@ import {
   genresProjection,
 } from "@/shared/api/sanity/fragments";
 
+/**
+ * One category with its genres, products and catalog banner, by $categorySlug.
+ */
 export const allProductsByCategoryQuery = `
 *[_type == "category" && slug.current == $categorySlug][0]{
   "categoryTitle": title,

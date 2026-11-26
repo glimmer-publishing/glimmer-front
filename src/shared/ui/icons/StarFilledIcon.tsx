@@ -1,7 +1,11 @@
-interface StarFilledIconProps {
+type StarFilledIconProps = {
+  /* Extra classes for the root element. */
   className?: string;
-}
+};
 
+/**
+ * Filled rating star.
+ */
 export default function StarFilledIcon({
   className = "",
 }: StarFilledIconProps) {

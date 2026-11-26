@@ -1,20 +1,17 @@
 import "server-only";
 import { NOVA_POSHTA_API_URL } from "@/shared/config/constants";
+import { serverEnv } from "@/shared/config/serverEnv";
 import type { NovaPoshtaCity, NovaPoshtaWarehouse } from "./types";
 
 /**
- * Nova Poshta lookups, made on the server so the API key never reaches the
- * browser. NEXT_PUBLIC_NOVA_POSHTA_API_KEY is read only as a fallback until
- * NOVA_POSHTA_API_KEY is set everywhere; read here, it is not bundled.
+ * Nova Poshta lookups, made on the server so the API key (serverEnv) never
+ * reaches the browser.
  */
-const apiKey = () =>
-  process.env.NOVA_POSHTA_API_KEY ||
-  process.env.NEXT_PUBLIC_NOVA_POSHTA_API_KEY ||
-  "";
 
 /* How many matches to ask for; the results are then narrowed by prefix. */
 const CITY_SEARCH_LIMIT = 50;
 
+/* One Nova Poshta API method; its data list, or [] when there is none. */
 const call = async <T>(
   modelName: string,
   calledMethod: string,
@@ -24,7 +21,7 @@ const call = async <T>(
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      apiKey: apiKey(),
+      apiKey: serverEnv.novaPoshtaApiKey,
       modelName,
       calledMethod,
       methodProperties,
@@ -59,6 +56,7 @@ export const searchNovaPoshtaCities = async (
     .map(({ Description, Ref }) => ({ Description, Ref }));
 };
 
+/* Every branch and parcel locker of one city, by its Ref. */
 export const getNovaPoshtaWarehouses = async (
   cityRef: string
 ): Promise<NovaPoshtaWarehouse[]> =>

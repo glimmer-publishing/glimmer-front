@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { quoteCart } from "@/entities/cart/api/quoteCart";
 import { normalizeCartItems } from "@/entities/cart/lib/pricing";
-import { parseCartQuoteParams } from "@/entities/cart/model/cartHref";
+import { parseCartQuoteParams } from "@/shared/lib/searchParams/cartQuoteParams";
 import { MAX_PROMO_LENGTH } from "@/entities/cart/model/constants";
 import type { CartQuote } from "@/entities/cart/model/types";
 

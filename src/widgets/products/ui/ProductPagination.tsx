@@ -2,10 +2,10 @@ import Link from "next/link";
 import {
   ListingParams,
   listingHref,
-} from "@/entities/product/model/listingParams";
+} from "@/shared/lib/searchParams/listingParams";
 import ArrowIcon from "@/shared/ui/icons/ArrowIcon";
 
-interface ProductPaginationProps {
+type ProductPaginationProps = {
   /* URL the links build on: the path plus the page's own params. */
   baseHref: string;
   /* The listing's params; the links keep filter and sort. */
@@ -14,17 +14,19 @@ interface ProductPaginationProps {
   currentPage: number;
   /* Number of pages; nothing renders when there is only one. */
   totalPages: number;
-}
+};
 
-interface PaginationArrowProps {
+type PaginationArrowProps = {
   /* Target page URL; missing at either end, where the arrow is greyed out. */
   href?: string;
   /* Which way the arrow points. */
   direction: "prev" | "next";
-}
+};
 
+/* Page numbers shown around the current one. */
 const MAX_VISIBLE_PAGES = 4;
 
+/* The page numbers to show, centred on the current page where possible. */
 const getVisiblePages = (currentPage: number, totalPages: number) => {
   const halfVisible = Math.floor(MAX_VISIBLE_PAGES / 2);
 

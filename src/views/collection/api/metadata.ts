@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import { DEFAULT_METADATA } from "@/shared/config/constants";
-import { decodePathParam } from "@/shared/lib/decodePathParam";
+import { decodePathParam } from "@/shared/lib/routing/decodePathParam";
 import { getSeriesHref } from "@/entities/product/lib/getSeriesInfo";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "");
+import { publicEnv } from "@/shared/config/env";
 
+/* The canonical URL needs the site's origin. */
+const SITE_URL = publicEnv.siteUrl;
+
+/* Metadata of an author page; the defaults for an unreadable name. */
 export const getAuthorMetadata = (authorParam: string): Metadata => {
   const authorName = decodePathParam(authorParam);
 
@@ -16,6 +20,10 @@ export const getAuthorMetadata = (authorParam: string): Metadata => {
   };
 };
 
+/**
+ * Metadata of a series page, with its canonical URL; the defaults for an
+ * unreadable name.
+ */
 export const getSeriesMetadata = (seriesParam: string): Metadata => {
   const name = decodePathParam(seriesParam);
 

@@ -4,7 +4,7 @@ import { getProductReference } from "@/entities/product/api/getProductReference"
 import { callBackValidation } from "@/features/callback/model/schema";
 import { writeReviewValidation } from "@/features/write-review/model/schema";
 import { sendTelegramMessage } from "@/shared/api/telegram/client";
-import { escapeHtml as e } from "@/shared/lib/html";
+import { escapeHtml as e } from "@/shared/lib/text/html";
 
 /**
  * Builds the operations-group message for one of the site's forms. The

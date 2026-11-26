@@ -22,8 +22,11 @@ src/
 ```
 
 A **slice** is one folder in a layer (`entities/product`, `views/category`).
-Inside a slice, code is split by segment: `ui/`, `api/` (data access),
-`model/` (types, stores, params, `constants.ts`), `lib/` (pure logic).
+Inside a slice, code is split by segment: `ui/`, `api/` (data access:
+server reads, queries, route clients), `hooks/` (every React hook, including
+the ones that call our routes), `model/` (types, stores, `constants.ts`),
+`lib/` (pure logic). `shared/` has the same segments plus `providers/`
+(`QueryProvider`).
 Entities have no `ui/` segment: lint rejects JSX there. How an entity looks
 is a widget or view; what a user does with it is a feature.
 
@@ -51,8 +54,14 @@ query is `entities/product`'s; the search query is
 
 ### Where former root modules went
 
-- Helpers and regexes: `shared/lib`. Constants, enums and the environment
-  gate (`isProduction`, `shared/config/env.ts`): `shared/config`.
+- Helpers: `shared/lib`, grouped by topic: `searchParams/` (every URL
+  param parser and href builder), `date/`, `analytics/`, `seo/`, `images/`,
+  `text/` (HTML escaping, regexes), `animation/`, `routing/`. Shared hooks:
+  `shared/hooks`. Constants and enums: `shared/config`.
+- Environment variables: read only in `shared/config`. `env.ts` has
+  `publicEnv` (NEXT_PUBLIC_* values, safe in any bundle) and the
+  `isProduction` gate; `serverEnv.ts` (`import "server-only"`) has every
+  secret. Nothing else reads `process.env`.
 - Domain types live in their entity: `Product` in `entities/product`,
   `Review` in `entities/review`, banners in `entities/banner`, Instagram
   posts in `entities/instagram-post`. Entities may import each other's
@@ -73,7 +82,7 @@ The root layout composes `widgets/header` (which composes
 | Layer | Holds |
 | --- | --- |
 | `shared/api` | raw clients (`sanityFetch`, `fetchSanityDataServer`) |
-| `entities` | reads (`getCategory`, `getProductSelection`, `getProductsBySlugs`), client stores (favorites), client queries over our own routes (`useListingBySlugs`) |
+| `entities` | reads (`getCategory`, `getProductSelection`, `getProductsBySlugs`), client stores (favorites), client queries over our own routes (`useFetchListingBySlugs`) |
 | `features` | user actions and writes |
 | `views` | the page loader only (`loadCategoryView`), composing entity reads; home is the exception, one combined query of its own in `views/home/api` |
 | `widgets` | usually no data access: data comes in as props |
@@ -86,19 +95,26 @@ The root layout composes `widgets/header` (which composes
 - No Server Actions for reads.
 - Data that exists only in the browser (favorites are slugs in
   `localStorage`) goes through TanStack Query, calling a narrow route of our
-  own (`GET /api/products?slug=…`). `QueryProvider` sits in the root layout.
+  own (`GET /api/products?slug=…`). `QueryProvider`
+  (`shared/providers`) sits in the root layout.
+- The browser calls our routes with `fetch` through
+  `shared/api/http/fetchJson.ts` (`fetchJson`, `postJson`), which throws on
+  a non-2xx status. No axios.
+- A hook that loads data says so: `useFetch…` (`useFetchCartQuote`,
+  `useFetchNovaPoshtaCities`). It lives in `hooks/`, not `api/`.
 
 ### URL params: parse once at the edge
 
 - `app/**/page.tsx` is the only place raw `searchParams` exist, and it parses
   them right away.
-- Whoever owns a param defines its parser:
-  - `filter`, `sort` and `page` belong to the listing:
-    `entities/product/model/listingParams.ts` (`parseListingParams`,
+- Every parser and href builder lives in `shared/lib/searchParams/`:
+  - `listingParams.ts`: `filter`, `sort`, `page` (`parseListingParams`,
     `listingHref`).
-  - `subcategory` (the genre tab) only means something on a category page:
-    `views/category/model/categoryParams.ts` (`parseCategoryParams`,
-    `categoryHref`).
+  - `categoryParams.ts`: `subcategory`, the genre tab (`parseCategoryParams`,
+    `categoryHref`, `categoryPageHref`).
+  - `cartQuoteParams.ts`: `GET /api/cart`'s `item` and `promo`.
+  - `utmParams.ts`: the UTM keys.
+  - `urlParams.ts`: the generic helpers (`toUrlSearchParams`, `withParams`).
 - Everything below `app/` takes typed params. Links are built from typed
   values: the page's own params make a `baseHref` (`categoryHref`), and
   `listingHref` puts the listing's params on top.
@@ -137,7 +153,7 @@ return <CategoryView {...view} />;
 ```
 
 The same rule joins slices of one layer that may not import each other:
-the root layout passes `widgets/cart`'s `HeaderCart` into `widgets/header`
+the root layout passes `widgets/cart`'s `CartHeaderSlot` into `widgets/header`
 as its `cart` slot, and the checkout view passes the cart widget's list and
 totals into `features/checkout`'s form (`cartList`, `renderTotal`).
 
@@ -149,7 +165,18 @@ coupling appears.
 
 ## Conventions
 
-- Components get a `/** */` doc; props get one-line `/* */` docs.
+- Every component, hook and type in a slice is named after the slice:
+  `views/home` has `HomeHero`, `widgets/footer` has `FooterInfo`,
+  `features/checkout` has `CheckoutDelivery`, `features/edit-cart` has
+  `EditCartRemove`. A name alone tells where it lives. Shared UI is named
+  after its folder (`shared/ui/form`: `FormInput`, `FormRadioInput`).
+- `type`, never `interface` (the one exception is the global `Window`
+  augmentation, which has to be an interface).
+- Unions that mean something get a name: `ProductStatus`, `PromoStatus`.
+- Every query lives in its slice's `api/queries.ts`, never inline in a read.
+- Every exported declaration (component, hook, read, type, constant) has
+  a doc comment; components get a `/** */` block, props one-line `/* */`
+  docs.
 - A comment longer than one line is always a `/** */` block, one ` * ` per
   line, never `/* */` over several lines or a run of `//` lines.
 - No JSX in variables: extract a small component instead.

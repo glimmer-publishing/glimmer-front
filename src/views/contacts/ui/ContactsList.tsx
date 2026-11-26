@@ -1,5 +1,5 @@
-import { contactsPhoneRegex } from "@/shared/lib/regex";
-import ContactItem from "./ContactItem";
+import { contactsPhoneRegex } from "@/shared/lib/text/regex";
+import ContactsItem from "./ContactsItem";
 import {
   EMAIL_AUTHORS,
   EMAIL_CLIENTS,
@@ -10,8 +10,11 @@ import {
   WORKING_HOURS,
 } from "@/shared/config/constants";
 import * as motion from "motion/react-client";
-import { listVariants } from "@/shared/lib/animationVariants";
+import { listVariants } from "@/shared/lib/animation/animationVariants";
 
+/**
+ * Every way to reach the shop, one ContactsItem each.
+ */
 export default function ContactsList() {
   return (
     <motion.div
@@ -27,7 +30,7 @@ export default function ContactsList() {
     >
       <div className="flex flex-col gap-5 xl:w-[calc(50%-16px)]">
         <div className="flex gap-5 lg:gap-8">
-          <ContactItem
+          <ContactsItem
             title="Телефон"
             description={
               <a
@@ -41,7 +44,7 @@ export default function ContactsList() {
             }
             className="w-[calc(50%-10px)] lg:[calc(50%-16px)]"
           />
-          <ContactItem
+          <ContactsItem
             title="Telegram"
             description={
               <a
@@ -56,12 +59,12 @@ export default function ContactsList() {
             className="w-[calc(50%-10px)] lg:[calc(50%-16px)]"
           />
         </div>
-        <ContactItem
+        <ContactsItem
           title="Робочі години"
           description={<p className="lowercase">{WORKING_HOURS}</p>}
           className="xl:hidden"
         />
-        <ContactItem
+        <ContactsItem
           title="Якщо ти автор, надсилай нам свій рукопис на пошту:"
           description={
             <a
@@ -78,7 +81,7 @@ export default function ContactsList() {
       </div>
       <div className="flex flex-col gap-5 xl:w-[calc(50%-16px)]">
         <div className="flex flex-col md:flex-row gap-5 lg:gap-8">
-          <ContactItem
+          <ContactsItem
             title="Email для клієнтів"
             description={
               <a
@@ -92,7 +95,7 @@ export default function ContactsList() {
             }
             className="md:w-[calc(50%-10px)] lg:[calc(50%-16px)]"
           />
-          <ContactItem
+          <ContactsItem
             title="Якщо ти автор, надсилай нам свій рукопис на пошту:"
             description={
               <a
@@ -106,13 +109,13 @@ export default function ContactsList() {
             }
             className="xl:hidden md:w-[calc(50%-10px)] lg:w-[calc(50%-16px)]"
           />
-          <ContactItem
+          <ContactsItem
             title="Робочі години"
             description={<p className="lowercase">{WORKING_HOURS}</p>}
             className="hidden xl:block w-[calc(50%-16px)]"
           />
         </div>
-        <ContactItem
+        <ContactsItem
           title="Для співпраці щодо реалізації книг:"
           description={
             <a

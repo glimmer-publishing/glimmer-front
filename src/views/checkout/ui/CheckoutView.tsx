@@ -6,6 +6,7 @@ import SectionDescription from "@/shared/ui/section-description/SectionDescripti
 import PageTitle from "@/shared/ui/titles/PageTitle";
 import TelegramCTA from "@/widgets/telegram-cta/ui/TelegramCTA";
 
+/* The page's breadcrumb trail. */
 const CRUMBS = [
   { label: "Головна", href: "/" },
   { label: "Оформлення замовлення", href: "/checkout" },

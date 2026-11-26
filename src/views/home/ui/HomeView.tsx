@@ -3,9 +3,9 @@ import MarqueeLine from "@/shared/ui/marquee-line/MarqueeLine";
 import Instagram from "@/widgets/instagram/ui/Instagram";
 import TelegramCTA from "@/widgets/telegram-cta/ui/TelegramCTA";
 import type { HomeViewData } from "../api/loadHomeView";
-import Genres from "./Genres";
-import Hero from "./Hero";
-import PromoBanner from "./PromoBanner";
+import HomeGenres from "./HomeGenres";
+import HomeHero from "./HomeHero";
+import HomePromoBanner from "./HomePromoBanner";
 import ProductSliderSection from "@/widgets/products/ui/ProductSliderSection";
 
 /**
@@ -26,9 +26,9 @@ export default function HomeView({
 }: HomeViewData) {
   return (
     <>
-      <Hero banners={heroBanners} />
+      <HomeHero banners={heroBanners} />
       <MarqueeLine />
-      <Genres genres={genres} />
+      <HomeGenres genres={genres} />
       <ProductSliderSection
         title="Топ продажів"
         description="Наші улюбленці — і твої теж. Ці товари обирають найчастіше, бо вони справді особливі."
@@ -44,10 +44,10 @@ export default function HomeView({
       {(!!promoBannerFirst || !!promoBannerSecond) && (
         <Container className="md:flex gap-4 py-8 lg:py-10">
           {!!promoBannerFirst && (
-            <PromoBanner banner={promoBannerFirst} idx="first" />
+            <HomePromoBanner banner={promoBannerFirst} idx="first" />
           )}
           {!!promoBannerSecond && (
-            <PromoBanner
+            <HomePromoBanner
               banner={promoBannerSecond}
               className="hidden md:block"
               idx="second"
@@ -63,7 +63,7 @@ export default function HomeView({
       />
       {!!promoBannerSecond && (
         <Container className="md:hidden py-8">
-          <PromoBanner banner={promoBannerSecond} idx="second" />
+          <HomePromoBanner banner={promoBannerSecond} idx="second" />
         </Container>
       )}
       <Instagram instagramPosts={instagramPosts} />

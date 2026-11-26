@@ -1,9 +1,15 @@
-interface MinusIconProps {
+type MinusIconProps = {
+  /* Color of the sign. */
   iconColor: string;
+  /* Color of the circle behind it. */
   bgColor: string;
+  /* Extra classes for the root element. */
   className?: string;
-}
+};
 
+/**
+ * Minus icon, for quantity counters.
+ */
 export default function MinusIcon({
   iconColor,
   bgColor,

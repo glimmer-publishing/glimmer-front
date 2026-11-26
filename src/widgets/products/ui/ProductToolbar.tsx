@@ -9,12 +9,12 @@ import {
 import {
   ListingParams,
   listingHref,
-} from "@/entities/product/model/listingParams";
+} from "@/shared/lib/searchParams/listingParams";
 import { SortSet } from "@/entities/product/model/types";
 import Dropdown from "@/shared/ui/dropdown/Dropdown";
-import { fadeInAnimation } from "@/shared/lib/animationVariants";
+import { fadeInAnimation } from "@/shared/lib/animation/animationVariants";
 
-interface ProductToolbarProps {
+type ProductToolbarProps = {
   /* URL the new one builds on: the path plus the page's own params. */
   baseHref: string;
   /* The listing's params, kept apart from the one being changed. */
@@ -25,7 +25,7 @@ interface ProductToolbarProps {
   sort: string;
   /* Sort list the dropdown offers. */
   sortSet: SortSet;
-}
+};
 
 /**
  * Filter and sort dropdowns above a product grid. A change replaces the

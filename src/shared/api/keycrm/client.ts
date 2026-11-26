@@ -1,6 +1,7 @@
 import "server-only";
 import { CRM_API_URL } from "@/shared/config/constants";
 import { isProduction } from "@/shared/config/env";
+import { serverEnv } from "@/shared/config/serverEnv";
 
 /**
  * KeyCRM has no sandbox. Outside production nothing is sent: writes are
@@ -8,25 +9,26 @@ import { isProduction } from "@/shared/config/env";
  * still runs, and reads return null.
  */
 
-export interface KeyCrmPayment {
+export type KeyCrmPayment = {
   payment_method_id?: number;
   payment_method: string;
   amount: number;
   status: "paid" | "not_paid";
   description?: string;
   payment_date?: string;
-}
+};
 
 /* The fields of a KeyCRM order the webhook relies on. */
-export interface KeyCrmOrder {
+export type KeyCrmOrder = {
   id: number;
   /* Hryvnia: what the customer owes for the order. */
   grand_total: number;
   payments?: { status: string; amount: number; description?: string | null }[];
-}
+};
 
+/* A KeyCRM API call with the key; throws on a non-2xx response. */
 const request = async <T>(path: string, init: RequestInit = {}) => {
-  const apiKey = process.env.CRM_API_KEY;
+  const apiKey = serverEnv.crmApiKey;
   if (!apiKey) throw new Error("CRM_API_KEY is not configured");
 
   const response = await fetch(`${CRM_API_URL}${path}`, {
@@ -81,6 +83,9 @@ export const getKeyCrmOrder = async (
   );
 };
 
+/**
+ * Records a payment on a KeyCRM order. Logged, not sent, outside production.
+ */
 export const addKeyCrmPayment = async (id: string, payment: KeyCrmPayment) => {
   if (!isProduction) {
     console.log(

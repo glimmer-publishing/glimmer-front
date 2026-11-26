@@ -1,8 +1,8 @@
 import "server-only";
 import type { Metadata } from "next";
 import { getProductBySlug } from "@/entities/product/api/getProducts";
-import { getDefaultMetadata } from "@/shared/lib/getDefaultMetadata";
-import { sanityImageUrl } from "@/shared/lib/sanityImage";
+import { getDefaultMetadata } from "@/shared/lib/seo/getDefaultMetadata";
+import { sanityImageUrl } from "@/shared/lib/images/sanityImage";
 
 /**
  * Title "<title>, <author>. Купити книгу за <price> грн" with the active

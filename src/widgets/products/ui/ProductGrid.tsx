@@ -2,7 +2,7 @@ import { ProductListing } from "@/entities/product/model/types";
 import ProductList from "./ProductList";
 import ProductToolbar from "./ProductToolbar";
 
-interface ProductGridProps {
+type ProductGridProps = {
   /**
    * URL every dropdown and page link builds on: the path plus the page's own
    * params, such as the genre tab.
@@ -12,7 +12,7 @@ interface ProductGridProps {
   listing: ProductListing;
   /* Text shown when no product matches. */
   emptyMessage?: string;
-}
+};
 
 /**
  * Filter and sort toolbar over the cards and page links. Used by

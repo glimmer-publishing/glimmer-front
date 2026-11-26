@@ -6,11 +6,13 @@ import TelegramCTA from "@/widgets/telegram-cta/ui/TelegramCTA";
 import AboutHero from "./AboutHero";
 import AboutInfo from "./AboutInfo";
 
-export interface AboutViewProps {
+/* What the about page shows besides its static text. */
+export type AboutViewProps = {
   /* Posts of the Instagram section; it hides itself when there are none. */
   instagramPosts: InstagramPost[];
-}
+};
 
+/* The page's breadcrumb trail. */
 const CRUMBS = [
   { label: "Головна", href: "/" },
   { label: "Про нас", href: "/about" },

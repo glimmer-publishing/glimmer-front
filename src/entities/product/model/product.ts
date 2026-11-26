@@ -1,5 +1,9 @@
 import type { Review } from "@/entities/review/model/types";
 
+/* Whether a product ships now or is sold ahead of its release. */
+export type ProductStatus = "inStock" | "preOrder";
+
+/* A product as the storefront's Sanity queries project it. */
 export type Product = {
   id: string;
   slug: string;
@@ -8,7 +12,7 @@ export type Product = {
   price: number;
   discountPrice?: number | null;
   mainImage: string;
-  status: "inStock" | "preOrder";
+  status: ProductStatus;
   isBestseller: boolean;
   isNew: boolean;
   isNationalCashback?: boolean;

@@ -8,11 +8,16 @@ export enum PaymentOption {
   CASH_ON_DELIVERY = "Оплата під час отримання товару",
 }
 
+/**
+ * The delivery services offered at checkout; the value is also what KeyCRM
+ * stores.
+ */
 export enum DeliveryService {
   NOVA_POSHTA = "Нова пошта",
   UKRPOSHTA = "Укрпошта",
 }
 
+/* How an order is delivered; the value is also what KeyCRM stores. */
 export enum DeliveryType {
   BRANCH = "Відділення",
   COURIER = "Доставка кур’єром",

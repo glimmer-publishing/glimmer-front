@@ -2,13 +2,18 @@ import { ReactNode } from "react";
 import clsx from "clsx";
 import { twMerge } from "tailwind-merge";
 import * as motion from "motion/react-client";
-import { fadeInAnimation } from "@/shared/lib/animationVariants";
+import { fadeInAnimation } from "@/shared/lib/animation/animationVariants";
 
-interface SectionDescriptionProps {
+type SectionDescriptionProps = {
+  /* The content. */
   children?: ReactNode;
+  /* Extra classes for the root element. */
   className?: string;
-}
+};
 
+/**
+ * The short text beside a section or page title.
+ */
 export default function SectionDescription({
   children,
   className,

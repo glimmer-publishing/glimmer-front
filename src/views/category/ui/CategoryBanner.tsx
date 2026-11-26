@@ -2,18 +2,21 @@ import Image from "next/image";
 import Link from "next/link";
 import * as motion from "motion/react-client";
 import type { CatalogBanner } from "@/entities/banner/model/types";
-import { fadeInAnimation } from "@/shared/lib/animationVariants";
-import { BANNER_IMAGE_QUALITY, sanityImageUrl } from "@/shared/lib/sanityImage";
+import { fadeInAnimation } from "@/shared/lib/animation/animationVariants";
+import {
+  BANNER_IMAGE_QUALITY,
+  sanityImageUrl,
+} from "@/shared/lib/images/sanityImage";
 
-interface CategoryBannerProps {
+type CategoryBannerProps = {
   /* The homepage banner marked "show on catalog" in Studio. */
   banner: CatalogBanner;
-}
+};
 
-interface CategoryBannerImageProps {
+type CategoryBannerImageProps = {
   /* Sanity image URL of the banner. */
   src: string;
-}
+};
 
 /**
  * The width the banner had before the catalog refactor. It was never set:
@@ -22,6 +25,7 @@ interface CategoryBannerImageProps {
  * the grid keeps the width it had then.
  */
 const BANNER_WIDTH = 195;
+/* The banner's height in px, for its sizes. */
 const BANNER_HEIGHT = 503;
 
 /**

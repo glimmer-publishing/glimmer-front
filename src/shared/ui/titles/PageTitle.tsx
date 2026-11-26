@@ -1,12 +1,17 @@
 import { ReactNode } from "react";
 import * as motion from "motion/react-client";
-import { fadeInAnimation } from "@/shared/lib/animationVariants";
+import { fadeInAnimation } from "@/shared/lib/animation/animationVariants";
 
-interface PageTitleProps {
+type PageTitleProps = {
+  /* The content. */
   children?: ReactNode;
+  /* Extra classes for the root element. */
   className?: string;
-}
+};
 
+/**
+ * The page's <h1>.
+ */
 export default function PageTitle({ children, className }: PageTitleProps) {
   return (
     <motion.h1

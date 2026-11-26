@@ -1,5 +1,5 @@
 import { ITEMS_PER_PAGE } from "@/shared/config/pagination";
-import { ListingParams } from "../model/listingParams";
+import { ListingParams } from "@/shared/lib/searchParams/listingParams";
 import { FILTER_OPTIONS, SORT_OPTION_SETS } from "../model/constants";
 import { Product } from "../model/product";
 import {
@@ -19,6 +19,7 @@ const pickOption = (options: ListingOption[], value: string | undefined) =>
 const unlessDefault = (options: ListingOption[], value: string) =>
   value === options[0].value ? undefined : value;
 
+/* One page of products; a page out of range is clamped to the nearest. */
 const paginate = (products: Product[], requestedPage = 1): ListingPage => {
   const totalPages = Math.max(1, Math.ceil(products.length / ITEMS_PER_PAGE));
   const currentPage = Math.min(Math.max(requestedPage, 1), totalPages);
@@ -33,6 +34,10 @@ const paginate = (products: Product[], requestedPage = 1): ListingPage => {
   };
 };
 
+/**
+ * Products filtered, sorted and cut to the requested page; out-of-range
+ * choices fall back to the defaults.
+ */
 export const listProducts = (
   products: Product[],
   params: ListingParams,

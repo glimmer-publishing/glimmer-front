@@ -3,12 +3,12 @@
 import { useState } from "react";
 import Backdrop from "@/shared/ui/backdrop/Backdrop";
 import NotificationPopUp from "@/shared/ui/notification-pop-up/NotificationPopUp";
-import CheckoutForm, {
-  type CheckoutNotice,
-} from "@/features/checkout/ui/CheckoutForm";
+import CheckoutForm from "@/features/checkout/ui/CheckoutForm";
+import type { CheckoutNotice } from "@/features/checkout/model/types";
 import CartList from "@/widgets/cart/ui/CartList";
 import CartTotal from "@/widgets/cart/ui/CartTotal";
 
+/* The pop-up's title and text for each reason an order did not go through. */
 const noticeText = (notice: CheckoutNotice) => {
   switch (notice.kind) {
     case "priceChanged":

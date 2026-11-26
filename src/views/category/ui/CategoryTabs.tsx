@@ -1,14 +1,14 @@
 import Link from "next/link";
 import * as motion from "motion/react-client";
-import { fadeInAnimation } from "@/shared/lib/animationVariants";
+import { fadeInAnimation } from "@/shared/lib/animation/animationVariants";
 import type { CategoryGenre } from "@/entities/category/model/types";
 import {
   ListingParams,
   listingHref,
-} from "@/entities/product/model/listingParams";
-import { categoryHref } from "@/entities/category/model/categoryParams";
+} from "@/shared/lib/searchParams/listingParams";
+import { categoryHref } from "@/shared/lib/searchParams/categoryParams";
 
-interface CategoryTabsProps {
+type CategoryTabsProps = {
   /* Path of the category page the tabs point to. */
   pathname: string;
   /* The listing's params; the links keep filter and sort. */
@@ -17,7 +17,7 @@ interface CategoryTabsProps {
   genres: CategoryGenre[];
   /* Slug of the selected genre; none is highlighted when it is missing. */
   activeSlug?: string;
-}
+};
 
 /**
  * Genre tabs of a category page. Each is a link that switches the genre,

@@ -4,7 +4,7 @@ import TelegramCTA from "@/widgets/telegram-cta/ui/TelegramCTA";
 import type { ProductViewData } from "../api/loadProductView";
 import ProductInfo from "./ProductInfo";
 import ProductSliderSection from "@/widgets/products/ui/ProductSliderSection";
-import ReviewedProducts from "./ReviewedProducts";
+import ProductReviewedProducts from "./ProductReviewedProducts";
 
 /**
  * The product page: the book, recommendations, and the books viewed before
@@ -24,7 +24,7 @@ export default function ProductView({
         products={recommended}
         swiperClassName="recommendedProducts"
       />
-      <ReviewedProducts currentSlug={product.slug} />
+      <ProductReviewedProducts currentSlug={product.slug} />
       <MarqueeLine />
       <TelegramCTA />
     </div>

@@ -5,13 +5,14 @@ import type { Product } from "@/entities/product/model/product";
 import type { CatalogBanner } from "@/entities/banner/model/types";
 import { Category, CategoryGenre } from "../model/types";
 
-interface CategoryData {
+/* A category as allProductsByCategoryQuery projects it. */
+type CategoryData = {
   categoryTitle?: string;
   categorySlug?: string;
   genres?: CategoryGenre[];
   allProducts?: Product[];
   catalogBanner?: CatalogBanner | null;
-}
+};
 
 /**
  * A Sanity category with its genres and products, or null when no category

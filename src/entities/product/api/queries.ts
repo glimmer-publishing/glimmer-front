@@ -4,6 +4,9 @@ import {
   genresProjection,
 } from "@/shared/api/sanity/fragments";
 
+/**
+ * Products discounted today, with the catalog banner, for /catalog/discounted.
+ */
 export const allDiscountedProductsQuery = `
 {
   "allProducts": *[_type == "product" && ${activeDiscountFilter}]{
@@ -112,13 +115,14 @@ const listingCardProjection = `{
   ${genresProjection}
 }`;
 
+/* Every book by $authorName, as listing cards. */
 export const productsByAuthorQuery = `
 *[_type == "product" && author == $authorName] | order(title asc) ${listingCardProjection}
 `;
 
 /**
  * Series is a "Серія" characteristic row, not a field - see
- * src/utils/getSeriesInfo.ts. Pass SERIES_FEATURE as $seriesFeature.
+ * ../lib/getSeriesInfo.ts. Pass SERIES_FEATURE as $seriesFeature.
  */
 export const productsBySeriesQuery = `
 *[
@@ -245,3 +249,10 @@ export const allProductsForFeedQuery = `
   }
 }
 `;
+
+/* A product's name and code, for the Telegram review notification. */
+export const productReferenceQuery = `*[_type == "product" && _id == $id][0]{
+  title,
+  author,
+  sku
+}`;

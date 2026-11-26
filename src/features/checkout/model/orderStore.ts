@@ -3,11 +3,12 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { OrderSummary } from "./types";
 
-interface OrderState {
+/* The last-order store's state and actions. */
+type OrderState = {
   /* The last order placed in this browser, as createOrder returned it. */
   order: OrderSummary | null;
   setOrder: (order: OrderSummary) => void;
-}
+};
 
 /**
  * Kept in localStorage because online payment leaves the site: the

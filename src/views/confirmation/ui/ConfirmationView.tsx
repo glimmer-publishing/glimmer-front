@@ -14,14 +14,15 @@ import TelegramCTA from "@/widgets/telegram-cta/ui/TelegramCTA";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 import { EMAIL_CLIENTS, PHONE } from "@/shared/config/constants";
-import { contactsPhoneRegex } from "@/shared/lib/regex";
+import { contactsPhoneRegex } from "@/shared/lib/text/regex";
 import * as motion from "motion/react-client";
-import { fadeInAnimation } from "@/shared/lib/animationVariants";
-import { formatDate } from "@/shared/lib/formatDate";
-import { trackPurchaseOnce } from "@/shared/lib/ecommerceTracking";
+import { fadeInAnimation } from "@/shared/lib/animation/animationVariants";
+import { formatDate } from "@/shared/lib/date/formatDate";
+import { trackPurchaseOnce } from "@/shared/lib/analytics/ecommerceTracking";
 
 pdfMake.vfs = pdfFonts.vfs;
 
+/* Reports the purchase to analytics, once per order number. */
 const trackOrder = (order: OrderSummary) =>
   trackPurchaseOnce({
     orderNumber: order.orderNumber,

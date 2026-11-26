@@ -1,6 +1,7 @@
 import Breadcrumbs from "@/shared/ui/breadcrumbs/Breadcrumbs";
-import PublicContract from "./PublicContract";
+import PublicContractContent from "./PublicContractContent";
 
+/* The page's breadcrumb trail. */
 const CRUMBS = [
   { label: "Головна", href: "/" },
   { label: "Публічний договір", href: "/public-contract" },
@@ -13,7 +14,7 @@ export default function PublicContractView() {
   return (
     <div className="pt-[85px]">
       <Breadcrumbs crumbs={CRUMBS} />
-      <PublicContract />
+      <PublicContractContent />
     </div>
   );
 }

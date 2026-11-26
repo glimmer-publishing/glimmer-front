@@ -1,10 +1,13 @@
 import Image from "next/image";
 import Container from "@/shared/ui/container/Container";
-import NavMenu from "./NavMenu";
-import Info from "./Info";
+import FooterNavMenu from "./FooterNavMenu";
+import FooterInfo from "./FooterInfo";
 import * as motion from "motion/react-client";
-import { fadeInAnimation } from "@/shared/lib/animationVariants";
+import { fadeInAnimation } from "@/shared/lib/animation/animationVariants";
 
+/**
+ * The site footer: logo, navigation, contacts and social links.
+ */
 export default function Footer() {
   return (
     <motion.footer
@@ -48,8 +51,8 @@ export default function Footer() {
             className="mb-8 lg:mb-[58px]"
           />
         </motion.div>
-        <NavMenu />
-        <Info />
+        <FooterNavMenu />
+        <FooterInfo />
       </Container>
     </motion.footer>
   );

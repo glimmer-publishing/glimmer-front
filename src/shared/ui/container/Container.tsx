@@ -1,10 +1,15 @@
 import { ReactNode } from "react";
 
-interface ContainerProps {
+type ContainerProps = {
+  /* The content. */
   children?: ReactNode;
+  /* Extra classes for the root element. */
   className?: string;
-}
+};
 
+/**
+ * Centers content at the site's responsive max width with side padding.
+ */
 export default function Container({
   children,
   className = "",

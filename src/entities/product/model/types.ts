@@ -1,12 +1,12 @@
 import type { CatalogBanner } from "@/entities/banner/model/types";
 import { Product } from "./product";
-import { ListingParams } from "./listingParams";
+import { ListingParams } from "@/shared/lib/searchParams/listingParams";
 
 /* One choice of the filter or sort list. */
-export interface ListingOption {
+export type ListingOption = {
   title: string;
   value: string;
-}
+};
 
 /* Which sort list a listing offers: series pages add "order in series". */
 export type SortSet = "default" | "series";
@@ -15,22 +15,23 @@ export type SortSet = "default" | "series";
 export type ProductSelection = "all" | "discounted";
 
 /* A selection's products with the catalog banner its query also returns. */
-export interface ProductSelectionData {
+export type ProductSelectionData = {
   products: Product[];
   banner?: CatalogBanner;
-}
+};
 
-export interface ListingPage {
+/* One page of a listing. */
+export type ListingPage = {
   products: Product[];
   currentPage: number;
   totalPages: number;
-}
+};
 
 /**
  * Products filtered, sorted and cut to one page, with the choices that
  * produced them.
  */
-export interface ProductListing {
+export type ProductListing = {
   page: ListingPage;
   totalCount: number;
   /* Resolved filter value, for the dropdown. */
@@ -44,15 +45,15 @@ export interface ProductListing {
    * so a value the listing rejected never travels on.
    */
   params: ListingParams;
-}
+};
 
 /**
  * Body of GET /api/products. listing is null when none of the slugs is a
  * product any more.
  */
-export interface ProductListingResponse {
+export type ProductListingResponse = {
   listing: ProductListing | null;
-}
+};
 
 /**
  * One manualRecommendationsBySlugsQuery entry. Inner entries are null for

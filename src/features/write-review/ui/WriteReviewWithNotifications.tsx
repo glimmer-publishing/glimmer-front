@@ -7,13 +7,20 @@ import Backdrop from "@/shared/ui/backdrop/Backdrop";
 import Modal from "@/shared/ui/modal/Modal";
 import { Product } from "@/entities/product/model/product";
 
-interface WriteReviewWithNotificationsProps {
+type WriteReviewWithNotificationsProps = {
+  /* Whether the review modal is open. */
   isWriteReviewModalShown: boolean;
+  /* Opens or closes the review modal. */
   setIsWriteReviewModalShown: Dispatch<SetStateAction<boolean>>;
+  /* The book on this page. */
   currentProduct: Product;
+  /* Extra classes for the root element. */
   className?: string;
-}
+};
 
+/**
+ * The review form modal with the pop-up that says whether the review was sent.
+ */
 export default function WriteReviewWithNotifications({
   isWriteReviewModalShown,
   setIsWriteReviewModalShown,

@@ -1,9 +1,13 @@
 import TelegramIcon from "@/shared/ui/icons/TelegramIcon";
 
-interface TelegramButtonProps {
+type TelegramButtonProps = {
+  /* Extra classes for the root element. */
   className?: string;
-}
+};
 
+/**
+ * The "Підписатися" button with the Telegram logo, styled as a raised card.
+ */
 export default function TelegramButton({
   className = "",
 }: TelegramButtonProps) {

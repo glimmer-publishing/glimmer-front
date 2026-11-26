@@ -1,15 +1,21 @@
 import { notFound } from "next/navigation";
-import { parseListingParams } from "@/entities/product/model/listingParams";
-import { SearchParamsRecord } from "@/shared/lib/url";
+import { parseListingParams } from "@/shared/lib/searchParams/listingParams";
+import { SearchParamsRecord } from "@/shared/lib/searchParams/urlParams";
 import CategoryView from "@/views/category/ui/CategoryView";
-import { parseCategoryParams } from "@/entities/category/model/categoryParams";
+import { parseCategoryParams } from "@/shared/lib/searchParams/categoryParams";
 import { loadCategoryView } from "@/views/category/api/loadCategoryView";
 
-interface CategoryPageProps {
+type CategoryPageProps = {
+  /* The route's dynamic segments. */
   params: Promise<{ category: string }>;
+  /* The URL's query; parsed right away, never passed down raw. */
   searchParams: Promise<SearchParamsRecord>;
-}
+};
 
+/**
+ * /catalog/<category>: a category, or the "all" and "discounted" selections,
+ * as a listing with genre tabs; 404 for an unknown slug.
+ */
 export default async function CategoryPage({
   params,
   searchParams,

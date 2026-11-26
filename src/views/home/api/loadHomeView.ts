@@ -6,13 +6,14 @@ import { HomepageBanner } from "@/entities/banner/model/types";
 import type { Genre, HeroBanner } from "../model/types";
 import { homepageCombinedQuery } from "./queries";
 
-interface HomePageData {
+/* What homepageCombinedQuery returns. */
+type HomePageData = {
   heroBanners?: HeroBanner[];
   homepageBanners?: HomepageBanner[];
   products?: Product[];
   genres?: Genre[];
-  instagram?: { posts?: InstagramPost[] } | null;
-}
+  instagramPosts: InstagramPost[];
+};
 
 /**
  * The home page's data. Throws on a Sanity error: the whole page is this
@@ -34,8 +35,9 @@ export const loadHomeView = async () => {
     newProducts: products.filter((product) => product.isNew),
     promoBannerFirst: banners.find((banner) => banner.order === 1),
     promoBannerSecond: banners.find((banner) => banner.order === 2),
-    instagramPosts: data?.instagram?.posts ?? [],
+    instagramPosts: data?.instagramPosts ?? [],
   };
 };
 
+/* Everything the home page renders. */
 export type HomeViewData = Awaited<ReturnType<typeof loadHomeView>>;

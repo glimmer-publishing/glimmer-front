@@ -5,14 +5,19 @@ import { persist } from "zustand/middleware";
 /* Most books remembered; the oldest is dropped first. */
 const MAX_REVIEWED = 20;
 
-interface ReviewedState {
+/* The viewed-books store's state and actions. */
+type ReviewedState = {
   /* Slugs of viewed books, most recent first. */
   slugs: string[];
   /* True once the slugs are read from localStorage. */
   hydrated: boolean;
   addReviewed: (slug: string) => void;
-}
+};
 
+/**
+ * Slugs of the books viewed in this browser, most recent first, for "Ти
+ * переглядав".
+ */
 export const useReviewedStore = create<ReviewedState>()(
   persist(
     (set) => ({

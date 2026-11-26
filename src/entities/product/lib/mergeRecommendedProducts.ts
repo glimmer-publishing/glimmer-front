@@ -1,6 +1,7 @@
 import { Product } from "../model/product";
 import type { ManualRecommendationsBySlug } from "../model/types";
 
+/* A list from a read that may have failed or held removed references. */
 type MaybeProducts = Array<Product | null | undefined> | null | undefined;
 
 /**

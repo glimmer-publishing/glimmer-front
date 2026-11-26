@@ -1,3 +1,4 @@
+import type { ProductStatus } from "@/entities/product/model/product";
 import { DeliveryService, PaymentOption } from "@/shared/config/enums";
 
 /**
@@ -6,11 +7,12 @@ import { DeliveryService, PaymentOption } from "@/shared/config/enums";
  */
 
 /* What the rules need to know about a cart line. */
-export interface PaymentRuleLine {
-  status: "inStock" | "preOrder";
+export type PaymentRuleLine = {
+  status: ProductStatus;
   isNationalCashback?: boolean | null;
-}
+};
 
+/* Why a payment method is not allowed, as the field error says it. */
 const ERRORS = {
   ukrposhtaCash: "Для Укрпошти доступна лише оплата онлайн",
   preOrderCash: "Оплата під час отримання недоступна для передзамовлень",
