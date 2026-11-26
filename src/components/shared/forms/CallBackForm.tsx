@@ -5,7 +5,7 @@ import { Dispatch, SetStateAction, useState } from "react";
 
 import { callBackValidation } from "@/schemas/callBackValidation";
 
-import CustomizedInput from "../formComponents/CustomizedInput";
+import CustomizedInput from "@/shared/ui/form/CustomizedInput";
 import MainButton from "../buttons/MainButton";
 
 export interface ValuesCallBackFormType {
@@ -41,11 +41,7 @@ export default function CallBackForm({
     formikHelpers: FormikHelpers<ValuesCallBackFormType>
   ) => {
     const { resetForm } = formikHelpers;
-    const data =
-      `<b>Заявка "Форма зворотнього зв'язку"</b>\n` +
-      `<b>Ім'я:</b> ${values.name.trim()}\n` +
-      `<b>Email:</b> ${values.email.trim()}\n` +
-      `<b>Повідомлення:</b> ${values.message.trim()}\n`;
+    const data = { kind: "callback", ...values };
     try {
       setIsError(false);
       setIsLoading(true);

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import IconButton from "../../buttons/IconButton";
+import IconButton from "@/shared/ui/icon-button/IconButton";
 import ArrowIcon from "../../icons/ArrowIcon";
 import CrossIcon from "../../icons/CrossIcon";
 import Link from "next/link";

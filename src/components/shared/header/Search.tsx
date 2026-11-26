@@ -2,12 +2,12 @@
 import { useEffect, Dispatch, SetStateAction, useState } from "react";
 import SearchIcon from "../icons/SearchIcon";
 import { AnimatePresence, motion } from "framer-motion";
-import Backdrop from "../backdrop/Backdrop";
+import Backdrop from "@/shared/ui/backdrop/Backdrop";
 import { catalogMenuVariants } from "@/utils/animationVariants";
-import IconButton from "../buttons/IconButton";
+import IconButton from "@/shared/ui/icon-button/IconButton";
 import CrossIcon from "../icons/CrossIcon";
 import { Formik, Form } from "formik";
-import CustomizedInput from "../formComponents/CustomizedInput";
+import CustomizedInput from "@/shared/ui/form/CustomizedInput";
 import Image from "next/image";
 import Link from "next/link";
 

@@ -1,7 +1,7 @@
 "use client";
 import { Dispatch, SetStateAction } from "react";
 import CartButton from "../buttons/CartButton";
-import Backdrop from "../backdrop/Backdrop";
+import Backdrop from "@/shared/ui/backdrop/Backdrop";
 import CartModal from "../cartModal/CartModal";
 
 interface CartProps {

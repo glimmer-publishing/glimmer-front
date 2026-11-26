@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import CallBackForm from "../shared/forms/CallBackForm";
-import NotificationPopUp from "../shared/pop-ups/NotitficationPopUp";
-import Backdrop from "../shared/backdrop/Backdrop";
+import NotificationPopUp from "@/shared/ui/notification-pop-up/NotificationPopUp";
+import Backdrop from "@/shared/ui/backdrop/Backdrop";
 import * as motion from "motion/react-client";
 import { fadeInAnimation } from "@/utils/animationVariants";
 

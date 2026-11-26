@@ -2,7 +2,7 @@
 import { Dispatch, SetStateAction } from "react";
 import BurgerMenuButton from "./BurgerMenuButton";
 import BurgerMenuContent from "./BurgerMenuContent";
-import Backdrop from "../../backdrop/Backdrop";
+import Backdrop from "@/shared/ui/backdrop/Backdrop";
 import { Category } from "@/types/category";
 import { buildCatalogList } from "@/utils/buildCatalogList";
 

@@ -8,7 +8,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperClass } from "swiper/types";
 import ArrowIcon from "@/components/shared/icons/ArrowIcon";
 import CrossIcon from "@/components/shared/icons/CrossIcon";
-import IconButton from "@/components/shared/buttons/IconButton";
+import IconButton from "@/shared/ui/icon-button/IconButton";
 import { TAP_TOLERANCE_PX } from "@/hooks/useImageTap";
 import { PRODUCT_IMAGE_QUALITY, sanityImageUrl } from "@/utils/sanityImage";
 

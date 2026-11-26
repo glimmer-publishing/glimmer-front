@@ -3,14 +3,14 @@
 import { useState, useRef, useEffect, Dispatch, SetStateAction } from "react";
 import ImageGallery from "react-image-gallery";
 import MainButton from "@/components/shared/buttons/MainButton";
-import Modal from "@/components/shared/modals/Modal";
-import Backdrop from "@/components/shared/backdrop/Backdrop";
+import Modal from "@/shared/ui/modal/Modal";
+import Backdrop from "@/shared/ui/backdrop/Backdrop";
 import ArrowIcon from "@/components/shared/icons/ArrowIcon";
 import { useScreenWidth } from "@/hooks/useScreenWidth";
 import MarqueeLine from "@/components/shared/marquee/MarqueeLine";
 import FavoriteButton from "./FavoriteButton";
 import { Product } from "@/types/product";
-import { useCartStore } from "@/store/cartStore";
+import { useCartStore } from "@/entities/cart/model/store";
 import * as motion from "motion/react-client";
 import { fadeInAnimation } from "@/utils/animationVariants";
 import { trackAddToCart } from "@/utils/ecommerceTracking";
@@ -36,7 +36,7 @@ export default function ReadPassage({
   const screenWidth = useScreenWidth();
   const isDesktop = screenWidth >= 768;
 
-  const { addToCart } = useCartStore();
+  const addItem = useCartStore((state) => state.addItem);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const galleryRef = useRef<ImageGallery | null>(null);
@@ -147,7 +147,7 @@ export default function ReadPassage({
               <FavoriteButton slug={currentProduct.slug} />
               <MainButton
                 onClick={() => {
-                  addToCart(currentProduct, 1);
+                  addItem(currentProduct.id, 1);
                   trackAddToCart(currentProduct, 1);
                 }}
                 className="h-[45px] lg:max-w-[180px]"

@@ -1,6 +1,4 @@
-import { CartItem } from "@/types/cartItem";
 import { Product } from "@/types/product";
-import { OrderData } from "@/types/orderData";
 
 const CURRENCY = "UAH";
 const GOOGLE_ADS_SEND_TO = "AW-18111056280/9ydPCO3HyKAcEJiTg7xD";
@@ -36,21 +34,43 @@ function callFbq(...args: unknown[]) {
   console.warn("[ecommerceTracking] fbq is not available:", args);
 }
 
-function toGa4Item(product: Product, quantity: number) {
-  return {
-    item_id: product.id,
-    item_name: product.title,
-    currency: CURRENCY,
-    item_category: product.categoryTitle || product.categorySlug || "",
-    price: product.discountPrice ?? product.price,
-    quantity,
-  };
+/* One product as analytics sees it; price in hryvnia. */
+export interface TrackedItem {
+  id: string;
+  title: string;
+  category: string;
+  price: number;
+  quantity: number;
 }
+
+/* A placed order as the server returned it; value in hryvnia. */
+export interface TrackedOrder {
+  orderNumber: string;
+  value: number;
+  items: TrackedItem[];
+  email: string;
+  phone: string;
+}
+
+const toGa4Item = ({ id, title, category, price, quantity }: TrackedItem) => ({
+  item_id: id,
+  item_name: title,
+  currency: CURRENCY,
+  item_category: category,
+  price,
+  quantity,
+});
 
 // ── public ────────────────────────────────────────────────────────────────────
 
 export function trackAddToCart(product: Product, quantity: number) {
-  const item = toGa4Item(product, quantity);
+  const item = toGa4Item({
+    id: product.id,
+    title: product.title,
+    category: product.categoryTitle || product.categorySlug || "",
+    price: product.discountPrice ?? product.price,
+    quantity,
+  });
   callGtag("event", "add_to_cart", {
     currency: CURRENCY,
     value: item.price * quantity,
@@ -59,11 +79,11 @@ export function trackAddToCart(product: Product, quantity: number) {
   callFbq("track", "AddToCart");
 }
 
-export function trackBeginCheckout(cart: CartItem[], value: number) {
+export function trackBeginCheckout(items: TrackedItem[], value: number) {
   callGtag("event", "begin_checkout", {
     currency: CURRENCY,
     value,
-    items: cart.map(({ product, quantity }) => toGa4Item(product, quantity)),
+    items: items.map(toGa4Item),
   });
   callFbq("track", "InitiateCheckout");
 }
@@ -72,7 +92,7 @@ export function trackBeginCheckout(cart: CartItem[], value: number) {
  * Fires GA4 purchase, Google Ads user_data + conversion.
  * Guarded by localStorage — safe to call on every page mount.
  */
-export function trackPurchaseOnce(order: OrderData) {
+export function trackPurchaseOnce(order: TrackedOrder) {
   if (typeof window === "undefined") return;
 
   const storageKey = `purchase_tracked_${order.orderNumber}`;
@@ -81,10 +101,8 @@ export function trackPurchaseOnce(order: OrderData) {
   callGtag("event", "purchase", {
     currency: CURRENCY,
     transaction_id: order.orderNumber,
-    value: order.totalOrderSum,
-    items: order.cart.map(({ product, quantity }) =>
-      toGa4Item(product, quantity)
-    ),
+    value: order.value,
+    items: order.items.map(toGa4Item),
   });
 
   callGtag("set", "user_data", {
@@ -94,7 +112,7 @@ export function trackPurchaseOnce(order: OrderData) {
 
   callGtag("event", "conversion", {
     send_to: GOOGLE_ADS_SEND_TO,
-    value: order.totalOrderSum,
+    value: order.value,
     currency: CURRENCY,
     transaction_id: order.orderNumber,
   });

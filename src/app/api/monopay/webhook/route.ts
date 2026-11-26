@@ -1,92 +1,122 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createVerify } from "crypto";
-import axios from "axios";
-import { CRM_API_URL } from "@/constants/constants";
+import { toKopecks } from "@/entities/cart/lib/pricing";
 import { isProduction } from "@/lib/env";
+import { addKeyCrmPayment, getKeyCrmOrder } from "@/shared/api/keycrm/client";
+import { verifyMonopayWebhook } from "@/shared/api/monopay/client";
+import { notifyTelegram } from "@/shared/api/telegram/client";
+import { escapeHtml } from "@/shared/lib/html";
+import { getKyivDateTime } from "@/utils/getKyivDate";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL!;
-const MONOPAY_PUBKEY = process.env.MONOPAY_PUBKEY!; // Base64 ECDSA pubkey
-const CRM_API_KEY = process.env.CRM_API_KEY;
+interface MonopayWebhook {
+  status?: string;
+  /* The KeyCRM order id createOrder passed as the invoice reference. */
+  reference?: string;
+  /* Kopecks actually paid. */
+  finalAmount?: number;
+}
 
-export async function POST(req: NextRequest) {
+const hryvnia = (kopecks: number) => kopecks / 100;
+
+/**
+ * Marks the KeyCRM order paid, but only for the amount it was placed for,
+ * and only once: Monobank retries callbacks, and a second "success" for an
+ * order that already has a paid payment changes nothing.
+ */
+const recordPayment = async (reference: string, finalAmount: number) => {
+  const ref = escapeHtml(reference);
+
+  if (!isProduction) {
+    console.log(
+      `KeyCRM payment update NOT sent for order ${reference}, amount ${hryvnia(finalAmount)}`
+    );
+    await notifyTelegram(
+      `✅ Оплата через MonoPay успішна!\nСума: ${hryvnia(finalAmount)} грн\nЗамовлення: #${ref}`
+    );
+    return;
+  }
+
+  const order = await getKeyCrmOrder(reference);
+  if (!order) throw new Error(`KeyCRM order ${reference} not found`);
+
+  if (order.payments?.some((payment) => payment.status === "paid")) {
+    console.log(`Order ${reference} is already paid; webhook ignored`);
+    return;
+  }
+
+  if (typeof order.grand_total !== "number") {
+    await notifyTelegram(
+      `⚠️ <b>Не вдалося перевірити оплату MonoPay</b>\n` +
+        `Замовлення: #${ref}\nОплачено: ${hryvnia(finalAmount)} грн\n` +
+        `KeyCRM не повернув суму замовлення. Позначте оплату вручну.`
+    );
+    return;
+  }
+
+  const expected = toKopecks(order.grand_total);
+  if (expected !== finalAmount) {
+    await notifyTelegram(
+      `⚠️ <b>Сума оплати MonoPay не збігається із замовленням</b>\n` +
+        `Замовлення: #${ref}\nОплачено: ${hryvnia(finalAmount)} грн\n` +
+        `Сума замовлення: ${hryvnia(expected)} грн\nЗамовлення НЕ позначене як оплачене.`
+    );
+    return;
+  }
+
+  await addKeyCrmPayment(reference, {
+    payment_method_id: 6,
+    payment_method: "MonoPay",
+    amount: hryvnia(finalAmount),
+    status: "paid",
+    description: "Оплата через MonoPay",
+    payment_date: getKyivDateTime().sortable,
+  });
+
+  await notifyTelegram(
+    `✅ Оплата через MonoPay успішна!\nСума: ${hryvnia(finalAmount)} грн\nЗамовлення: #${ref}`
+  );
+};
+
+/**
+ * MonoPay's payment status callback. The body is accepted only when X-Sign
+ * verifies against one of the two accounts' public keys.
+ */
+export async function POST(request: NextRequest) {
+  const rawBody = await request.text();
+  const signature = request.headers.get("x-sign");
+
+  if (!signature) {
+    return new NextResponse("Missing X-Sign header", { status: 400 });
+  }
+
+  if (!(await verifyMonopayWebhook(rawBody, signature))) {
+    return new NextResponse("Invalid signature", { status: 403 });
+  }
+
+  let data: MonopayWebhook;
   try {
-    const rawBody = await req.text(); // Важливо: отримаємо тіло як рядок для перевірки підпису
-    const signature = req.headers.get("x-sign");
+    data = JSON.parse(rawBody);
+  } catch {
+    return new NextResponse("Invalid body", { status: 400 });
+  }
 
-    if (!signature) {
-      return new NextResponse("Missing X-Sign header", { status: 400 });
-    }
+  if (data.status !== "success") {
+    return NextResponse.json({ ok: true, status: data.status });
+  }
 
-    // Перевірка підпису
-    const verify = createVerify("SHA256");
-    verify.write(rawBody);
-    verify.end();
+  if (
+    typeof data.reference !== "string" ||
+    !data.reference ||
+    !Number.isInteger(data.finalAmount)
+  ) {
+    return new NextResponse("Invalid payment data", { status: 400 });
+  }
 
-    const signatureBuf = Buffer.from(signature, "base64");
-    const publicKeyBuf = Buffer.from(MONOPAY_PUBKEY, "base64");
-
-    const isValid = verify.verify(publicKeyBuf, signatureBuf);
-
-    if (!isValid) {
-      return new NextResponse("Invalid signature", { status: 403 });
-    }
-
-    const data = JSON.parse(rawBody);
-
-    if (data.status === "success") {
-      const orderId = data.reference;
-      const finalAmount = data.finalAmount;
-
-      const message = `✅ Оплата через MonoPay успішна!\nСума: ${finalAmount / 100} грн\nЗамовлення: #${orderId}`;
-
-      await axios({
-        method: "post",
-        url: `${SITE_URL}api/telegram`,
-        data: message,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      const now = new Date();
-      now.setHours(now.getHours() + 3);
-
-      const payment_date = now.toISOString().slice(0, 19).replace("T", " ");
-
-      // Поза production замовлення в CRM не існує — логуємо замість оновлення
-      if (!isProduction) {
-        console.log(
-          `KeyCRM payment update NOT sent for order ${orderId}, amount ${finalAmount / 100}`
-        );
-        return NextResponse.json({ ok: true, status: data.status });
-      }
-
-      // Оновлюємо статус оплати у Key CRM
-      const crmResponse = await axios.post(
-        `${CRM_API_URL}/order/${orderId}/payment`,
-        {
-          payment_method_id: 6,
-          payment_method: "MonoPay",
-          amount: data.finalAmount / 100,
-          status: "paid",
-          description: "Оплата через MonoPay",
-          payment_date,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${CRM_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      // Логуємо відповідь від CRM
-      console.log("CRM response:", crmResponse.data);
-    }
-
+  try {
+    await recordPayment(data.reference, data.finalAmount as number);
     return NextResponse.json({ ok: true, status: data.status });
   } catch (error) {
     console.error("Webhook error:", error);
+    /* A 5xx makes Monobank retry, which is safe: recording is idempotent. */
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }

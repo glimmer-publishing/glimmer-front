@@ -1,11 +1,11 @@
 import { Dispatch, SetStateAction } from "react";
-import CartTotal from "./CartTotal";
+import CartList from "@/entities/cart/ui/CartList";
+import CartTotal from "@/entities/cart/ui/CartTotal";
 import { AnimatePresence, motion } from "framer-motion";
 import { fadeInAnimation, cartModalVariants } from "@/utils/animationVariants";
-import IconButton from "../buttons/IconButton";
+import IconButton from "@/shared/ui/icon-button/IconButton";
 import CrossIcon from "../icons/CrossIcon";
 import CartIcon from "../icons/CartIcon";
-import CartList from "./CartList";
 
 interface CartModalProps {
   isPopUpShown: boolean;
@@ -52,7 +52,7 @@ export default function CartModal({
               </motion.div>
 
               <CartList
-                setIsPopUpShown={setIsPopUpShown}
+                onNavigate={() => setIsPopUpShown(false)}
                 className="h-[calc(100dvh-284px)] lg:h-[calc(100dvh-303px)] "
               />
             </div>
@@ -65,10 +65,7 @@ export default function CartModal({
             variants={fadeInAnimation({ y: 20, delay: 0.8 })}
             className="absolute bottom-0 right-0 w-full max-w-[400px] bg-white"
           >
-            <CartTotal
-              setIsPopUpShown={setIsPopUpShown}
-              isPopUpShown={isPopUpShown}
-            />
+            <CartTotal onNavigate={() => setIsPopUpShown(false)} />
           </motion.div>
         </motion.div>
       )}

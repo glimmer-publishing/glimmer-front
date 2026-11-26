@@ -2,7 +2,7 @@
 import { useRef, useState } from "react";
 import MainButton from "@/components/shared/buttons/MainButton";
 import AddToCartAnimation from "@/components/shared/addToCartAnimation/AddToCartAnimation";
-import { useCartStore } from "@/store/cartStore";
+import { useCartStore } from "@/entities/cart/model/store";
 import { Product } from "@/types/product";
 import { trackAddToCart } from "@/utils/ecommerceTracking";
 
@@ -18,7 +18,7 @@ export default function AddToCartButton({
   className,
 }: AddToCartButtonProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const { addToCart } = useCartStore();
+  const addItem = useCartStore((state) => state.addItem);
 
   const [animationKey, setAnimationKey] = useState<number | null>(null);
   const [startPos, setStartPos] = useState<{
@@ -45,7 +45,7 @@ export default function AddToCartButton({
 
     setTimeout(() => {
       setAnimationKey(null);
-      addToCart(product, count);
+      addItem(product.id, count);
     }, 800);
 
     trackAddToCart(product, count);

@@ -2,9 +2,9 @@
 
 import { useState, Dispatch, SetStateAction } from "react";
 import WriteReviewForm from "@/components/shared/forms/WriteReviewForm";
-import NotificationPopUp from "@/components/shared/pop-ups/NotitficationPopUp";
-import Backdrop from "@/components/shared/backdrop/Backdrop";
-import Modal from "@/components/shared/modals/Modal";
+import NotificationPopUp from "@/shared/ui/notification-pop-up/NotificationPopUp";
+import Backdrop from "@/shared/ui/backdrop/Backdrop";
+import Modal from "@/shared/ui/modal/Modal";
 import { Product } from "@/types/product";
 
 interface WriteReviewFormWithNotificationsProps {

@@ -200,19 +200,6 @@ export type ManualRecommendationsBySlug = {
   manualRecommendations: Array<Product | null> | null;
 };
 
-export const promocodeByCodeQuery = `
-  *[_type == "promocode" && code == $promocode][0]{
-    "id": _id,
-    code,
-    discountPercent,
-    expirationDate,
-    "publishers": publishers[]->{
-      "id": _id,
-      name
-    }
-  }
-`;
-
 export const allProductsForFeedQuery = `
 *[_type == "product" && defined(gallery[0]) && category->slug.current == "khudozhnya-literatura"]{
   "id": sku,
@@ -234,11 +221,3 @@ export const allProductsForFeedQuery = `
 }
 `;
 
-export const productsByIds = `*[_type == "product" && _id in $ids]{
-  "id": _id,
-  price,
-  ${activeDiscountProjection},
-  status,
-  preOrderShippingDate,
-  isNationalCashback,
-}`;

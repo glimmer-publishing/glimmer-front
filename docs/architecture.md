@@ -2,7 +2,7 @@
 
 > **Status: in migration.** The layered structure below is real for the
 > catalog (`/catalog/[category]`, including `all` and `promo`), `/author`,
-> `/series`, `/favorites` and `/about`. Every other page still lives in
+> `/series`, `/favorites`, `/about`, `/checkout` and `/confirmation`. Every other page still lives in
 > `src/components/` and is moved over when it is next worked on. New code for
 > the migrated pages goes into the layers; code for the other pages follows
 > the existing structure until that page migrates.
@@ -158,17 +158,24 @@ two entities both return (the catalog banner) lives in a shared-level module
 
 No big-bang restructure.
 
-1. **Checkout and open routes: urgent.** The order flow runs in the browser
-   today (`utils/handleSubmitForm.ts`). Move it to one `createOrder` action in
-   `features/checkout` that re-prices on the server, validates the promo
-   code, creates the KeyCRM order and the MonoPay invoice with a
-   server-computed amount, and sends Telegram and email internally. Close the
-   open routes. The webhook compares `finalAmount` with the order total.
+1. **Checkout and open routes: done (2026-11-25).** The order is placed by
+   one server action, `features/checkout/api/createOrder.ts`. It validates
+   the form with the schema the browser also uses, re-prices the cart from
+   Sanity past the API CDN (`entities/cart/api/quoteCart.ts`, pure rules in
+   `entities/cart/lib/pricing.ts`, integer kopecks), checks the promo code
+   and payment rules, then creates the KeyCRM order, notifies Telegram,
+   emails the customer and creates the MonoPay invoice for the amount it
+   computed. If the total differs from the one the customer saw, nothing is
+   created. The cart in localStorage is `{ id, quantity }` plus a promo code;
+   everything it shows comes from `GET /api/cart`. `/api/keycrm`,
+   `/api/send-email`, `/api/monopay/invoice` and `/api/sanity` are gone;
+   `/api/telegram` takes typed form fields only. Integrations live in
+   `shared/api/{keycrm,monopay,telegram,email,nova-poshta}`.
 2. **Remaining pages** (home, product, contacts, checkout UI, delivery,
    legal) move into `views/` as they are worked on. Each move deletes the
    duplicates it frees.
-3. **Stores:** `store/cartStore.ts` → `entities/cart`,
-   `store/reviewedProductsStore.ts` → `entities/product` or its own entity.
+3. **Stores:** `store/reviewedProductsStore.ts` → `entities/product` or its
+   own entity (the cart is already `entities/cart`).
 4. **Before auth:** Sanity TypeGen, and the legacy root modules folded into
    `shared/` and entities.
 
@@ -177,23 +184,13 @@ the money is.
 
 ## Known issues found during the review
 
-Recorded 2026-11-15; check whether they still hold before acting.
+Recorded 2026-11-15. Fixed 2026-11-25 by the checkout migration: the
+client-set invoice amount, the open KeyCRM, email and Telegram routes, the
+unchecked webhook amount (now compared with the KeyCRM order total), the
+winter-time bug, the raw payment-method strings and the webhook's Telegram
+URL. Still open:
 
-- `app/api/monopay/invoice` takes `amount` from the request body, so a
-  client can pay any amount. The webhook marks the KeyCRM order `paid`
-  without comparing `finalAmount` with the order total.
-- `app/api/keycrm` forwards any body to KeyCRM with the production key.
-- `app/api/send-email` sends any subject/HTML to any address from
-  `hello@glimmer.com.ua`.
-- `app/api/telegram` posts any text to the operations group.
-- The webhook computes Kyiv time as `setHours(+3)`, which is wrong during
-  winter time (UTC+2). `utils/getKyivDate.ts` already does this correctly for
-  dates.
-- Payment methods are compared as raw strings
-  (`"Оплата картою онлайн Visa, Mastercard"`) alongside the `PaymentOption`
-  enum.
-- The webhook builds `${SITE_URL}api/telegram` (no slash) while the invoice
-  route uses `${SITE_URL}/confirmation`, so one of them is wrong depending on
-  whether `SITE_URL` ends with `/`.
 - The Sanity dataset is public, so promo codes are readable through Sanity's
-  public API regardless of `/api/sanity`.
+  public API. The storefront no longer trusts anything the browser says
+  about them, but they cannot be kept secret.
+- Order submission has no rate limiting.

@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 import type { Product } from "@/types/product";
 import CartIcon from "@/shared/ui/icons/CartIcon";
 import AddToCartAnimation from "./AddToCartAnimation";
-import { useCartStore } from "@/store/cartStore";
+import { useCartStore } from "@/entities/cart/model/store";
 import { trackAddToCart } from "@/utils/ecommerceTracking";
 
 interface AddToCartProps {
@@ -20,7 +20,7 @@ interface AddToCartProps {
 export default function AddToCart({ product, className }: AddToCartProps) {
   const { status } = product;
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const { addToCart } = useCartStore();
+  const addItem = useCartStore((state) => state.addItem);
 
   const [animationKey, setAnimationKey] = useState<number | null>(null);
   const [startPos, setStartPos] = useState<{
@@ -44,7 +44,7 @@ export default function AddToCart({ product, className }: AddToCartProps) {
 
     setTimeout(() => {
       setAnimationKey(null);
-      addToCart(product, 1);
+      addItem(product.id, 1);
     }, 800);
 
     trackAddToCart(product, 1);

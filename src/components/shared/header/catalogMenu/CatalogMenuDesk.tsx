@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { catalogMenuVariants } from "@/utils/animationVariants";
-import Backdrop from "../../backdrop/Backdrop";
+import Backdrop from "@/shared/ui/backdrop/Backdrop";
 import CategoriesListDesk from "./CategoriesListDesk";
 import { CatalogItem } from "@/types/catalogItem";
 
