@@ -23,12 +23,4 @@ export const EMAIL_COOPERATION = "publishing@glimmer.com.ua";
 
 export const CRM_API_URL = "https://openapi.keycrm.app/v1";
 
-/**
- * Temporary kill switch: KeyCRM rejects the production API key (401
- * "Unauthenticated."). While false, orders and payments are not sent to
- * KeyCRM in any environment — checkout gets a synthetic order id and the
- * Telegram messages are the only record. Set back to true once the key works.
- */
-export const KEYCRM_ENABLED = false;
-
 export const NOVA_POSHTA_API_URL = "https://api.novaposhta.ua/v2.0/json/";

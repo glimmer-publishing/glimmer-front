@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
-import { CRM_API_URL, KEYCRM_ENABLED } from "@/constants/constants";
+import { CRM_API_URL } from "@/constants/constants";
 import { isProduction } from "@/lib/env";
 
 export async function POST(req: NextRequest) {
@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
     // KeyCRM has no sandbox, so outside production we log the order instead of test
     // creating it. The synthetic id keeps the rest of the checkout flow intact:
     // it becomes orderNumber and is passed to the payment gateway as order_id.
-    if (!isProduction || !KEYCRM_ENABLED) {
+    if (!isProduction) {
       const id = Date.now();
       console.log(
         `KeyCRM order NOT sent, synthetic id ${id}:`,

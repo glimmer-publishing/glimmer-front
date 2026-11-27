@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createVerify } from "crypto";
 import axios from "axios";
-import { CRM_API_URL, KEYCRM_ENABLED } from "@/constants/constants";
+import { CRM_API_URL } from "@/constants/constants";
 import { isProduction } from "@/lib/env";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL!;
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
       const payment_date = now.toISOString().slice(0, 19).replace("T", " ");
 
       // Поза production замовлення в CRM не існує — логуємо замість оновлення
-      if (!isProduction || !KEYCRM_ENABLED) {
+      if (!isProduction) {
         console.log(
           `KeyCRM payment update NOT sent for order ${orderId}, amount ${finalAmount / 100}`
         );
