@@ -1,5 +1,4 @@
 "use server";
-import "server-only";
 import { ValidationError } from "yup";
 import { isOnlinePayment, PaymentOption } from "@/shared/config/enums";
 import { quoteCart } from "@/entities/cart/api/quoteCart";
