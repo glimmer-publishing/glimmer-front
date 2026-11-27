@@ -30,11 +30,11 @@ export default function CartButton({ onClick, className }: CartButtonProps) {
          will-change-transform transition duration-300 ease-in-out ${className}`}
       >
         <CartIcon />
-        {count > 0 ? (
+        {count > 0 && (
           <div className="absolute -top-0.5 -right-1.5 flex items-center justify-center w-4 h-4 text-white rounded-full bg-main">
             <p className="text-[10px] font-medium leading-[90%]">{count}</p>
           </div>
-        ) : null}
+        )}
       </button>
     </>
   );

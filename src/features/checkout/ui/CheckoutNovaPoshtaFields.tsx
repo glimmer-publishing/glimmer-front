@@ -3,11 +3,9 @@ import { useEffect, useMemo, useState } from "react";
 import { useFormikContext } from "formik";
 import { DeliveryType } from "@/shared/config/enums";
 import FormInput from "@/shared/ui/form/FormInput";
-import {
-  CITY_SEARCH_MIN_LENGTH,
-  useFetchNovaPoshtaCities,
-} from "../hooks/useFetchNovaPoshtaCities";
+import { useFetchNovaPoshtaCities } from "../hooks/useFetchNovaPoshtaCities";
 import { useFetchNovaPoshtaWarehouses } from "../hooks/useFetchNovaPoshtaWarehouses";
+import { CITY_SEARCH_MIN_LENGTH } from "../model/constants";
 import type { CheckoutValues } from "../model/schema";
 import CheckoutLocationInput from "./CheckoutLocationInput";
 

@@ -3,34 +3,19 @@ import type { CategoryGenre } from "@/entities/category/model/types";
 import { getCategory } from "@/entities/category/api/getCategory";
 import { ListingParams } from "@/entities/product/lib/listingParams";
 import { listProducts } from "@/entities/product/lib/listProducts";
-import { ProductSelection } from "@/entities/product/model/types";
 import { getProductSelection } from "@/entities/product/api/getProducts";
 import { CategoryParams } from "@/entities/category/lib/categoryParams";
-import { CategoryViewProps } from "../ui/CategoryView";
+import {
+  STATIC_CATEGORIES,
+  type StaticCategory,
+} from "@/entities/category/model/constants";
+import type { CategoryViewProps } from "../model/types";
 
-/* A product selection shown like a category: its title and which products. */
-type StaticCategory = {
-  title: string;
-  emptyMessage?: string;
-  selection: ProductSelection;
-};
-
-/**
- * Slugs that are not Sanity categories: their own products and title, and no
- * genre tabs. They still show the catalog banner.
- */
-const STATIC_CATEGORIES: Record<string, StaticCategory> = {
-  promo: { title: "Акції", selection: "discounted" },
-  all: {
-    title: "Весь каталог",
-    emptyMessage: "За обраним фільтром товарів не знайдено",
-    selection: "all",
-  },
-};
-
-// Own keys only, so "constructor" or "toString" is not a static category.
+/* Own keys only, so "constructor" or "toString" is not a static category. */
 const getStaticCategory = (slug: string): StaticCategory | undefined =>
-  Object.hasOwn(STATIC_CATEGORIES, slug) ? STATIC_CATEGORIES[slug] : undefined;
+  Object.hasOwn(STATIC_CATEGORIES, slug)
+    ? STATIC_CATEGORIES[slug as keyof typeof STATIC_CATEGORIES]
+    : undefined;
 
 /**
  * An unknown slug returns undefined on purpose: the whole category is shown.

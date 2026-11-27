@@ -39,3 +39,7 @@ export const listingHref = (
     sort,
     page: page && page > 1 ? String(page) : undefined,
   });
+
+/* GET /api/products for the listing of these slugs: ?slug=…&filter=…. */
+export const productsBySlugsHref = (slugs: string[], params: ListingParams) =>
+  listingHref(`/api/products?${toUrlSearchParams({ slug: slugs })}`, params);

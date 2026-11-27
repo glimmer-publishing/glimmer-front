@@ -1,5 +1,6 @@
+"use client";
 import { ReactNode } from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { listVariants } from "@/shared/lib/animation/animationVariants";
 
 type CheckoutColumnProps = {

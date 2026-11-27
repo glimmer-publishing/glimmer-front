@@ -1,4 +1,5 @@
 import "server-only";
+import { FICTION_CATEGORY_SLUG } from "@/entities/category/model/constants";
 import { fetchSanityDataServer } from "@/shared/api/sanity/fetch";
 import type { FeedProduct } from "../model/types";
 import { allProductsForFeedQuery } from "./queries";
@@ -10,7 +11,8 @@ import { allProductsForFeedQuery } from "./queries";
  */
 export const getFeedProducts = async (): Promise<FeedProduct[]> => {
   const products: FeedProduct[] | undefined = await fetchSanityDataServer(
-    allProductsForFeedQuery
+    allProductsForFeedQuery,
+    { categorySlug: FICTION_CATEGORY_SLUG }
   );
 
   if (!Array.isArray(products)) {

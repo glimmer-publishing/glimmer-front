@@ -107,7 +107,7 @@ export default function ProductReadPassage({
         setIsPopUpShown={setIsModalShown}
       >
         <div className="book-screens w-full max-w-[320px] md:max-w-[580px] mx-auto lg:mx-0 overflow-visible">
-          {hasBeenOpened ? (
+          {hasBeenOpened && (
             <ImageGallery
               ref={(ref) => {
                 galleryRef.current = ref;
@@ -148,7 +148,7 @@ export default function ProductReadPassage({
                 </button>
               )}
             />
-          ) : null}
+          )}
           <div className="fixed bottom-0 left-0 md:hidden w-full">
             {isModalShown && <MarqueeLine className="md:hidden mt-2.5 mb-4" />}
             <div className="flex justify-between gap-4 px-5 w-full my-4">

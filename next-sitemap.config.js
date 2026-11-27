@@ -55,6 +55,7 @@ async function getDynamicPages() {
   );
 
   const products = res?.products || [];
+  // Same URL shape as productHref in src/entities/product/lib/productHref.ts.
   const productsPages = products.map(
     (product) => `/catalog/${product.categorySlug}/${product.slug}`
   );

@@ -1,5 +1,5 @@
 import "server-only";
-import { allInstagramPostsQuery } from "./queries";
+import { instagramPostsProjection } from "./queries";
 import { fetchSanityDataServer } from "@/shared/api/sanity/fetch";
 import type { InstagramPost } from "../model/types";
 
@@ -10,7 +10,7 @@ import type { InstagramPost } from "../model/types";
  */
 export const getInstagramPosts = async (): Promise<InstagramPost[]> => {
   const posts: InstagramPost[] | undefined = await fetchSanityDataServer(
-    allInstagramPostsQuery,
+    instagramPostsProjection,
     {},
     { throwError: false }
   );

@@ -3,17 +3,10 @@ import { Form, Formik, FormikHelpers } from "formik";
 import { postJson } from "@/shared/api/http/fetchJson";
 import { Dispatch, SetStateAction, useState } from "react";
 
-import { callBackValidation } from "../model/schema";
+import { callbackSchema, type CallbackFormValues } from "../model/schema";
 
 import FormInput from "@/shared/ui/form/FormInput";
 import MainButton from "@/shared/ui/main-button/MainButton";
-
-/* The callback form's fields. */
-export type ValuesCallBackFormType = {
-  name: string;
-  email: string;
-  message: string;
-};
 
 type CallbackFormProps = {
   /* Records whether the last submit failed. */
@@ -43,11 +36,9 @@ export default function CallbackForm({
     message: "",
   };
 
-  const validationSchema = callBackValidation();
-
   const submitForm = async (
-    values: ValuesCallBackFormType,
-    formikHelpers: FormikHelpers<ValuesCallBackFormType>
+    values: CallbackFormValues,
+    formikHelpers: FormikHelpers<CallbackFormValues>
   ) => {
     const { resetForm } = formikHelpers;
     const data = { kind: "callback", ...values };
@@ -71,7 +62,7 @@ export default function CallbackForm({
     <Formik
       initialValues={initialValues}
       onSubmit={submitForm}
-      validationSchema={validationSchema}
+      validationSchema={callbackSchema}
     >
       {({ errors, touched, dirty, isValid }) => (
         <Form className={`${className}`}>

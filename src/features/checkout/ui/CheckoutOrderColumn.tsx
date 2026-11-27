@@ -1,6 +1,6 @@
 "use client";
 import { ReactNode } from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useFormikContext } from "formik";
 import type { CartQuote } from "@/entities/cart/model/types";
 import { listItemVariants } from "@/shared/lib/animation/animationVariants";

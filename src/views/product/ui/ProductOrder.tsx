@@ -7,6 +7,7 @@ import * as motion from "motion/react-client";
 import { fadeInAnimation } from "@/shared/lib/animation/animationVariants";
 import AddToCartButton from "@/features/add-to-cart/ui/AddToCartButton";
 import { formatDate } from "@/shared/lib/date/formatDate";
+import { getDiscount } from "@/shared/lib/price/getDiscount";
 
 type ProductOrderProps = {
   /* The book on the page. */
@@ -26,7 +27,8 @@ export default function ProductOrder({
   count,
   setCount,
 }: ProductOrderProps) {
-  const { price, discountPrice, preOrderShippingDate, status } = currentProduct;
+  const { price, preOrderShippingDate, status } = currentProduct;
+  const { hasDiscount, currentPrice, percent } = getDiscount(currentProduct);
 
   const formattedPreOrderShippingDate = preOrderShippingDate
     ? formatDate(preOrderShippingDate)
@@ -42,15 +44,15 @@ export default function ProductOrder({
       className="py-4 lg:py-6 border-t border-b border-black/60"
     >
       <div className="flex justify-between mb-4 lg:mb-[18px]">
-        {discountPrice && discountPrice < price ? (
+        {hasDiscount ? (
           <div className="flex flex-col lg:gap-2 shrink-0">
             <span className="line-through">{price} грн</span>
             <div className="flex items-end gap-4">
               <span className="text-[20px] lg:text-[32px] font-semibold leading-[120%] text-accent">
-                {discountPrice} грн
+                {currentPrice} грн
               </span>
               <div className="p-1 text-[18px] lg:text-[24px] font-semibold leading-[120%] text-white bg-accent rounded-[12px]">
-                {Math.round(((discountPrice - price) / price) * 100)}%
+                {percent}%
               </div>
             </div>
           </div>
@@ -70,11 +72,11 @@ export default function ProductOrder({
           className="h-[45px] lg:max-w-[180px]"
         />
       </div>
-      {status === "preOrder" && formattedPreOrderShippingDate ? (
+      {status === "preOrder" && formattedPreOrderShippingDate && (
         <p className="mt-1 mr-2 text-[10px] font-normal leading-[120%] text-accent text-right">
           Відправка з {formattedPreOrderShippingDate}
         </p>
-      ) : null}
+      )}
     </motion.div>
   );
 }

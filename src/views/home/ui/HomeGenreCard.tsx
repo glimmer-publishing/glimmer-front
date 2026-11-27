@@ -2,9 +2,7 @@ import { Genre } from "../model/types";
 import Image from "next/image";
 import Link from "next/link";
 import { categoryPageHref } from "@/entities/category/lib/categoryParams";
-
-/* Home genres all belong to fiction. */
-const FICTION_CATEGORY = "khudozhnya-literatura";
+import { FICTION_CATEGORY_SLUG } from "@/entities/category/model/constants";
 
 type HomeGenreCardProps = {
   /* The genre shown. */
@@ -20,7 +18,7 @@ export default function HomeGenreCard({ genre }: HomeGenreCardProps) {
   return (
     <div className="w-[180px] h-[240px]">
       <Link
-        href={categoryPageHref(FICTION_CATEGORY, slug)}
+        href={categoryPageHref(FICTION_CATEGORY_SLUG, slug)}
         className="block min-h-[228px] px-2.5 pt-6 pb-5 shadow-md rounded-[8px] xl:hover:-translate-y-1 transition duration-300 ease-in-out"
       >
         <div className="relative w-[160px] h-[120px] mb-6">

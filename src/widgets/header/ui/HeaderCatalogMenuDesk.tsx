@@ -1,6 +1,6 @@
 "use client";
 import { useEffect } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { catalogMenuVariants } from "@/shared/lib/animation/animationVariants";
 import Backdrop from "@/shared/ui/backdrop/Backdrop";
 import HeaderCategoriesListDesk from "./HeaderCategoriesListDesk";

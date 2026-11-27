@@ -3,20 +3,12 @@ import { Form, Formik, FormikHelpers } from "formik";
 import { postJson } from "@/shared/api/http/fetchJson";
 import { Dispatch, SetStateAction, useState } from "react";
 
-import { writeReviewValidation } from "../model/schema";
+import { writeReviewSchema, type WriteReviewFormValues } from "../model/schema";
 
 import FormInput from "@/shared/ui/form/FormInput";
 import MainButton from "@/shared/ui/main-button/MainButton";
 import RatingField from "@/shared/ui/rating-field/RatingField";
 import { Product } from "@/entities/product/model/product";
-
-/* The review form's fields. */
-export type ValuesWriteReviewFormType = {
-  name: string;
-  email: string;
-  rating: number;
-  message: string;
-};
 
 type WriteReviewFormProps = {
   /* Records whether the last submit failed. */
@@ -53,11 +45,9 @@ export default function WriteReviewForm({
     message: "",
   };
 
-  const validationSchema = writeReviewValidation();
-
   const submitForm = async (
-    values: ValuesWriteReviewFormType,
-    formikHelpers: FormikHelpers<ValuesWriteReviewFormType>
+    values: WriteReviewFormValues,
+    formikHelpers: FormikHelpers<WriteReviewFormValues>
   ) => {
     const { resetForm } = formikHelpers;
     const data = { kind: "review", productId: currentProduct.id, ...values };
@@ -82,7 +72,7 @@ export default function WriteReviewForm({
     <Formik
       initialValues={initialValues}
       onSubmit={submitForm}
-      validationSchema={validationSchema}
+      validationSchema={writeReviewSchema}
     >
       {({ errors, touched, dirty, isValid }) => (
         <Form className={`${className}`}>

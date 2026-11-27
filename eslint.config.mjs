@@ -54,6 +54,11 @@ const layerRules = (layer) => {
               message:
                 "src/components no longer exists; put shared UI in shared/ui or the owning slice.",
             },
+            {
+              group: ["framer-motion", "framer-motion/*"],
+              message:
+                'framer-motion is only a dependency of motion: import from "motion/react" (client) or "motion/react-client" (server components).',
+            },
           ],
         },
       ],

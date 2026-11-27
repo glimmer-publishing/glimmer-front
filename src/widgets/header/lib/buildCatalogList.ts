@@ -1,20 +1,15 @@
 import { CatalogItem } from "../model/catalogItem";
 import { categoryPageHref } from "@/entities/category/lib/categoryParams";
+import { STATIC_CATEGORIES } from "@/entities/category/model/constants";
 import type { MenuCategory } from "@/entities/category/model/types";
 
-/* The "Акції" entry, first in the catalog menu. */
-const promoItem: CatalogItem = {
-  slug: "promo",
-  title: "Акції",
-  href: "/catalog/promo",
-};
-
-// Весь каталог — книги і канцелярія в одному списку, без жанрових чіпів.
-const allProductsItem: CatalogItem = {
-  slug: "all",
-  title: "Весь каталог",
-  href: "/catalog/all",
-};
+/**
+ * The static selections ("Акції", "Весь каталог"), first in the catalog menu.
+ * "Весь каталог" lists books and stationery together, with no genre chips.
+ */
+const staticItems: CatalogItem[] = Object.entries(STATIC_CATEGORIES).map(
+  ([slug, { title }]) => ({ slug, title, href: categoryPageHref(slug) })
+);
 
 /**
  * Категорія з жанрами не показується в меню окремим пунктом — замість неї
@@ -41,5 +36,5 @@ export function buildCatalogList(
           ]
     );
 
-  return [promoItem, allProductsItem, ...items];
+  return [...staticItems, ...items];
 }

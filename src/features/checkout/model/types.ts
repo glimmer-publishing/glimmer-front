@@ -85,3 +85,9 @@ export type MonopayPayment = {
   /* Kopecks actually paid. */
   finalAmount: number;
 };
+
+/* One pickable entry of the city or branch dropdown. */
+export type CheckoutLocationOption = {
+  key: string;
+  description: string;
+};

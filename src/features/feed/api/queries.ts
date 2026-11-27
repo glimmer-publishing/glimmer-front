@@ -4,9 +4,9 @@ import { activeDiscountProjection } from "@/shared/api/sanity/fragments";
 const genreTitleProjection = `
     "genreTitle": genres[0]->name`;
 
-/* Books with a cover, for the Google Merchant feed at /api/feed. */
+/* Books with a cover in category $categorySlug, for the feed at /api/feed. */
 export const allProductsForFeedQuery = `
-*[_type == "product" && defined(gallery[0]) && category->slug.current == "khudozhnya-literatura"]{
+*[_type == "product" && defined(gallery[0]) && category->slug.current == $categorySlug]{
   "id": sku,
   "slug": slug.current,
   title,

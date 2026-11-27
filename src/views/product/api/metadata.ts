@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { getProductBySlug } from "@/entities/product/api/getProducts";
 import { DEFAULT_METADATA } from "@/shared/config/constants";
 import { sanityImageUrl } from "@/shared/lib/images/sanityImage";
+import { getDiscount } from "@/shared/lib/price/getDiscount";
 
 /**
  * Title "<title>, <author>. Купити книгу за <price> грн" with the active
@@ -13,10 +14,7 @@ export const buildProductMetadata = async (slug: string): Promise<Metadata> => {
 
   if (!product) return DEFAULT_METADATA;
 
-  const currentPrice =
-    product.discountPrice && product.discountPrice < product.price
-      ? product.discountPrice
-      : product.price;
+  const { currentPrice } = getDiscount(product);
 
   return {
     title: `${product.title}, ${product.author}. Купити книгу за ${currentPrice} грн`,

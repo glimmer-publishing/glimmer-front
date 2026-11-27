@@ -107,7 +107,7 @@ export default function ProductReviews({
                     </div>
                     <p className="text-black/60">{formatDate(date)}</p>
                   </div>
-                  {text ? <p>{text}</p> : null}
+                  {text && <p>{text}</p>}
                 </motion.li>
               ))}
             </motion.ul>
@@ -144,7 +144,7 @@ export default function ProductReviews({
                       </div>
                       <p className="text-black/60">{formatDate(date)}</p>
                     </div>
-                    {text ? <p>{text}</p> : null}
+                    {text && <p>{text}</p>}
                   </li>
                 ))}
               </ul>

@@ -4,7 +4,7 @@ import { ListingParams } from "@/entities/product/lib/listingParams";
 import { getProductsBySeries } from "@/entities/product/api/getProducts";
 import { decodePathParam } from "@/shared/lib/routing/decodePathParam";
 import { getSeriesHref } from "@/entities/product/lib/getSeriesInfo";
-import { CollectionViewProps } from "../ui/CollectionView";
+import type { CollectionViewProps } from "../model/types";
 
 /* Props of a series page, or null when the series has no products. */
 export const loadSeriesView = async (

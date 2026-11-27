@@ -2,6 +2,8 @@ import { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Product } from "@/entities/product/model/product";
+import { getDiscount } from "@/shared/lib/price/getDiscount";
+import { productHref } from "@/entities/product/lib/productHref";
 
 type ProductCardProps = {
   /* The product shown on the card. */
@@ -29,9 +31,10 @@ export default function ProductCard({
     isBestseller,
     isNew,
     price,
-    discountPrice,
     categorySlug,
   } = product;
+  const { hasDiscount, currentPrice, percent } = getDiscount(product);
+  const href = productHref(categorySlug, slug);
 
   return (
     <div className="flex flex-col pb-3 rounded-[10px]">
@@ -73,7 +76,7 @@ export default function ProductCard({
               />
             </>
           )}
-          {!!discountPrice && (
+          {hasDiscount && (
             <div className="relative">
               <Image
                 src="/images/icons/promoMob.svg"
@@ -90,7 +93,7 @@ export default function ProductCard({
                 height="29"
               />
               <div className="absolute left-0 -bottom-[22px] lg:-bottom-[30px] z-10 p-0.5 lg:p-1 text-[12px] lg:text-[15px] font-semibold leading-[120%] text-white bg-accent rounded-[6px]">
-                {Math.round(((discountPrice - price) / price) * 100)}%
+                {percent}%
               </div>
             </div>
           )}
@@ -98,7 +101,7 @@ export default function ProductCard({
         {topAction && <div className="ml-auto">{topAction}</div>}
       </div>
       <Link
-        href={`/catalog/${categorySlug}/${slug}`}
+        href={href}
         className="group relative block w-full h-[197px] lg:h-[275px] mb-2 lg:mb-3"
       >
         <Image
@@ -109,10 +112,7 @@ export default function ProductCard({
           className="object-contain will-change-transform xl:group-hover:scale-[105%] transition duration-700 ease-in-out"
         />
       </Link>
-      <Link
-        href={`/catalog/${categorySlug}/${slug}`}
-        className="group block mb-2 lg:mb-[14px] px-2"
-      >
+      <Link href={href} className="group block mb-2 lg:mb-[14px] px-2">
         <p
           className="mb-2 text-[10px] lg:text-[12px] font-light leading-[120%] opacity-60 line-clamp-1 xl:group-hover:text-main
          group-focus-visible:text-main group-active:text-main transition duration-300 ease-in-out"
@@ -127,10 +127,10 @@ export default function ProductCard({
         </p>
       </Link>
       <div className="px-2 flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
-        {discountPrice && discountPrice < price ? (
+        {hasDiscount ? (
           <div className="lg:flex flex-col-reverse shrink-0">
             <span className="text-[15px] lg:text-[16px] font-semibold leading-[120%] text-accent">
-              {discountPrice} грн
+              {currentPrice} грн
             </span>
             <span className="inline-block ml-2 lg:ml-0 text-[12px] lg:text-[14px] font-light leading-[120%] line-through">
               {price} грн

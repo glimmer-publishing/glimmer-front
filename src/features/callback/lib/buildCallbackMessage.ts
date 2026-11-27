@@ -1,5 +1,5 @@
 import { escapeHtml as e } from "@/shared/lib/text/html";
-import { callBackValidation } from "../model/schema";
+import { callbackSchema } from "../model/schema";
 
 /**
  * The operations-group message for a callback request, built from the form
@@ -9,7 +9,7 @@ import { callBackValidation } from "../model/schema";
 export const buildCallbackMessage = async (
   fields: unknown
 ): Promise<string> => {
-  const { name, email, message } = await callBackValidation().validate(fields, {
+  const { name, email, message } = await callbackSchema.validate(fields, {
     stripUnknown: true,
   });
 

@@ -64,3 +64,10 @@ export type ManualRecommendationsBySlug = {
   slug: string;
   manualRecommendations: Array<Product | null> | null;
 };
+
+/* How a product is named in notifications. */
+export type ProductReference = {
+  title: string;
+  author?: string | null;
+  sku: string;
+};

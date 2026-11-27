@@ -1,21 +1,11 @@
 import * as motion from "motion/react-client";
-import type { ProductListing } from "@/entities/product/model/types";
 import Breadcrumbs from "@/shared/ui/breadcrumbs/Breadcrumbs";
 import Container from "@/shared/ui/container/Container";
 import MarqueeLine from "@/shared/ui/marquee-line/MarqueeLine";
 import { fadeInAnimation } from "@/shared/lib/animation/animationVariants";
 import ProductGrid from "@/widgets/products/ui/ProductGrid";
 import TelegramCTA from "@/widgets/telegram-cta/ui/TelegramCTA";
-
-/* Everything an author or series page renders. */
-export type CollectionViewProps = {
-  /* Heading and breadcrumb label, e.g. the author's name. */
-  title: string;
-  /* Path of the page; every dropdown and page link points to it. */
-  pathname: string;
-  /* The filtered, sorted current page of products. */
-  listing: ProductListing;
-};
+import type { CollectionViewProps } from "../model/types";
 
 /**
  * Products grouped by something other than a category, under a heading:

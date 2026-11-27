@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction } from "react";
 import CartList from "./CartList";
 import BeginCheckout from "@/features/begin-checkout/ui/BeginCheckout";
 import CartTotal from "./CartTotal";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import {
   fadeInAnimation,
   cartModalVariants,

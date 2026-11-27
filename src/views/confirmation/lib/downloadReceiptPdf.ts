@@ -31,28 +31,28 @@ export const downloadReceiptPdf = (order: OrderSummary) => {
 
   const docDefinition: TDocumentDefinitions = {
     content: [
-      // Заголовок квитанції
+      /* Receipt heading. */
       {
         text: `Квитанція № ${orderNumber} від ${orderDate}`,
         style: "header",
-        margin: [0, 0, 0, 20], // відстань до підкреслення
+        margin: [0, 0, 0, 20] /* Space above the rule. */,
       },
-      // Підкреслення
+      /* Rule under the heading. */
       {
         canvas: [
           {
             type: "line",
             x1: 0,
             y1: 0,
-            x2: 515, // приблизна ширина сторінки A4 без бокових полів
+            x2: 515 /* About the width of A4 without side margins. */,
             y2: 0,
             lineWidth: 2,
             lineColor: "#000000",
           },
         ],
-        margin: [0, 0, 0, 30], // відстань після підкреслення до наступного блоку
+        margin: [0, 0, 0, 30] /* Space below the rule. */,
       },
-      // Виконавець
+      /* Seller. */
       {
         columns: [
           {
@@ -83,7 +83,7 @@ export const downloadReceiptPdf = (order: OrderSummary) => {
         ],
         margin: [0, 0, 0, 20],
       },
-      // Замовник
+      /* Customer. */
       {
         columns: [
           {
@@ -101,7 +101,7 @@ export const downloadReceiptPdf = (order: OrderSummary) => {
         ],
         margin: [0, 0, 0, 20],
       },
-      // Адреса доставки
+      /* Delivery address. */
       {
         columns: [
           {
@@ -127,7 +127,7 @@ export const downloadReceiptPdf = (order: OrderSummary) => {
         ],
         margin: [0, 0, 0, 20],
       },
-      // Таблиця товарів
+      /* Items table. */
       {
         table: {
           widths: ["auto", "*", "auto", 70, 70],
@@ -179,7 +179,7 @@ export const downloadReceiptPdf = (order: OrderSummary) => {
           ],
         },
       },
-      // Загальна сума
+      /* Total. */
       {
         text: `Разом: ${formatHryvnia(total)} грн`,
         style: "total",

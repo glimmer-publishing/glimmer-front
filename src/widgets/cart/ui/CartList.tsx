@@ -1,7 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import { pluralizeUk, type UkPluralForms } from "@/shared/lib/text/pluralizeUk";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import Loader from "@/shared/ui/loader/Loader";
 import {
   cartItemVariants,

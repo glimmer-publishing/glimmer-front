@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, Dispatch, SetStateAction, useState } from "react";
 import SearchIcon from "@/shared/ui/icons/SearchIcon";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import Backdrop from "@/shared/ui/backdrop/Backdrop";
 import { catalogMenuVariants } from "@/shared/lib/animation/animationVariants";
 import IconButton from "@/shared/ui/icon-button/IconButton";
@@ -12,6 +12,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useFetchSearchProducts } from "../hooks/useFetchSearchProducts";
 import { filterSearchProducts } from "../lib/filterSearchProducts";
+import { productHref } from "@/entities/product/lib/productHref";
 
 type SearchProductsProps = {
   /* Whether it is open. */
@@ -108,7 +109,7 @@ export default function SearchProducts({
                     {results.map((book, idx) => (
                       <Link
                         onClick={() => setIsOpen(false)}
-                        href={`/catalog/${book.categorySlug}/${book.slug}`}
+                        href={productHref(book.categorySlug, book.slug)}
                         key={`${book.sku} - ${idx}`}
                         className="flex items-center gap-2 py-2 px-3 rounded-[12px] xl:hover:bg-main/20 cursor-pointer shadow-sm transition duration-300 ease-in-out"
                       >

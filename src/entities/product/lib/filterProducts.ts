@@ -1,4 +1,5 @@
 import { Product } from "../model/product";
+import { getDiscount } from "@/shared/lib/price/getDiscount";
 
 /**
  * The products matching one FILTER_OPTIONS value; an unknown value keeps them
@@ -11,7 +12,7 @@ export function filterProducts(products: Product[], filter: string): Product[] {
     case "new":
       return products.filter((p) => p.isNew);
     case "discount":
-      return products.filter((p) => p.discountPrice);
+      return products.filter((p) => getDiscount(p).hasDiscount);
     case "pre-order":
       return products.filter((p) => p.status === "preOrder");
     case "in-stock":

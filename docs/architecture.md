@@ -14,9 +14,10 @@ Rewritten 2026-11-24. It replaces the 2026-11-15 proposal (`server/`,
 ```
 src/
   app/        routes and route handlers: adapters only
-  views/      one slice per page: the page component and its loader
+  views/      one slice per page: the page component, its loader, page-only hooks and logic
   widgets/    composed blocks reused across pages (products, cart, header)
-  features/   things a user does: toggle a favorite, add to cart, edit cart
+  features/   things a user does (toggle a favorite, add to cart, check out),
+              and outputs other systems consume (the Merchant feed)
   entities/   domain objects: types, reads, client stores, pure logic; no UI
   shared/     no domain: Sanity client, UI kit, URL helpers, config
 ```
@@ -33,7 +34,7 @@ is a widget or view; what a user does with it is a feature.
 A slice that reads Sanity keeps its GROQ in `api/queries.ts`, next to the
 reads that use it. Fragments every product query shares (`genresProjection`,
 the discount window) live in `shared/api/sanity/fragments.ts`. The feed
-query is `entities/product`'s; the search query is
+query is `features/feed`'s; the search query is
 `features/search-products`'.
 
 ### Import rules
@@ -56,7 +57,9 @@ query is `entities/product`'s; the search query is
 
 - Helpers: `shared/lib`, grouped by topic: `searchParams/` (generic URL
   param helpers only), `date/`, `analytics/`, `images/`,
-  `text/` (HTML escaping, regexes), `animation/`, `routing/`. Shared hooks:
+  `text/` (HTML escaping, regexes, `pluralizeUk`), `price/` (`getDiscount`,
+  the one rule for "on sale" used by cards, the product page, metadata, the
+  cart pricing and the feed), `animation/`, `routing/`. Shared hooks:
   `shared/hooks`. Constants and enums: `shared/config`.
 - Environment variables: read only in `shared/config`. `env.ts` has
   `publicEnv` (NEXT_PUBLIC_* values, safe in any bundle) and the
@@ -66,14 +69,17 @@ query is `entities/product`'s; the search query is
   `Review` in `entities/review`, banners in `entities/banner`, Instagram
   posts in `entities/instagram-post`. Entities may import each other's
   types with `import type`, never values (see below).
-- Domain helpers (series, average rating, the product-to-analytics mapping)
-  live in `entities/product/lib`; `shared/lib/ecommerceTracking` only knows
+- Domain helpers (series, average rating, the product-to-analytics mapping,
+  `productHref`) live in `entities/product/lib`; `shared/lib/ecommerceTracking` only knows
   a generic `TrackedItem`.
 - The UTM store: `entities/utm`.
+- Catalog slugs that are not Sanity categories (`promo`, `all`) and the
+  fiction category slug: `entities/category/model/constants.ts`.
 - There is one Sanity client and one cache tag, in `shared/api/sanity`.
 
 The root layout composes `widgets/header` (which composes
-`features/search-products` and the cart entity's button and modal),
+`features/search-products`, and takes `widgets/cart`'s `CartHeaderSlot` as
+its `cart` slot),
 `widgets/footer`, `features/track-utm`, and the analytics tags in
 `shared/ui/analytics`, which it renders only when `isProduction`.
 
@@ -83,8 +89,8 @@ The root layout composes `widgets/header` (which composes
 | --- | --- |
 | `shared/api` | raw clients (`sanityFetch`, `fetchSanityDataServer`) |
 | `entities` | reads (`getCategory`, `getProductSelection`, `getProductsBySlugs`), client stores (favorites), client queries over our own routes (`useFetchListingBySlugs`) |
-| `features` | user actions and writes |
-| `views` | the page loader only (`loadCategoryView`), composing entity reads; home is the exception, one combined query of its own in `views/home/api` |
+| `features` | user actions and writes; read-only outputs for other systems (`features/feed`) |
+| `views` | the page loader (`loadCategoryView`), composing entity reads; home is the exception, one combined query of its own in `views/home/api`. The props a loader returns are typed in the view's `model/types.ts`, never in `ui/` |
 | `widgets` | usually no data access: data comes in as props |
 | `app` | adapters: route files and route handlers call one loader or read |
 
@@ -114,9 +120,13 @@ The root layout composes `widgets/header` (which composes
     (`parseCategoryParams`, `categoryHref`, `categoryPageHref`).
   - `entities/cart/lib/cartQuoteParams.ts`: `GET /api/cart`'s `item` and
     `promo`.
+  - `entities/product/lib/recommendationsParams.ts` and
+    `productsBySlugsHref` in `listingParams.ts`: the `GET /api/recommendations`
+    and `GET /api/products` URLs.
   - `entities/utm/lib/utmParams.ts`: the UTM keys.
 - Only the generic helpers are in `shared/lib/searchParams/urlParams.ts`
-  (`toUrlSearchParams`, `withParams`, `readListParam`).
+  (`toUrlSearchParams`, `withParams`, `readListParam`). Every query string
+  is built with them, never with a hand-written `append` loop.
 - Everything below `app/` takes typed params. Links are built from typed
   values: the page's own params make a `baseHref` (`categoryHref`), and
   `listingHref` puts the listing's params on top.
@@ -130,7 +140,11 @@ The root layout composes `widgets/header` (which composes
 response body live in the slice that owns them, e.g. `features/feed`
 (the Merchant feed XML), `features/checkout/lib/parseMonopayWebhook.ts`,
 `features/callback/lib/buildCallbackMessage.ts` and
-`features/write-review/api/buildReviewMessage.ts` (the Telegram texts).
+`features/write-review/api/buildReviewMessage.ts` (the Telegram texts; the
+review one reads the product in `api/` and formats it with
+`lib/formatReviewMessage.ts`). Form schemas are constants in `model/schema.ts`
+(`callbackSchema`, `writeReviewSchema`), and the form values are their
+`yup.InferType`.
 
 ## Composition
 
@@ -173,11 +187,18 @@ coupling appears.
 
 ## Conventions
 
-- Every component, hook and type in a slice is named after the slice:
+- Every component in a slice is named after the slice:
   `views/home` has `HomeHero`, `widgets/footer` has `FooterInfo`,
   `features/checkout` has `CheckoutDelivery`, `features/edit-cart` has
   `EditCartRemove`. A name alone tells where it lives. Shared UI is named
-  after its folder (`shared/ui/form`: `FormInput`, `FormRadioInput`).
+  after its folder (`shared/ui/form`: `FormInput`, `FormRadioInput`). Hooks
+  and types are named for what they are (`useSubmitOrder`, `OrderSummary`).
+- Animation imports come from `motion/react` (client components) or
+  `motion/react-client` (server components), never `framer-motion`, which is
+  only `motion`'s own dependency. Lint rejects it.
+- A segment only imports from segments that do not import it back: `hooks/`
+  and `api/` never import from `ui/`. Types go in `model/types.ts` and
+  constants in `model/constants.ts`.
 - `type`, never `interface` (the one exception is the global `Window`
   augmentation, which has to be an interface).
 - Unions that mean something get a name: `ProductStatus`, `PromoStatus`.
@@ -220,12 +241,14 @@ No big-bang restructure.
    - features: `callback`, `write-review`, `search-products`, `track-utm`,
      `edit-cart` (quantity, remove, clear), `begin-checkout`;
      `add-to-cart` gained the product-page button (every buy button shares
-     `useAddToCartFlight`), `toggle-favorite` a `size` prop
+     `useAddToCartFlight`, since renamed `hooks/useAddToCartWithAnimation`),
+     `toggle-favorite` a `size` prop
    - entities: `review`, `banner`, `reviewed-product`, `utm`; `category`
      gained the menu read and `categoryHref`, which every category link now
      uses
    - shared: `ui/swiper`, `ui/image-viewer`, `ui/rating-field`,
-     `ui/analytics`, `lib/useScreenWidth`, `lib/useImageTap`
+     `ui/analytics`, `lib/useScreenWidth`, `lib/useImageTap` (both since
+     moved to `shared/hooks`)
 3. **Stores: done (2026-11-26).** The viewed-books history is
    `entities/reviewed-product`, slugs only, with cards fetched through
    `GET /api/products` like favorites. The UTM store is `entities/utm`,

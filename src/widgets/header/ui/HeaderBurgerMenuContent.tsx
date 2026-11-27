@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import IconButton from "@/shared/ui/icon-button/IconButton";
 import ArrowIcon from "@/shared/ui/icons/ArrowIcon";
 import CrossIcon from "@/shared/ui/icons/CrossIcon";

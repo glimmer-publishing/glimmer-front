@@ -1,6 +1,7 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
 import { fetchJson } from "@/shared/api/http/fetchJson";
+import { recommendationsHref } from "../lib/recommendationsParams";
 import type { Product } from "../model/product";
 
 /**
@@ -11,10 +12,7 @@ export const useFetchCartRecommendations = (
   slugs: string[],
   genreSlugs: string[]
 ) => {
-  const params = new URLSearchParams();
-  slugs.forEach((slug) => params.append("slug", slug));
-  genreSlugs.forEach((genre) => params.append("genre", genre));
-  const url = `/api/recommendations?${params}`;
+  const url = recommendationsHref(slugs, genreSlugs);
 
   return useQuery({
     queryKey: ["cart-recommendations", url],

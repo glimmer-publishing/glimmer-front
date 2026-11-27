@@ -9,12 +9,7 @@ import React, {
 } from "react";
 import FormInput from "@/shared/ui/form/FormInput";
 import { useFormikContext } from "formik";
-
-/* One pickable entry of the dropdown. */
-export type CheckoutLocationOption = {
-  key: string;
-  description: string;
-};
+import type { CheckoutLocationOption } from "../model/types";
 
 type CheckoutLocationInputProps = {
   /* The Formik field the picked description is stored in. */

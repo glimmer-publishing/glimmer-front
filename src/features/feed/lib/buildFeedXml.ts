@@ -1,10 +1,12 @@
 import { sanityImageUrl } from "@/shared/lib/images/sanityImage";
 import type { FeedProduct } from "../model/types";
+import { getDiscount } from "@/shared/lib/price/getDiscount";
+import { productHref } from "@/entities/product/lib/productHref";
 
 /* The brand every item is listed under. */
 const BRAND = "Glimmer";
 
-const GOOGLE_PRODUCT_CATEGORY = "784"; // Media > Books
+const GOOGLE_PRODUCT_CATEGORY = "784"; /* Media > Books. */
 
 /* Wraps free text so XML special characters need no escaping. */
 function cdata(value: string): string {
@@ -35,7 +37,7 @@ function isValidGtin13(value: string): boolean {
 
 /* A YYYY-MM-DD date as Google's ISO 8601 date-time. */
 function formatAvailabilityDate(date: string): string {
-  // Sanity stores dates as YYYY-MM-DD; Google requires ISO 8601 with time
+  /* Sanity stores dates as YYYY-MM-DD; Google requires ISO 8601 with time. */
   if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
     return `${date}T00:00:00Z`;
   }
@@ -63,7 +65,7 @@ function buildItem(product: FeedProduct, siteUrl: string): string {
     features,
   } = product;
 
-  const link = `${siteUrl}/catalog/${encodeURIComponent(categorySlug ?? "")}/${encodeURIComponent(slug)}`;
+  const link = `${siteUrl}${productHref(encodeURIComponent(categorySlug ?? ""), encodeURIComponent(slug))}`;
 
   const availability =
     status === "inStock"
@@ -76,7 +78,7 @@ function buildItem(product: FeedProduct, siteUrl: string): string {
 
   const googleCategory = GOOGLE_PRODUCT_CATEGORY;
 
-  // Prefer ISBN from Sanity features; fall back to id if it looks like an ISBN-13
+  /* Prefer ISBN from Sanity features; fall back to id if it looks like an ISBN-13. */
   const isbnFromFeatures = features
     ?.find((f) => f.featureName?.toLowerCase().includes("isbn"))
     ?.value?.replace(/[-\s]/g, "");
@@ -97,7 +99,7 @@ function buildItem(product: FeedProduct, siteUrl: string): string {
   lines.push(`      <g:link>${escapeXml(link)}</g:link>`);
 
   if (mainImage) {
-    // 1000px wide is plenty for Merchant Center and keeps its crawler fast.
+    /* 1000px wide is plenty for Merchant Center and keeps its crawler fast. */
     lines.push(
       `      <g:image_link>${escapeXml(sanityImageUrl(mainImage, { width: 1000 }))}</g:image_link>`
     );
@@ -116,9 +118,10 @@ function buildItem(product: FeedProduct, siteUrl: string): string {
 
   lines.push(`      <g:price>${price.toFixed(2)} UAH</g:price>`);
 
-  if (discountPrice != null) {
+  const { hasDiscount, currentPrice } = getDiscount({ price, discountPrice });
+  if (hasDiscount) {
     lines.push(
-      `      <g:sale_price>${discountPrice.toFixed(2)} UAH</g:sale_price>`
+      `      <g:sale_price>${currentPrice.toFixed(2)} UAH</g:sale_price>`
     );
   }
 

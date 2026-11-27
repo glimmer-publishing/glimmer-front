@@ -6,6 +6,7 @@ import { formatHryvnia } from "@/entities/cart/lib/money";
 import type { PricedLine } from "@/entities/cart/model/types";
 import EditCartQuantityCounter from "@/features/edit-cart/ui/EditCartQuantityCounter";
 import EditCartRemove from "@/features/edit-cart/ui/EditCartRemove";
+import { productHref } from "@/entities/product/lib/productHref";
 
 type CartLineProps = {
   /* The line as the server priced it. */
@@ -32,7 +33,7 @@ export default function CartLine({ line, onNavigate }: CartLineProps) {
     preOrderShippingDate,
   } = line;
 
-  const href = `/catalog/${categorySlug}/${slug}`;
+  const href = productHref(categorySlug, slug);
   const isDiscounted = unitPrice < basePrice;
   const shippingDate =
     status === "preOrder" && preOrderShippingDate

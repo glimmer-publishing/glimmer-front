@@ -1,6 +1,7 @@
 import { Product } from "../model/product";
 import { getAverageRating } from "./getAverageRating";
 import { getSeriesInfo } from "./getSeriesInfo";
+import { getDiscount } from "@/shared/lib/price/getDiscount";
 
 /* Series order: books with a known position first, by position. */
 function compareBySeriesPosition(a: Product, b: Product): number {
@@ -23,8 +24,7 @@ function compareBySeriesPosition(a: Product, b: Product): number {
 export function sortProducts(products: Product[], sort: string): Product[] {
   const items = [...products];
 
-  const getFinalPrice = (product: Product) =>
-    product.discountPrice ?? product.price ?? 0;
+  const getFinalPrice = (product: Product) => getDiscount(product).currentPrice;
 
   switch (sort) {
     case "price-ascending":

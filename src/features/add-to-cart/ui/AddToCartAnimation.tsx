@@ -1,5 +1,5 @@
 "use client";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import Image from "next/image";
 import { createPortal } from "react-dom";
 import { CART_BUTTON_ID } from "@/entities/cart/model/constants";

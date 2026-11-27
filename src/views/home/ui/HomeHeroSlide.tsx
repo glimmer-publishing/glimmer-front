@@ -103,36 +103,37 @@ export default function HomeHeroSlide({
       <Container
         className={`flex min-h-full flex-1 ${button.position === "bottomLeft" ? "flex-col justify-between" : button.position === "bottomRight" ? "flex-col justify-between" : "flex-col-reverse justify-between"}`}
       >
-        {title || description ? (
-          <div
-            className={`flex flex-col gap-10  mb-10 lg:mb-9 text-white ${button.position === "bottomLeft" ? "md:flex-row md:gap-20 lg:gap-50" : ""}`}
-          >
-            {title ? (
-              <motion.h1
-                initial="hidden"
-                whileInView="visible"
-                exit="exit"
-                viewport={{ once: true, amount: 0.2 }}
-                variants={fadeInAnimation({ scale: 0.95 })}
-                className="max-w-[320px] lg:max-w-[380px] text-[24px] lg:text-[40px] font-normal leading-[120%] uppercase"
-              >
-                {title}
-              </motion.h1>
-            ) : null}
-            {description ? (
-              <motion.p
-                initial="hidden"
-                whileInView="visible"
-                exit="exit"
-                viewport={{ once: true, amount: 0.2 }}
-                variants={fadeInAnimation({ scale: 0.95 })}
-                className={`text-[14px] lg:text-[18px] font-light leading-[120%] ${button.position === "bottomLeft" ? "max-w-[250px] lg:max-w-[290px]" : "max-w-[300px] lg:max-w-[380px]"}`}
-              >
-                {description}
-              </motion.p>
-            ) : null}
-          </div>
-        ) : null}
+        {title ||
+          (description && (
+            <div
+              className={`flex flex-col gap-10  mb-10 lg:mb-9 text-white ${button.position === "bottomLeft" ? "md:flex-row md:gap-20 lg:gap-50" : ""}`}
+            >
+              {title && (
+                <motion.h1
+                  initial="hidden"
+                  whileInView="visible"
+                  exit="exit"
+                  viewport={{ once: true, amount: 0.2 }}
+                  variants={fadeInAnimation({ scale: 0.95 })}
+                  className="max-w-[320px] lg:max-w-[380px] text-[24px] lg:text-[40px] font-normal leading-[120%] uppercase"
+                >
+                  {title}
+                </motion.h1>
+              )}
+              {description && (
+                <motion.p
+                  initial="hidden"
+                  whileInView="visible"
+                  exit="exit"
+                  viewport={{ once: true, amount: 0.2 }}
+                  variants={fadeInAnimation({ scale: 0.95 })}
+                  className={`text-[14px] lg:text-[18px] font-light leading-[120%] ${button.position === "bottomLeft" ? "max-w-[250px] lg:max-w-[290px]" : "max-w-[300px] lg:max-w-[380px]"}`}
+                >
+                  {description}
+                </motion.p>
+              )}
+            </div>
+          ))}
         <motion.div
           initial="hidden"
           whileInView="visible"

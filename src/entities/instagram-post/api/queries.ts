@@ -1,7 +1,7 @@
 /**
  * The posts of the Instagram document in Studio, always a list: empty when
- * there is no document or it has no posts. The home page embeds it in its
- * combined query.
+ * there is no document or it has no posts. A valid query on its own (the
+ * about and contacts pages) and embedded in the home page's combined query.
  */
 export const instagramPostsProjection = `coalesce(
   *[_type == "instagram"][0].posts[]{
@@ -11,6 +11,3 @@ export const instagramPostsProjection = `coalesce(
   },
   []
 )`;
-
-/* The Instagram posts on their own, for the about and contacts pages. */
-export const allInstagramPostsQuery = instagramPostsProjection;

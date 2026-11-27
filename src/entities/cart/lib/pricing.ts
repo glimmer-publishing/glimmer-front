@@ -1,4 +1,5 @@
 import { MAX_LINES, MAX_QUANTITY } from "../model/constants";
+import { getDiscount } from "@/shared/lib/price/getDiscount";
 import { toKopecks } from "./money";
 import type {
   CartItem,
@@ -17,7 +18,7 @@ import type {
 
 /* A product on sale never takes the promo on top of its own discount. */
 const isPromoEligible = (product: CartProduct, promo: CartPromo | null) => {
-  if (!promo || product.discountPrice != null) return false;
+  if (!promo || getDiscount(product).hasDiscount) return false;
 
   const publisher = product.publisher?.trim().toLowerCase();
 
@@ -37,16 +38,16 @@ export const priceLine = (
   promo: CartPromo | null
 ): PricedLine => {
   const { price, discountPrice, publisher: _publisher, ...display } = product;
+  const discount = getDiscount({ price, discountPrice });
   void _publisher;
 
   const basePrice = toKopecks(price);
   const promoApplied = isPromoEligible(product, promo);
-  const unitPrice =
-    discountPrice != null
-      ? toKopecks(discountPrice)
-      : promoApplied
-        ? Math.round((basePrice * (100 - promo!.discountPercent)) / 100)
-        : basePrice;
+  const unitPrice = discount.hasDiscount
+    ? toKopecks(discount.currentPrice)
+    : promoApplied
+      ? Math.round((basePrice * (100 - promo!.discountPercent)) / 100)
+      : basePrice;
 
   return {
     ...display,

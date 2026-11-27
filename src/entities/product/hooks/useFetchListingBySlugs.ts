@@ -1,6 +1,6 @@
 "use client";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { listingHref, ListingParams } from "../lib/listingParams";
+import { productsBySlugsHref, type ListingParams } from "../lib/listingParams";
 import { fetchJson } from "@/shared/api/http/fetchJson";
 import type { ProductListingResponse } from "../model/types";
 
@@ -15,9 +15,7 @@ export const useFetchListingBySlugs = (
   params: ListingParams,
   enabled = true
 ) => {
-  const slugParams = new URLSearchParams();
-  slugs.forEach((slug) => slugParams.append("slug", slug));
-  const url = listingHref(`/api/products?${slugParams}`, params);
+  const url = productsBySlugsHref(slugs, params);
 
   return useQuery({
     queryKey: ["product-listing", url],

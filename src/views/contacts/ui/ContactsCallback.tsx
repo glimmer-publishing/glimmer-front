@@ -7,7 +7,7 @@ import { fadeInAnimation } from "@/shared/lib/animation/animationVariants";
 /**
  * "Залишились питання?": the callback form beside the logo.
  */
-export default function ContactsCallBack() {
+export default function ContactsCallback() {
   return (
     <section className="py-8 lg:py-10">
       <Container className="md:flex justify-between items-center">

@@ -119,7 +119,7 @@ export default function ImageViewer({
         </div>
 
         <div className="flex-1 min-h-0 py-2">
-          {isShown ? (
+          {isShown && (
             <Swiper
               modules={[Keyboard]}
               keyboard={{ enabled: true }}
@@ -163,7 +163,7 @@ export default function ImageViewer({
                     }
                     className="max-w-full max-h-full object-contain select-none"
                   />
-                  {!loadedPhotos[photo] ? (
+                  {!loadedPhotos[photo] && (
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                       {failedPhotos[photo] ? (
                         <p className="text-[14px] text-placeholder px-5 text-center">
@@ -173,14 +173,14 @@ export default function ImageViewer({
                         <div className="loader"></div>
                       )}
                     </div>
-                  ) : null}
+                  )}
                 </SwiperSlide>
               ))}
             </Swiper>
-          ) : null}
+          )}
         </div>
 
-        {hasManyPhotos ? (
+        {hasManyPhotos && (
           <div className="flex items-center justify-center gap-6 pt-1 pb-1">
             <button
               type="button"
@@ -204,7 +204,7 @@ export default function ImageViewer({
               <ArrowIcon className="size-7 lg:size-8" />
             </button>
           </div>
-        ) : null}
+        )}
       </div>
     </div>,
     document.body

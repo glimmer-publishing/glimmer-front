@@ -3,7 +3,7 @@ import { ListingParams } from "@/entities/product/lib/listingParams";
 import { listProducts } from "@/entities/product/lib/listProducts";
 import { getProductsByAuthor } from "@/entities/product/api/getProducts";
 import { decodePathParam } from "@/shared/lib/routing/decodePathParam";
-import { CollectionViewProps } from "../ui/CollectionView";
+import type { CollectionViewProps } from "../model/types";
 
 /* Props of an author page, or null when the author has no products. */
 export const loadAuthorView = async (

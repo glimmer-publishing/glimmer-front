@@ -1,15 +1,12 @@
+import { toUrlSearchParams } from "@/shared/lib/searchParams/urlParams";
 import type { CartItem } from "../model/types";
 
 /* GET /api/cart for these items and promo code: ?item=<id>:<qty>&promo=. */
-export const cartQuoteHref = (items: CartItem[], promoCode: string | null) => {
-  const params = new URLSearchParams();
-  items.forEach(({ id, quantity }) =>
-    params.append("item", `${id}:${quantity}`)
-  );
-  if (promoCode) params.set("promo", promoCode);
-
-  return `/api/cart?${params}`;
-};
+export const cartQuoteHref = (items: CartItem[], promoCode: string | null) =>
+  `/api/cart?${toUrlSearchParams({
+    item: items.map(({ id, quantity }) => `${id}:${quantity}`),
+    promo: promoCode || undefined,
+  })}`;
 
 /**
  * The inverse of cartQuoteHref, for the route. Malformed entries stay as-is

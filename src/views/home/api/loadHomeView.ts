@@ -5,6 +5,7 @@ import { Product } from "@/entities/product/model/product";
 import { HomepageBanner } from "@/entities/banner/model/types";
 import type { Genre, HeroBanner } from "../model/types";
 import { homepageCombinedQuery } from "./queries";
+import { getDiscount } from "@/shared/lib/price/getDiscount";
 
 /* What homepageCombinedQuery returns. */
 type HomePageData = {
@@ -31,7 +32,9 @@ export const loadHomeView = async () => {
     heroBanners: data?.heroBanners ?? [],
     genres: (data?.genres ?? []).slice().sort((a, b) => a.order - b.order),
     bestsellers: products.filter((product) => product.isBestseller),
-    promotionalProducts: products.filter((product) => product.discountPrice),
+    promotionalProducts: products.filter(
+      (product) => getDiscount(product).hasDiscount
+    ),
     newProducts: products.filter((product) => product.isNew),
     promoBannerFirst: banners.find((banner) => banner.order === 1),
     promoBannerSecond: banners.find((banner) => banner.order === 2),
