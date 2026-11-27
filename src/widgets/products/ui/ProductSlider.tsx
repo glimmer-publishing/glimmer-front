@@ -48,7 +48,7 @@ export default function ProductSlider({
           <SwiperSlide key={product.id}>
             <ProductCard
               product={product}
-              topAction={<ToggleFavorite slug={product.slug} />}
+              topAction={<ToggleFavorite product={product} />}
               action={<AddToCart product={product} />}
             />
           </SwiperSlide>

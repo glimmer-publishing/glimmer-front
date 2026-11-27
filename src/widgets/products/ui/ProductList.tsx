@@ -50,7 +50,7 @@ export default function ProductList({
           >
             <ProductCard
               product={product}
-              topAction={<ToggleFavorite slug={product.slug} />}
+              topAction={<ToggleFavorite product={product} />}
               action={<AddToCart product={product} />}
             />
           </motion.li>

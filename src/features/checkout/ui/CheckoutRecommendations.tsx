@@ -1,4 +1,5 @@
 "use client";
+import { productToSnapshot } from "@/entities/cart/lib/snapshots";
 import { useCartStore } from "@/entities/cart/model/store";
 import type { PricedLine } from "@/entities/cart/model/types";
 import { toTrackedItem } from "@/entities/product/lib/toTrackedItem";
@@ -34,7 +35,7 @@ export default function CheckoutRecommendations({
             key={product.id}
             product={product}
             onAddToCart={() => {
-              addItem(product.id, 1);
+              addItem(product.id, 1, productToSnapshot(product));
               trackAddToCart(toTrackedItem(product, 1));
             }}
           />

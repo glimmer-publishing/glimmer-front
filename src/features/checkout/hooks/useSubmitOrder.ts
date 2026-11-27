@@ -15,8 +15,12 @@ import type { CheckoutNotice, CreateOrderResult } from "../model/types";
 
 /* The cart the form shows, as the submit needs it. */
 type SubmitOrderCart = {
-  /* The server's quote; nothing is submitted without one. */
+  /**
+   * The quote shown; nothing is submitted without one, nor while it is a
+   * placeholder (drawn from the cart's snapshot or an older cart).
+   */
   quote?: CartQuote;
+  isPlaceholderData: boolean;
   items: CartItem[];
   /* The code the server already accepted, or null. */
   promoCode: string | null;
@@ -33,7 +37,7 @@ type SubmitOrderCart = {
  * - paymentFailed or anything else: tells the customer through onNotice.
  */
 export const useSubmitOrder = (
-  { quote, items, promoCode }: SubmitOrderCart,
+  { quote, isPlaceholderData, items, promoCode }: SubmitOrderCart,
   onNotice: (notice: CheckoutNotice) => void
 ) => {
   const router = useRouter();
@@ -92,7 +96,7 @@ export const useSubmitOrder = (
     values: CheckoutValues,
     helpers: FormikHelpers<CheckoutValues>
   ) => {
-    if (!quote) return;
+    if (!quote || isPlaceholderData) return;
     setIsSubmitting(true);
 
     try {

@@ -75,3 +75,18 @@ export type CartQuote = {
   promo: { code: string; discountPercent: number } | null;
   promoStatus: PromoStatus;
 };
+
+/**
+ * A cart line as last seen, kept in localStorage only to draw the cart
+ * before the server's quote arrives. Never sent anywhere and never trusted
+ * for an amount: the quote replaces it, and orders are priced on the server.
+ */
+export type CartLineSnapshot = Omit<PricedLine, "quantity" | "lineTotal">;
+
+/* What the last quote made of the promo code it was asked about. */
+export type CartPromoSnapshot = {
+  /* The code the quote was requested with. */
+  code: string;
+  promo: CartQuote["promo"];
+  promoStatus: PromoStatus;
+};

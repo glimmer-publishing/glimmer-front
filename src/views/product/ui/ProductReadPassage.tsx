@@ -152,7 +152,7 @@ export default function ProductReadPassage({
           <div className="fixed bottom-0 left-0 md:hidden w-full">
             {isModalShown && <MarqueeLine className="md:hidden mt-2.5 mb-4" />}
             <div className="flex justify-between gap-4 px-5 w-full my-4">
-              <ToggleFavorite slug={currentProduct.slug} size="large" />
+              <ToggleFavorite product={currentProduct} size="large" />
               <AddToCartButton
                 product={currentProduct}
                 count={count}

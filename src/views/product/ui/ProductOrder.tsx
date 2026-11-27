@@ -64,7 +64,7 @@ export default function ProductOrder({
         <ProductCounter count={count} setCount={setCount} />
       </div>
       <div className="flex justify-between gap-4">
-        <ToggleFavorite slug={currentProduct.slug} size="large" />
+        <ToggleFavorite product={currentProduct} size="large" />
 
         <AddToCartButton
           product={currentProduct}

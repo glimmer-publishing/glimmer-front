@@ -2,6 +2,7 @@
 import { ReactNode } from "react";
 import { Form, Formik } from "formik";
 import { useFetchCartQuote } from "@/entities/cart/hooks/useFetchCartQuote";
+import { useQuotePricesChanged } from "../hooks/useQuotePricesChanged";
 import { useSubmitOrder } from "../hooks/useSubmitOrder";
 import {
   checkoutSchema,
@@ -25,7 +26,9 @@ type CheckoutFormProps = {
  * The checkout form. The cart, totals and payment options shown come from
  * the server's quote; submitting calls createOrder (useSubmitOrder), which
  * re-validates and re-prices everything before anything is created or
- * charged. Renders nothing until the cart is read from localStorage.
+ * charged. The cart may first be drawn from its snapshot; if the server's
+ * prices then differ, the totals say so. Renders nothing until the cart is
+ * read from localStorage.
  */
 export default function CheckoutForm({
   onNotice,
@@ -35,8 +38,13 @@ export default function CheckoutForm({
   const { quote, items, promoCode, hydrated, isFetching, isPlaceholderData } =
     useFetchCartQuote();
   const { submitOrder, isSubmitting } = useSubmitOrder(
-    { quote, items, promoCode },
+    { quote, isPlaceholderData, items, promoCode },
     onNotice
+  );
+  const pricesChanged = useQuotePricesChanged(
+    quote,
+    isPlaceholderData,
+    promoCode
   );
 
   if (!hydrated) return null;
@@ -53,6 +61,7 @@ export default function CheckoutForm({
           quote={quote}
           isQuoteStale={isFetching || isPlaceholderData}
           isQuoteFetching={isFetching}
+          pricesChanged={pricesChanged}
           isSubmitting={isSubmitting}
           cartList={cartList}
           renderTotal={renderTotal}

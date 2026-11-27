@@ -1,5 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
+import { productToSnapshot } from "@/entities/cart/lib/snapshots";
 import { useCartStore } from "@/entities/cart/model/store";
 import type { Product } from "@/entities/product/model/product";
 import { toTrackedItem } from "@/entities/product/lib/toTrackedItem";
@@ -43,7 +44,7 @@ export const useAddToCartWithAnimation = (product: Product, quantity = 1) => {
 
     setTimeout(() => {
       setFlight(null);
-      addItem(product.id, quantity);
+      addItem(product.id, quantity, productToSnapshot(product));
     }, FLIGHT_MS);
 
     trackAddToCart(toTrackedItem(product, quantity));

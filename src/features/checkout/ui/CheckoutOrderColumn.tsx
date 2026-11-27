@@ -7,6 +7,7 @@ import { listItemVariants } from "@/shared/lib/animation/animationVariants";
 import MainButton from "@/shared/ui/main-button/MainButton";
 import type { CheckoutValues } from "../model/schema";
 import CheckoutColumn from "./CheckoutColumn";
+import CheckoutPricesChangedNotice from "./CheckoutPricesChangedNotice";
 import CheckoutPromocodeField from "./CheckoutPromocodeField";
 import CheckoutRecommendations from "./CheckoutRecommendations";
 import CheckoutSection from "./CheckoutSection";
@@ -18,6 +19,8 @@ type CheckoutOrderColumnProps = {
   isQuoteStale: boolean;
   /* True while a quote request is in flight. */
   isQuoteFetching: boolean;
+  /* The server's prices differ from the saved cart the page opened with. */
+  pricesChanged: boolean;
   /* True while createOrder runs. */
   isSubmitting: boolean;
   /* The cart's lines, from the cart widget. */
@@ -36,6 +39,7 @@ export default function CheckoutOrderColumn({
   quote,
   isQuoteStale,
   isQuoteFetching,
+  pricesChanged,
   isSubmitting,
   cartList,
   renderTotal,
@@ -65,6 +69,7 @@ export default function CheckoutOrderColumn({
         variants={listItemVariants}
         className="py-6 md:p-0 border-t md:border-none border-black/10"
       >
+        {pricesChanged && <CheckoutPricesChangedNotice />}
         {renderTotal(
           <MainButton
             type="submit"

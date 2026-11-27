@@ -1,10 +1,11 @@
 "use client";
 import { useFavorite } from "@/entities/favorite/hooks/useFavorite";
+import type { Product } from "@/entities/product/model/product";
 import EmptyHeartIcon from "@/shared/ui/icons/EmptyHeartIcon";
 
 type ToggleFavoriteProps = {
-  /* Slug of the product the heart saves. */
-  slug: string;
+  /* The product the heart saves; kept to draw the favorites page at once. */
+  product: Product;
   /* "card": a bare heart on a product card; "large": a 45 px bordered box. */
   size?: "card" | "large";
   /* Extra classes for the button. */
@@ -30,11 +31,11 @@ const ICON_CLASSES = {
  * never shows the wrong state.
  */
 export default function ToggleFavorite({
-  slug,
+  product,
   size = "card",
   className = "",
 }: ToggleFavoriteProps) {
-  const { hydrated, isFavorite, toggleFavorite } = useFavorite(slug);
+  const { hydrated, isFavorite, toggleFavorite } = useFavorite(product);
 
   if (!hydrated) return null;
 
