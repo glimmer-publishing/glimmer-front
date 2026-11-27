@@ -1,11 +1,11 @@
 import "server-only";
 import type { CategoryGenre } from "@/entities/category/model/types";
 import { getCategory } from "@/entities/category/api/getCategory";
-import { ListingParams } from "@/shared/lib/searchParams/listingParams";
+import { ListingParams } from "@/entities/product/lib/listingParams";
 import { listProducts } from "@/entities/product/lib/listProducts";
 import { ProductSelection } from "@/entities/product/model/types";
 import { getProductSelection } from "@/entities/product/api/getProducts";
-import { CategoryParams } from "@/shared/lib/searchParams/categoryParams";
+import { CategoryParams } from "@/entities/category/lib/categoryParams";
 import { CategoryViewProps } from "../ui/CategoryView";
 
 /* A product selection shown like a category: its title and which products. */

@@ -6,10 +6,14 @@ import StarFilledIcon from "@/shared/ui/icons/StarFilledIcon";
 import * as motion from "motion/react-client";
 import { fadeInAnimation } from "@/shared/lib/animation/animationVariants";
 import Link from "next/link";
+import { pluralizeUk, type UkPluralForms } from "@/shared/lib/text/pluralizeUk";
 import {
   getSeriesHref,
   getSeriesInfo,
 } from "@/entities/product/lib/getSeriesInfo";
+
+/* "відгук" in the form that agrees with the review count. */
+const REVIEW_FORMS: UkPluralForms = ["відгук", "відгуки", "відгуків"];
 
 type ProductDetailsProps = {
   /* The book on this page. */
@@ -26,25 +30,6 @@ export default function ProductDetails({
 
   const rating = getAverageRating(reviews);
   const series = getSeriesInfo(features);
-
-  function getReviewWord(count: number) {
-    const lastDigit = count % 10;
-    const lastTwoDigits = count % 100;
-
-    if (lastTwoDigits >= 11 && lastTwoDigits <= 14) {
-      return "відгуків";
-    }
-
-    if (lastDigit === 1) {
-      return "відгук";
-    }
-
-    if (lastDigit >= 2 && lastDigit <= 4) {
-      return "відгуки";
-    }
-
-    return "відгуків";
-  }
 
   return (
     <div className="py-4 lg:pt-0 lg:pb-6">
@@ -116,7 +101,7 @@ export default function ProductDetails({
           />
           <p className="text-right">
             ({reviews?.length ? reviews?.length : 0}{" "}
-            {getReviewWord(reviews?.length)})
+            {pluralizeUk(reviews?.length ?? 0, REVIEW_FORMS)})
           </p>
         </div>
       </motion.div>

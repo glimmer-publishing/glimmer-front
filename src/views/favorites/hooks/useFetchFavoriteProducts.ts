@@ -1,6 +1,6 @@
 "use client";
 import { useFavoriteSlugs } from "@/entities/favorite/hooks/useFavorite";
-import type { ListingParams } from "@/shared/lib/searchParams/listingParams";
+import type { ListingParams } from "@/entities/product/lib/listingParams";
 import { useFetchListingBySlugs } from "@/entities/product/hooks/useFetchListingBySlugs";
 
 /**

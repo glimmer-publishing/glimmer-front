@@ -1,7 +1,7 @@
 import "server-only";
 import type { Metadata } from "next";
 import { getProductBySlug } from "@/entities/product/api/getProducts";
-import { getDefaultMetadata } from "@/shared/lib/seo/getDefaultMetadata";
+import { DEFAULT_METADATA } from "@/shared/config/constants";
 import { sanityImageUrl } from "@/shared/lib/images/sanityImage";
 
 /**
@@ -11,7 +11,7 @@ import { sanityImageUrl } from "@/shared/lib/images/sanityImage";
 export const buildProductMetadata = async (slug: string): Promise<Metadata> => {
   const product = await getProductBySlug(slug);
 
-  if (!product) return getDefaultMetadata();
+  if (!product) return DEFAULT_METADATA;
 
   const currentPrice =
     product.discountPrice && product.discountPrice < product.price
@@ -20,7 +20,7 @@ export const buildProductMetadata = async (slug: string): Promise<Metadata> => {
 
   return {
     title: `${product.title}, ${product.author}. Купити книгу за ${currentPrice} грн`,
-    description: product.description || getDefaultMetadata().description,
+    description: product.description || DEFAULT_METADATA.description,
     openGraph: {
       images: [
         /**

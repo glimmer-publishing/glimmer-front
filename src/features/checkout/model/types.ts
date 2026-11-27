@@ -75,3 +75,13 @@ export type CheckoutNotice =
   /* removedTitles: books no longer sold, dropped from the cart. */
   | { kind: "priceChanged"; removedTitles: string[] }
   | { kind: "paymentFailed"; orderNumber: string };
+
+/* A paid invoice as the webhook reports it. */
+export type MonopayPayment = {
+  /* The KeyCRM order id createOrder passed as the invoice reference. */
+  reference: string;
+  /* MonoPay's invoice id; marks the KeyCRM payment it produced. */
+  invoiceId: string;
+  /* Kopecks actually paid. */
+  finalAmount: number;
+};

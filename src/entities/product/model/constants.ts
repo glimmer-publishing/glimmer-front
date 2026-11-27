@@ -1,5 +1,8 @@
 import { ListingOption, SortSet } from "./types";
 
+/* Products per listing page. */
+export const ITEMS_PER_PAGE = 24;
+
 // Values must match the cases in lib/filterProducts.ts. The first is the default.
 export const FILTER_OPTIONS: ListingOption[] = [
   { title: "Всі товари", value: "all" },

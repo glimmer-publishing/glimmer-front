@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { keepPreviousData, QueryClient, useQuery } from "@tanstack/react-query";
 import { fetchJson } from "@/shared/api/http/fetchJson";
-import { cartQuoteHref } from "@/shared/lib/searchParams/cartQuoteParams";
+import { cartQuoteHref } from "../lib/cartQuoteParams";
 import { hydrateCart, useCartStore } from "../model/store";
 import type { CartItem, CartQuote } from "../model/types";
 

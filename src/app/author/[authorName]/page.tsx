@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { parseListingParams } from "@/shared/lib/searchParams/listingParams";
+import { parseListingParams } from "@/entities/product/lib/listingParams";
 import { SearchParamsRecord } from "@/shared/lib/searchParams/urlParams";
 import CollectionView from "@/views/collection/ui/CollectionView";
 import { getAuthorMetadata } from "@/views/collection/api/metadata";

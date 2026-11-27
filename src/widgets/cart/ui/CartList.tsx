@@ -1,5 +1,6 @@
 "use client";
 import { useEffect } from "react";
+import { pluralizeUk, type UkPluralForms } from "@/shared/lib/text/pluralizeUk";
 import { AnimatePresence, motion } from "framer-motion";
 import Loader from "@/shared/ui/loader/Loader";
 import {
@@ -20,16 +21,8 @@ type CartListProps = {
   variant?: "cart" | "checkout";
 };
 
-/* "товар" in the form that agrees with count. */
-const getProductWord = (count: number) => {
-  const mod10 = count % 10;
-  const mod100 = count % 100;
-
-  if (mod10 === 1 && mod100 !== 11) return "товар";
-  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20))
-    return "товари";
-  return "товарів";
-};
+/* "товар" in the form that agrees with the count. */
+const PRODUCT_FORMS: UkPluralForms = ["товар", "товари", "товарів"];
 
 /**
  * The cart's products as the server priced them. Products that no longer
@@ -65,7 +58,7 @@ export default function CartList({
           className="flex items-center justify-between  mb-4"
         >
           <p className="text-[12px] font-light leading-[120%] text-black/60">
-            {count} {getProductWord(count)}
+            {count} {pluralizeUk(count, PRODUCT_FORMS)}
           </p>
           <EditCartClear />
         </motion.div>

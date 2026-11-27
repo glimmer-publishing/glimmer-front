@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { parseListingParams } from "@/shared/lib/searchParams/listingParams";
+import { parseListingParams } from "@/entities/product/lib/listingParams";
 import type { ProductListingResponse } from "@/entities/product/model/types";
 import { getListingBySlugs } from "@/entities/product/api/getListingBySlugs";
 

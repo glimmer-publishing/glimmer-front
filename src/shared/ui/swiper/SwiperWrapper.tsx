@@ -39,8 +39,7 @@ export default function SwiperWrapper({
   autoplay = false,
   onSlideChange,
 }: SwiperWrapperProps) {
-  const screenWidth = useScreenWidth();
-  const isDesktop = screenWidth >= 1024;
+  const { isDesktop } = useScreenWidth();
   return (
     <Swiper
       pagination={isPagination ? createPagination(3) : false}

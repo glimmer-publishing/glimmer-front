@@ -4,20 +4,11 @@ import { isProduction } from "@/shared/config/env";
 import { addKeyCrmPayment, getKeyCrmOrder } from "@/shared/api/keycrm/client";
 import { notifyTelegram } from "@/shared/api/telegram/client";
 import { getKyivDateTime } from "@/shared/lib/date/getKyivDate";
+import type { MonopayPayment } from "../model/types";
 import { paymentMessages } from "./orderDocuments";
 
 /* KeyCRM's id of the MonoPay payment method. */
 const KEYCRM_MONOPAY_METHOD_ID = 6;
-
-/* A paid invoice as the webhook reports it. */
-type MonopayPayment = {
-  /* The KeyCRM order id createOrder passed as the invoice reference. */
-  reference: string;
-  /* MonoPay's invoice id; marks the KeyCRM payment it produced. */
-  invoiceId: string;
-  /* Kopecks actually paid. */
-  finalAmount: number;
-};
 
 /**
  * Callbacks for the same order are handled one after another on this

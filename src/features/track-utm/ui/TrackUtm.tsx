@@ -1,7 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import { useUtmStore } from "@/entities/utm/model/store";
-import { parseUtmParams } from "@/shared/lib/searchParams/utmParams";
+import { parseUtmParams } from "@/entities/utm/lib/utmParams";
 
 /**
  * Stores the UTM params of the landing URL, first touch only: once a

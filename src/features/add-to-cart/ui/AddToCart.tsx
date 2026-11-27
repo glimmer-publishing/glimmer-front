@@ -2,7 +2,7 @@
 import type { Product } from "@/entities/product/model/product";
 import CartIcon from "@/shared/ui/icons/CartIcon";
 import AddToCartAnimation from "./AddToCartAnimation";
-import { useAddToCartFlight } from "../hooks/useAddToCartFlight";
+import { useAddToCartWithAnimation } from "../hooks/useAddToCartWithAnimation";
 
 type AddToCartProps = {
   /* The product added, one at a time. */
@@ -17,7 +17,7 @@ type AddToCartProps = {
  */
 export default function AddToCart({ product, className }: AddToCartProps) {
   const { status } = product;
-  const { buttonRef, addToCart, flight } = useAddToCartFlight(product);
+  const { buttonRef, addToCart, flight } = useAddToCartWithAnimation(product);
 
   return (
     <>

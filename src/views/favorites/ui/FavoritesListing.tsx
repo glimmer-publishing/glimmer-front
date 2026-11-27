@@ -1,6 +1,6 @@
 "use client";
 import { useSearchParams } from "next/navigation";
-import { parseListingParams } from "@/shared/lib/searchParams/listingParams";
+import { parseListingParams } from "@/entities/product/lib/listingParams";
 import { ProductListing } from "@/entities/product/model/types";
 import Container from "@/shared/ui/container/Container";
 import Loader from "@/shared/ui/loader/Loader";

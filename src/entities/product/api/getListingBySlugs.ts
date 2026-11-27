@@ -1,6 +1,6 @@
 import "server-only";
 import { listProducts } from "../lib/listProducts";
-import { ListingParams } from "@/shared/lib/searchParams/listingParams";
+import { ListingParams } from "../lib/listingParams";
 import { ProductListingResponse } from "../model/types";
 import { getProductsBySlugs } from "./getProducts";
 

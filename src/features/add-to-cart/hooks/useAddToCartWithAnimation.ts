@@ -21,7 +21,7 @@ export type Flight = {
  * timing cannot drift between them. Attach buttonRef to the button, call
  * addToCart on click, and render AddToCartAnimation while flight is set.
  */
-export const useAddToCartFlight = (product: Product, quantity = 1) => {
+export const useAddToCartWithAnimation = (product: Product, quantity = 1) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const addItem = useCartStore((state) => state.addItem);
   const [flight, setFlight] = useState<Flight | null>(null);

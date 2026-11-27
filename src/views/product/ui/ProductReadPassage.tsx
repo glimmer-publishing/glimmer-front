@@ -42,8 +42,7 @@ export default function ProductReadPassage({
   isModalShown,
   setIsModalShown,
 }: ProductReadPassageProps) {
-  const screenWidth = useScreenWidth();
-  const isDesktop = screenWidth >= 768;
+  const { isMobile } = useScreenWidth();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const galleryRef = useRef<ImageGallery | null>(null);
@@ -117,7 +116,7 @@ export default function ProductReadPassage({
               lazyLoad
               showPlayButton={false}
               showFullscreenButton={false}
-              showThumbnails={isDesktop}
+              showThumbnails={!isMobile}
               useBrowserFullscreen={false}
               showBullets={false}
               slideOnThumbnailOver={true}

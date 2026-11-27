@@ -1,7 +1,7 @@
 "use client";
 import MainButton from "@/shared/ui/main-button/MainButton";
 import { Product } from "@/entities/product/model/product";
-import { useAddToCartFlight } from "../hooks/useAddToCartFlight";
+import { useAddToCartWithAnimation } from "../hooks/useAddToCartWithAnimation";
 import AddToCartAnimation from "./AddToCartAnimation";
 
 type AddToCartButtonProps = {
@@ -23,7 +23,10 @@ export default function AddToCartButton({
   count = 1,
   className,
 }: AddToCartButtonProps) {
-  const { buttonRef, addToCart, flight } = useAddToCartFlight(product, count);
+  const { buttonRef, addToCart, flight } = useAddToCartWithAnimation(
+    product,
+    count
+  );
 
   return (
     <>

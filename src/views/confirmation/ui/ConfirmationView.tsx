@@ -3,24 +3,17 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { DeliveryService } from "@/shared/config/enums";
-import { formatHryvnia, toHryvnia } from "@/entities/cart/lib/money";
+import { toHryvnia } from "@/entities/cart/lib/money";
 import { useOrderStore } from "@/features/checkout/model/orderStore";
 import type { OrderSummary } from "@/features/checkout/model/types";
 import Container from "@/shared/ui/container/Container";
 import MainButton from "@/shared/ui/main-button/MainButton";
 import MarqueeLine from "@/shared/ui/marquee-line/MarqueeLine";
 import TelegramCTA from "@/widgets/telegram-cta/ui/TelegramCTA";
-import pdfMake from "pdfmake/build/pdfmake";
-import pdfFonts from "pdfmake/build/vfs_fonts";
-import { EMAIL_CLIENTS, PHONE } from "@/shared/config/constants";
-import { contactsPhoneRegex } from "@/shared/lib/text/regex";
+import { downloadReceiptPdf } from "../lib/downloadReceiptPdf";
 import * as motion from "motion/react-client";
 import { fadeInAnimation } from "@/shared/lib/animation/animationVariants";
-import { formatDate } from "@/shared/lib/date/formatDate";
 import { trackPurchaseOnce } from "@/shared/lib/analytics/ecommerceTracking";
-
-pdfMake.vfs = pdfFonts.vfs;
 
 /* Reports the purchase to analytics, once per order number. */
 const trackOrder = (order: OrderSummary) =>
@@ -64,188 +57,7 @@ function Confirmation() {
 
   if (!order) return null;
 
-  const {
-    orderNumber,
-    orderDate,
-    name,
-    surname,
-    phone,
-    city,
-    branchNumber,
-    address,
-    lines,
-    total,
-    deliveryService,
-  } = order;
-
-  const handleDownloadPDF = () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const docDefinition: any = {
-      content: [
-        // Заголовок квитанції
-        {
-          text: `Квитанція № ${orderNumber} від ${orderDate}`,
-          style: "header",
-          margin: [0, 0, 0, 20], // відстань до підкреслення
-        },
-        // Підкреслення
-        {
-          canvas: [
-            {
-              type: "line",
-              x1: 0,
-              y1: 0,
-              x2: 515, // приблизна ширина сторінки A4 без бокових полів
-              y2: 0,
-              lineWidth: 2,
-              lineColor: "#000000",
-            },
-          ],
-          margin: [0, 0, 0, 30], // відстань після підкреслення до наступного блоку
-        },
-        // Виконавець
-        {
-          columns: [
-            {
-              width: "auto",
-              text: [{ text: "Виконавець:\n" }],
-              margin: [0, 0, 58, 0],
-            },
-            {
-              width: "*",
-              text: [
-                {
-                  text: "Glimmer. Publishing house\n",
-                  bold: true,
-                  lineHeight: 1.5,
-                },
-                {
-                  text: `Email: ${EMAIL_CLIENTS}\n`,
-                  bold: true,
-                  lineHeight: 1.5,
-                },
-                {
-                  text: `Тел.: ${PHONE.replace(contactsPhoneRegex, "+38 ($1) $2 $3 $4")}\n`,
-                  bold: true,
-                  lineHeight: 1.5,
-                },
-              ],
-            },
-          ],
-          margin: [0, 0, 0, 20],
-        },
-        // Замовник
-        {
-          columns: [
-            {
-              width: "auto",
-              text: [{ text: "Замовник:\n" }],
-              margin: [0, 0, 70, 0],
-            },
-            {
-              width: "*",
-              text: [
-                { text: `${name} ${surname}\n`, bold: true, lineHeight: 1.5 },
-                { text: `Тел.: ${phone}\n`, bold: true },
-              ],
-            },
-          ],
-          margin: [0, 0, 0, 20],
-        },
-        // Адреса доставки
-        {
-          columns: [
-            {
-              width: "auto",
-              text: [{ text: "Адреса доставки:\n" }],
-              margin: [0, 0, 30, 0],
-            },
-            {
-              width: "*",
-              text: [
-                {
-                  text: `${city}, ${
-                    branchNumber
-                      ? deliveryService === DeliveryService.NOVA_POSHTA
-                        ? branchNumber
-                        : "відділення №" + branchNumber
-                      : address
-                  }\n`,
-                  bold: true,
-                },
-              ],
-            },
-          ],
-          margin: [0, 0, 0, 20],
-        },
-        // Таблиця товарів
-        {
-          table: {
-            widths: ["auto", "*", "auto", 70, 70],
-            body: [
-              [
-                {
-                  text: "№",
-                  bold: true,
-                  fillColor: "#E0E0E0",
-                  alignment: "center",
-                },
-                {
-                  text: "Товари",
-                  bold: true,
-                  fillColor: "#E0E0E0",
-                  alignment: "center",
-                },
-                {
-                  text: "Кількість",
-                  bold: true,
-                  fillColor: "#E0E0E0",
-                  alignment: "center",
-                },
-                {
-                  text: "Ціна",
-                  bold: true,
-                  fillColor: "#E0E0E0",
-                  alignment: "center",
-                },
-                {
-                  text: "Сума",
-                  bold: true,
-                  fillColor: "#E0E0E0",
-                  alignment: "center",
-                },
-              ],
-              ...lines.map((line, index) => {
-                const shippingDate = line.preOrderShippingDate
-                  ? formatDate(line.preOrderShippingDate)
-                  : null;
-                return [
-                  index + 1,
-                  `"${line.title}" — ${line.author ?? ""}${shippingDate ? `, відправка з ${shippingDate}` : ""}`,
-                  `${line.quantity} шт.`,
-                  `${formatHryvnia(line.unitPrice)} грн`,
-                  `${formatHryvnia(line.lineTotal)} грн`,
-                ];
-              }),
-            ],
-          },
-        },
-        // Загальна сума
-        {
-          text: `Разом: ${formatHryvnia(total)} грн`,
-          style: "total",
-          alignment: "right",
-          margin: [0, 20, 0, 0],
-        },
-      ],
-      styles: {
-        header: { fontSize: 16, bold: true, margin: [0, 0, 0, 10] },
-        total: { bold: true, fontSize: 14 },
-      },
-    };
-
-    pdfMake.createPdf(docDefinition).download(`order_${orderNumber}.pdf`);
-  };
+  const { orderNumber } = order;
 
   return (
     <section className="relative py-[116px] lg:py-50">
@@ -330,7 +142,7 @@ function Confirmation() {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 w-[199px] sm:w-[540px] mx-auto">
             <MainButton
-              onClick={handleDownloadPDF}
+              onClick={() => downloadReceiptPdf(order)}
               variant="bordered"
               className="sm:w-[calc(50%-6px)] h-[45px] text-[12px] lg:text-[14px] font-normal"
             >

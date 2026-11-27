@@ -7,7 +7,7 @@ import MarqueeLine from "@/shared/ui/marquee-line/MarqueeLine";
 import ProductList from "@/widgets/products/ui/ProductList";
 import ProductToolbar from "@/widgets/products/ui/ProductToolbar";
 import TelegramCTA from "@/widgets/telegram-cta/ui/TelegramCTA";
-import { categoryHref } from "@/shared/lib/searchParams/categoryParams";
+import { categoryHref } from "@/entities/category/lib/categoryParams";
 import CategoryBackground from "./CategoryBackground";
 import CategoryBanner from "./CategoryBanner";
 import CategoryTabs from "./CategoryTabs";

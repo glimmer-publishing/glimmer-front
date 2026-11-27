@@ -11,6 +11,7 @@ import FormInput from "@/shared/ui/form/FormInput";
 import Image from "next/image";
 import Link from "next/link";
 import { useFetchSearchProducts } from "../hooks/useFetchSearchProducts";
+import { filterSearchProducts } from "../lib/filterSearchProducts";
 
 type SearchProductsProps = {
   /* Whether it is open. */
@@ -30,15 +31,7 @@ export default function SearchProducts({
   const [query, setQuery] = useState("");
   const { data: products = [], status } = useFetchSearchProducts(isOpen);
 
-  const q = query.trim().toLowerCase();
-  const results =
-    q.length > 0
-      ? products.filter(
-          (p) =>
-            p.title?.toLowerCase().includes(q) ||
-            p.author?.toLowerCase().includes(q)
-        )
-      : [];
+  const results = filterSearchProducts(products, query);
 
   useEffect(() => {
     const body = document.body;
@@ -105,7 +98,7 @@ export default function SearchProducts({
                   >
                     {/* While loading, or if loading failed, the list just
                         stays empty; results appear once the data arrives. */}
-                    {q.length > 0 &&
+                    {!!query.trim() &&
                       status === "success" &&
                       !results.length && (
                         <p className="py-2 px-3 text-[12px] font-light text-black/60">

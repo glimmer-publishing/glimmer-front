@@ -32,8 +32,7 @@ export default function ProductImagePicker({
   productTitle,
   isOverlayShown = false,
 }: ProductImagePickerProps) {
-  const screenWidth = useScreenWidth();
-  const isDesktop = screenWidth >= 1024;
+  const { isDesktop } = useScreenWidth();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isViewerShown, setIsViewerShown] = useState(false);

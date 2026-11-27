@@ -2,7 +2,7 @@ import Link from "next/link";
 import {
   ListingParams,
   listingHref,
-} from "@/shared/lib/searchParams/listingParams";
+} from "@/entities/product/lib/listingParams";
 import ArrowIcon from "@/shared/ui/icons/ArrowIcon";
 
 type ProductPaginationProps = {

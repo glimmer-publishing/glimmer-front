@@ -1,14 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { recordMonopayPayment } from "@/features/checkout/api/recordMonopayPayment";
+import { parseMonopayWebhook } from "@/features/checkout/lib/parseMonopayWebhook";
 import { verifyMonopayWebhook } from "@/shared/api/monopay/client";
-
-/* The fields of MonoPay's invoice status webhook the handler reads. */
-type MonopayWebhook = {
-  status?: string;
-  invoiceId?: string;
-  reference?: string;
-  finalAmount?: number;
-};
 
 /**
  * MonoPay's payment status callback. The body is accepted only when X-Sign
@@ -27,34 +20,17 @@ export async function POST(request: NextRequest) {
     return new NextResponse("Invalid signature", { status: 403 });
   }
 
-  let data: MonopayWebhook;
-  try {
-    data = JSON.parse(rawBody);
-  } catch {
-    return new NextResponse("Invalid body", { status: 400 });
+  const result = parseMonopayWebhook(rawBody);
+  if (result.kind === "invalid") {
+    return new NextResponse(result.error, { status: 400 });
   }
-
-  if (data.status !== "success") {
-    return NextResponse.json({ ok: true, status: data.status });
-  }
-
-  const { reference, invoiceId, finalAmount } = data;
-  if (
-    typeof reference !== "string" ||
-    !reference ||
-    typeof finalAmount !== "number" ||
-    !Number.isInteger(finalAmount)
-  ) {
-    return new NextResponse("Invalid payment data", { status: 400 });
+  if (result.kind === "ignored") {
+    return NextResponse.json({ ok: true, status: result.status });
   }
 
   try {
-    await recordMonopayPayment({
-      reference,
-      invoiceId: typeof invoiceId === "string" ? invoiceId : "",
-      finalAmount,
-    });
-    return NextResponse.json({ ok: true, status: data.status });
+    await recordMonopayPayment(result.payment);
+    return NextResponse.json({ ok: true, status: "success" });
   } catch (error) {
     console.error("Webhook error:", error);
     /* A 5xx makes Monobank retry, which is safe: recording is idempotent. */

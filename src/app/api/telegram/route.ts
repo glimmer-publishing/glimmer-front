@@ -1,51 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ValidationError } from "yup";
-import { getProductReference } from "@/entities/product/api/getProductReference";
-import { callBackValidation } from "@/features/callback/model/schema";
-import { writeReviewValidation } from "@/features/write-review/model/schema";
+import { buildCallbackMessage } from "@/features/callback/lib/buildCallbackMessage";
+import { buildReviewMessage } from "@/features/write-review/api/buildReviewMessage";
 import { sendTelegramMessage } from "@/shared/api/telegram/client";
-import { escapeHtml as e } from "@/shared/lib/text/html";
 
 /**
- * Builds the operations-group message for one of the site's forms. The
- * browser sends typed fields only; the text is built and escaped here.
- * Returns null when the request is not a valid form submission.
+ * The message for one of the site's forms, by its kind; null when the
+ * request is not a valid form submission.
  */
 const buildMessage = async (body: unknown): Promise<string | null> => {
   const { kind, ...fields } = (body ?? {}) as { kind?: unknown };
 
-  if (kind === "callback") {
-    const { name, email, message } = await callBackValidation().validate(
-      fields,
-      { stripUnknown: true }
-    );
-    return (
-      `<b>Заявка "Форма зворотнього зв'язку"</b>\n` +
-      `<b>Ім'я:</b> ${e(name.trim())}\n` +
-      `<b>Email:</b> ${e(email.trim())}\n` +
-      `<b>Повідомлення:</b> ${e(message.trim())}\n`
-    );
-  }
-
-  if (kind === "review") {
-    const productId = (fields as { productId?: unknown }).productId;
-    if (typeof productId !== "string" || productId.length > 100) return null;
-
-    const [{ name, email, rating, message }, product] = await Promise.all([
-      writeReviewValidation().validate(fields, { stripUnknown: true }),
-      getProductReference(productId),
-    ]);
-    if (!product || !Number.isInteger(rating) || rating > 5) return null;
-
-    return (
-      `<b>Відгук на товар "${e(product.title)}" ${e(product.author ?? "")}, код товару: ${e(product.sku)}</b>\n` +
-      `<b>Ім'я:</b> ${e(name.trim())}\n` +
-      `<b>Email:</b> ${e(email.trim())}\n` +
-      `<b>Рейтинг:</b> ${rating}\n` +
-      `<b>Текст відгуку:</b> ${e(message.trim())}\n`
-    );
-  }
-
+  if (kind === "callback") return buildCallbackMessage(fields);
+  if (kind === "review") return buildReviewMessage(fields);
   return null;
 };
 

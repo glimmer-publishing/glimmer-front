@@ -54,8 +54,8 @@ query is `entities/product`'s; the search query is
 
 ### Where former root modules went
 
-- Helpers: `shared/lib`, grouped by topic: `searchParams/` (every URL
-  param parser and href builder), `date/`, `analytics/`, `seo/`, `images/`,
+- Helpers: `shared/lib`, grouped by topic: `searchParams/` (generic URL
+  param helpers only), `date/`, `analytics/`, `images/`,
   `text/` (HTML escaping, regexes), `animation/`, `routing/`. Shared hooks:
   `shared/hooks`. Constants and enums: `shared/config`.
 - Environment variables: read only in `shared/config`. `env.ts` has
@@ -107,14 +107,16 @@ The root layout composes `widgets/header` (which composes
 
 - `app/**/page.tsx` is the only place raw `searchParams` exist, and it parses
   them right away.
-- Every parser and href builder lives in `shared/lib/searchParams/`:
-  - `listingParams.ts`: `filter`, `sort`, `page` (`parseListingParams`,
-    `listingHref`).
-  - `categoryParams.ts`: `subcategory`, the genre tab (`parseCategoryParams`,
-    `categoryHref`, `categoryPageHref`).
-  - `cartQuoteParams.ts`: `GET /api/cart`'s `item` and `promo`.
-  - `utmParams.ts`: the UTM keys.
-  - `urlParams.ts`: the generic helpers (`toUrlSearchParams`, `withParams`).
+- Whoever owns a param defines its parser, in its entity's `lib/`:
+  - `entities/product/lib/listingParams.ts`: `filter`, `sort`, `page`
+    (`parseListingParams`, `listingHref`).
+  - `entities/category/lib/categoryParams.ts`: `subcategory`, the genre tab
+    (`parseCategoryParams`, `categoryHref`, `categoryPageHref`).
+  - `entities/cart/lib/cartQuoteParams.ts`: `GET /api/cart`'s `item` and
+    `promo`.
+  - `entities/utm/lib/utmParams.ts`: the UTM keys.
+- Only the generic helpers are in `shared/lib/searchParams/urlParams.ts`
+  (`toUrlSearchParams`, `withParams`, `readListParam`).
 - Everything below `app/` takes typed params. Links are built from typed
   values: the page's own params make a `baseHref` (`categoryHref`), and
   `listingHref` puts the listing's params on top.
@@ -123,6 +125,12 @@ The root layout composes `widgets/header` (which composes
   link.
 - Exception: `/favorites` is a static page, so its client component is the
   edge and parses `useSearchParams()` itself.
+
+**Route handlers stay thin too:** parsing, validation and building the
+response body live in the slice that owns them, e.g. `features/feed`
+(the Merchant feed XML), `features/checkout/lib/parseMonopayWebhook.ts`,
+`features/callback/lib/buildCallbackMessage.ts` and
+`features/write-review/api/buildReviewMessage.ts` (the Telegram texts).
 
 ## Composition
 

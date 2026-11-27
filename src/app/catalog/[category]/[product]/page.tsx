@@ -34,6 +34,7 @@ export async function generateMetadata({
  */
 export default async function ProductPage({ params }: ProductPageProps) {
   const view = await loadProductView((await params).product);
+
   if (!view) notFound();
 
   return <ProductView {...view} />;

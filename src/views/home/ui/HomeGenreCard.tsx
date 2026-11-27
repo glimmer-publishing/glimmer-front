@@ -1,7 +1,7 @@
 import { Genre } from "../model/types";
 import Image from "next/image";
 import Link from "next/link";
-import { categoryPageHref } from "@/shared/lib/searchParams/categoryParams";
+import { categoryPageHref } from "@/entities/category/lib/categoryParams";
 
 /* Home genres all belong to fiction. */
 const FICTION_CATEGORY = "khudozhnya-literatura";

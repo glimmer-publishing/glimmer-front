@@ -1,5 +1,5 @@
 import { CatalogItem } from "../model/catalogItem";
-import { categoryPageHref } from "@/shared/lib/searchParams/categoryParams";
+import { categoryPageHref } from "@/entities/category/lib/categoryParams";
 import type { MenuCategory } from "@/entities/category/model/types";
 
 /* The "Акції" entry, first in the catalog menu. */

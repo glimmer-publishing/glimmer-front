@@ -1,5 +1,5 @@
-import { ITEMS_PER_PAGE } from "@/shared/config/pagination";
-import { ListingParams } from "@/shared/lib/searchParams/listingParams";
+import { ITEMS_PER_PAGE } from "../model/constants";
+import { ListingParams } from "./listingParams";
 import { FILTER_OPTIONS, SORT_OPTION_SETS } from "../model/constants";
 import { Product } from "../model/product";
 import {

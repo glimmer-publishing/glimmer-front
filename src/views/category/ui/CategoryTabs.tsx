@@ -5,8 +5,8 @@ import type { CategoryGenre } from "@/entities/category/model/types";
 import {
   ListingParams,
   listingHref,
-} from "@/shared/lib/searchParams/listingParams";
-import { categoryHref } from "@/shared/lib/searchParams/categoryParams";
+} from "@/entities/product/lib/listingParams";
+import { categoryHref } from "@/entities/category/lib/categoryParams";
 
 type CategoryTabsProps = {
   /* Path of the category page the tabs point to. */

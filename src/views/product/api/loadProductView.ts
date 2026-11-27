@@ -1,6 +1,6 @@
 import "server-only";
 import { getRecommendations } from "@/entities/product/api/getRecommendations";
-import { categoryPageHref } from "@/shared/lib/searchParams/categoryParams";
+import { categoryPageHref } from "@/entities/category/lib/categoryParams";
 import { getProductBySlug } from "@/entities/product/api/getProducts";
 
 /**

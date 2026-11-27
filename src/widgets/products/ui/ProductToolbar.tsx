@@ -9,7 +9,7 @@ import {
 import {
   ListingParams,
   listingHref,
-} from "@/shared/lib/searchParams/listingParams";
+} from "@/entities/product/lib/listingParams";
 import { SortSet } from "@/entities/product/model/types";
 import Dropdown from "@/shared/ui/dropdown/Dropdown";
 import { fadeInAnimation } from "@/shared/lib/animation/animationVariants";

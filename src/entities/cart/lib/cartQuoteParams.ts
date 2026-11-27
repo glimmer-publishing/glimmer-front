@@ -1,14 +1,7 @@
-/* A cart entry as it travels in the URL: which product, how many. */
-export type CartQuoteParamItem = {
-  id: string;
-  quantity: number;
-};
+import type { CartItem } from "../model/types";
 
 /* GET /api/cart for these items and promo code: ?item=<id>:<qty>&promo=. */
-export const cartQuoteHref = (
-  items: CartQuoteParamItem[],
-  promoCode: string | null
-) => {
+export const cartQuoteHref = (items: CartItem[], promoCode: string | null) => {
   const params = new URLSearchParams();
   items.forEach(({ id, quantity }) =>
     params.append("item", `${id}:${quantity}`)

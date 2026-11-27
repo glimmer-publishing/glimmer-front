@@ -1,6 +1,6 @@
 import type { CatalogBanner } from "@/entities/banner/model/types";
 import { Product } from "./product";
-import { ListingParams } from "@/shared/lib/searchParams/listingParams";
+import { ListingParams } from "../lib/listingParams";
 
 /* One choice of the filter or sort list. */
 export type ListingOption = {

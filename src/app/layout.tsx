@@ -11,7 +11,7 @@ import Header from "@/widgets/header/ui/Header";
 import CartHeaderSlot from "@/widgets/cart/ui/CartHeaderSlot";
 import Footer from "@/widgets/footer/ui/Footer";
 import { getMenuCategories } from "@/entities/category/api/getMenuCategories";
-import { getDefaultMetadata } from "@/shared/lib/seo/getDefaultMetadata";
+import { DEFAULT_METADATA } from "@/shared/config/constants";
 import GoogleBaseTag from "@/shared/ui/analytics/GoogleBaseTag";
 import GoogleTagManagerScript from "@/shared/ui/analytics/GoogleTagManagerScript";
 import GoogleTagManagerNoScript from "@/shared/ui/analytics/GoogleTagManagerNoScript";
@@ -32,9 +32,7 @@ const montserrat = Montserrat({
 /**
  * The site-wide title, description, Open Graph image and Search Console tag.
  */
-export async function generateMetadata() {
-  return getDefaultMetadata();
-}
+export const metadata = DEFAULT_METADATA;
 
 /**
  * The root layout: fonts, analytics tags (production only), query client, UTM

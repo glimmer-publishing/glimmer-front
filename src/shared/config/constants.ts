@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { publicEnv } from "./env";
+import { publicEnv } from "@/shared/config/env";
 
 /* The shop's social media pages. */
 export const socials = {

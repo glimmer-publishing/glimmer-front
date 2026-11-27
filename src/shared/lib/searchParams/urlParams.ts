@@ -42,3 +42,21 @@ export const withParams = (
   const search = params.toString();
   return search ? `${path}?${search}` : path;
 };
+
+/* Defaults of readListParam: how many values, and how long each may be. */
+const LIST_PARAM_LIMITS = { maxValues: 50, maxLength: 200 };
+
+/**
+ * The non-empty values of a repeated query param (?slug=a&slug=b), capped
+ * in count and length so a crafted URL cannot make a route do unbounded
+ * work. Over-long values are dropped, not cut.
+ */
+export const readListParam = (
+  params: URLSearchParams,
+  name: string,
+  { maxValues, maxLength } = LIST_PARAM_LIMITS
+): string[] =>
+  params
+    .getAll(name)
+    .filter((value) => value && value.length <= maxLength)
+    .slice(0, maxValues);

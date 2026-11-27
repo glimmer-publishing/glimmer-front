@@ -1,9 +1,6 @@
 "use client";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import {
-  listingHref,
-  ListingParams,
-} from "@/shared/lib/searchParams/listingParams";
+import { listingHref, ListingParams } from "../lib/listingParams";
 import { fetchJson } from "@/shared/api/http/fetchJson";
 import type { ProductListingResponse } from "../model/types";
 

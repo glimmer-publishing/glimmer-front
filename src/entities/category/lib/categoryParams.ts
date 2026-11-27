@@ -1,4 +1,8 @@
-import { toUrlSearchParams, UrlParams, withParams } from "./urlParams";
+import {
+  toUrlSearchParams,
+  UrlParams,
+  withParams,
+} from "@/shared/lib/searchParams/urlParams";
 
 /* Params only a category page has, as read from the URL. */
 export type CategoryParams = {
