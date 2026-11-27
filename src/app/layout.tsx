@@ -19,6 +19,7 @@ import MetaPixel from "@/shared/ui/analytics/MetaPixel";
 import TrackUtm from "@/features/track-utm/ui/TrackUtm";
 import { isProduction } from "@/shared/config/env";
 import QueryProvider from "@/shared/providers/QueryProvider";
+import TopLoader from "@/shared/ui/top-loader/TopLoader";
 
 /* The Google Tag Manager container. */
 const GTM_ID = "GTM-53NZVT3H";
@@ -64,6 +65,7 @@ export default async function RootLayout({
         className={`${montserrat.variable} flex min-h-dvh flex-col antialiased text-[12px] lg:text-[15px] font-light leading-[120%]`}
       >
         {isProduction && <GoogleTagManagerNoScript gtmId={GTM_ID} />}
+        <TopLoader />
         <QueryProvider>
           <TrackUtm />
           <Header categories={categories} cart={<CartHeaderSlot />} />
